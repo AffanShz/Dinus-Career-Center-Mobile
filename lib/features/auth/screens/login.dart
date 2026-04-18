@@ -1,4 +1,8 @@
-import 'package:dcc_mobile/features/home/screens/homescreen.dart';
+import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
+import 'package:dcc_mobile/features/auth/widgets/auth_password_field.dart';
+import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
+import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -9,192 +13,159 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF6B8DD6), Color(0xFF4A6FA5), Color(0xFF2D4F8A)],
+          ),
+        ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Welcome to DCC Mobile',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Shape your future career at UDINUS',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 32),
-                    Container(
-                      padding: const EdgeInsets.all(24.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24.0),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 10,
-                            offset: Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'DCC SSO Login',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF032D60),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 32.0,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Spacer(),
+                            Text(
+                              'Welcome to DCC Mobile',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.headingLarge,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Please sign in with your student credentials',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                            const SizedBox(height: 8),
+                            Text(
+                              'Shape your future career at UDINUS',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodyMedium,
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'NIM / USERNAME',
-                                labelStyle: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF032D60),
-                                ),
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                prefixIcon: const Icon(Icons.person_outline),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
+                            const SizedBox(height: 40),
+                            Container(
+                              padding: const EdgeInsets.all(32.0),
+                              height: 494,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(24.0),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 5),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            obscureText: _obscurePassword,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-
-                              if (value.length < 8) {
-                                return 'Password must be at least 8 characters long';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              labelText: 'PASSWORD',
-                              labelStyle: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF032D60),
-                              ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: Color(0xFF032D60),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF032D60),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                ),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState?.validate() == true) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Homescreen(),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                    'DCC SSO Login',
+                                    style: AppTextStyles.bodySmall,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Please sign in with your student \ncredentials',
+                                    style: AppTextStyles.bodyExtraSmall,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  AuthTextField(
+                                    label: 'USERNAME',
+                                    prefixIcon: Icons.person_outline,
+                                    hintText: 'A11.202X.XXXXX',
+                                  ),
+                                  const SizedBox(height: 16),
+                                  AuthPasswordField(),
+                                  const SizedBox(height: 8.0),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {},
+                                      child: Text(
+                                        'Forgot Password?',
+                                        style: AppTextStyles.bodyExtraSmallBold,
+                                      ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    size: 20,
-                                    color: Colors.white,
+                                  const SizedBox(height: 8.0),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primaryLight,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            25.0,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        if (_formKey.currentState?.validate() ==
+                                            true) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const MainScreen(),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Login',
+                                            style: AppTextStyles.bodySmallBold,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                            const Spacer(),
+                            Text(
+                              '© 2024 Dinus Career Center. All Rights Reserved.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodyExtraSmallLight,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
