@@ -1,8 +1,12 @@
-import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:dcc_mobile/core/theme/colors.dart';
 
+/// Centralized text styles for the DCC Mobile app.
+/// Use these constants for consistent typography across screens.
 class AppTextStyles {
+  AppTextStyles._();
+
   static final headingLarge = GoogleFonts.poppins(
     fontSize: 40,
     fontWeight: FontWeight.bold,
