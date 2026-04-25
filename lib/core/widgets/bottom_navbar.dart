@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 
-/// Bottom navigation bar widget extracted from MainScreen.
-/// Provides a styled Material 3 NavigationBar with rounded top corners
-/// and a floating shadow effect.
 class AppBottomNavbar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -45,10 +42,7 @@ class AppBottomNavbar extends StatelessWidget {
             }),
             iconTheme: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const IconThemeData(
-                  color: AppColors.primary,
-                  size: 28,
-                );
+                return const IconThemeData(color: AppColors.primary, size: 28);
               }
               return const IconThemeData(
                 color: AppColors.navInactive,

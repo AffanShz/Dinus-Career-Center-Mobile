@@ -13,7 +13,7 @@ class TrackScreen extends StatefulWidget {
 }
 
 class _TrackScreenState extends State<TrackScreen> {
-  final List<String> _filters = ['All (12)', 'Active (4)', 'Past (8)'];
+  final List<String> _filters = ['Semua (12)', 'Aktif (4)', 'Selesai (8)'];
   int _selectedFilterIndex = 0;
 
   final List<Map<String, dynamic>> _dummyApplications = [
@@ -21,23 +21,23 @@ class _TrackScreenState extends State<TrackScreen> {
       'role': 'Senior UX Architect',
       'company': 'Skyline Tech Solutions',
       'logo': 'assets/images/dcc.png',
-      'status': 'INTERVIEW\nSCHEDULED',
+      'status': 'Interview',
       'status_bg': const Color(0xFF9E9BF0).withValues(alpha: 0.8),
       'status_text': const Color(0xFF4530B2),
       'current_step': 2, // 0: Applied, 1: Reviewed, 2: Interview, 3: Hired
-      'applied_on': 'Oct 24, 2023',
-      'last_update': 'Yesterday',
+      'applied_on': '24 Oktober 2025',
+      'last_update': 'Kemarin',
     },
     {
       'role': 'Product Strategy Lead',
       'company': 'Global Logistics Inc.',
       'logo': 'assets/images/dcc.png',
-      'status': 'UNDER\nREVIEW',
+      'status': 'Reviewed',
       'status_bg': const Color(0xFFD3E2FF),
       'status_text': const Color(0xFF1E5BBF),
       'current_step': 1,
-      'applied_on': 'Oct 28, 2023',
-      'last_update': '2 hours ago',
+      'applied_on': '28 Oktober 2025',
+      'last_update': '2 jam yang lalu',
     },
   ];
 
@@ -79,9 +79,7 @@ class _TrackScreenState extends State<TrackScreen> {
                   style: GoogleFonts.poppins(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: isCompleted
-                        ? activeColor
-                        : AppColors.navInactive,
+                    color: isCompleted ? activeColor : AppColors.navInactive,
                   ),
                 ),
               ],
@@ -139,36 +137,40 @@ class _TrackScreenState extends State<TrackScreen> {
 
   // -- Filter Chips --
   Widget _buildFilterChips() {
-    return Row(
-      children: List.generate(_filters.length, (index) {
-        final isSelected = _selectedFilterIndex == index;
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedFilterIndex = index;
-            });
-          },
-          child: Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Colors.grey[200],
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Text(
-              _filters[index],
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.white : Colors.grey[800],
+    return SizedBox(
+      height: 45, // Sesuaikan tinggi dengan kebutuhan desain
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _filters.length,
+        itemBuilder: (context, index) {
+          final isSelected = _selectedFilterIndex == index;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedFilterIndex = index;
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : Colors.grey[200],
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Center(
+                child: Text(
+                  _filters[index],
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? AppColors.white : Colors.grey[800],
+                  ),
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
@@ -205,10 +207,7 @@ class _TrackScreenState extends State<TrackScreen> {
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.business,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.business, color: Colors.white),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -274,7 +273,7 @@ class _TrackScreenState extends State<TrackScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'APPLIED ON',
+                        'Dilamar Pada',
                         style: GoogleFonts.poppins(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -296,7 +295,7 @@ class _TrackScreenState extends State<TrackScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        'LAST UPDATE',
+                        'UPDATE TERAKHIR',
                         style: GoogleFonts.poppins(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,

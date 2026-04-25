@@ -65,18 +65,13 @@ class Homescreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
-            children: [
-              TextSpan(text: '👋', style: TextStyle(fontSize: 28)),
-            ],
+            children: [TextSpan(text: '👋', style: TextStyle(fontSize: 28))],
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Ready to architect your career today?',
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.blueGrey[600],
-          ),
+          'Siap untuk membangun karir impianmu?',
+          style: TextStyle(fontSize: 15, color: Colors.blueGrey[600]),
         ),
       ],
     );
@@ -117,7 +112,7 @@ class Homescreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              'Profile Completeness',
+                              'Kelengkapan Profil',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -136,8 +131,8 @@ class Homescreen extends StatelessWidget {
                                       backgroundColor: Colors.grey[200],
                                       valueColor:
                                           const AlwaysStoppedAnimation<Color>(
-                                        AppColors.primary,
-                                      ),
+                                            AppColors.primary,
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -166,7 +161,7 @@ class Homescreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
-                          'Complete',
+                          'Lengkapi',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -191,7 +186,7 @@ class Homescreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          'Recommended Jobs',
+          'Rekomendasi Loker',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -199,7 +194,7 @@ class Homescreen extends StatelessWidget {
           ),
         ),
         Text(
-          'See all',
+          'Lihat Semua',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -284,8 +279,11 @@ class Homescreen extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(Icons.location_on_outlined,
-                  size: 16, color: Colors.blueGrey[600]),
+              Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: Colors.blueGrey[600],
+              ),
               const SizedBox(width: 6),
               Text(
                 location,
@@ -325,7 +323,7 @@ class Homescreen extends StatelessWidget {
   // -- Upcoming Events --
   Widget _buildUpcomingEventsHeader() {
     return const Text(
-      'Upcoming Events',
+      'Event yang akan datang',
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
@@ -408,26 +406,30 @@ class Homescreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.calendar_today_outlined,
-                              color: Colors.white70, size: 14),
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            color: Colors.white70,
+                            size: 14,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             'Oct 24, 2024',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ],
                       ),
                       SizedBox(width: 20),
                       Row(
                         children: [
-                          Icon(Icons.access_time_outlined,
-                              color: Colors.white70, size: 14),
+                          Icon(
+                            Icons.access_time_outlined,
+                            color: Colors.white70,
+                            size: 14,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             '10:00 AM',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ],
                       ),

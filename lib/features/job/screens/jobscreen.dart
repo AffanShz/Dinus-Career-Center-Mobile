@@ -13,9 +13,9 @@ class JobScreen extends StatefulWidget {
 
 class _JobScreenState extends State<JobScreen> {
   final List<String> _categories = [
-    'All Jobs',
+    'Semua',
     'Full-time',
-    'Internship',
+    'Magang',
     'Part-time',
     'Freelance',
   ];
@@ -141,7 +141,7 @@ class _JobScreenState extends State<JobScreen> {
             ),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search dream jobs...',
+                hintText: 'Cari lowongan',
                 hintStyle: GoogleFonts.poppins(
                   color: Colors.grey[500],
                   fontSize: 16,
@@ -173,11 +173,7 @@ class _JobScreenState extends State<JobScreen> {
             ],
           ),
           child: IconButton(
-            icon: const Icon(
-              Icons.tune_rounded,
-              color: Colors.white,
-              size: 24,
-            ),
+            icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 24),
             onPressed: () {
               // TODO: Filter action
             },
@@ -204,10 +200,7 @@ class _JobScreenState extends State<JobScreen> {
             },
             child: Container(
               margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : Colors.grey[200],
                 borderRadius: BorderRadius.circular(20),
@@ -217,11 +210,8 @@ class _JobScreenState extends State<JobScreen> {
                   _categories[index],
                   style: GoogleFonts.poppins(
                     fontSize: 14,
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected
-                        ? AppColors.white
-                        : AppColors.secondary,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? AppColors.white : AppColors.secondary,
                   ),
                 ),
               ),
@@ -238,7 +228,7 @@ class _JobScreenState extends State<JobScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Opportunity for you',
+          'Lowongan Tersedia',
           style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -252,7 +242,7 @@ class _JobScreenState extends State<JobScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            '142 FOUND',
+            '142 Lowongan',
             style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -401,7 +391,7 @@ class _JobScreenState extends State<JobScreen> {
                       ),
                       children: [
                         TextSpan(
-                          text: '/mo',
+                          text: '/bulan',
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,

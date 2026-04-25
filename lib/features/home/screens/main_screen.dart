@@ -8,11 +8,13 @@ import 'package:dcc_mobile/features/track/screens/trackscreen.dart';
 class _NavItem {
   final Widget page;
   final IconData icon;
+  final IconData selectedIcon;
   final String label;
 
   const _NavItem({
     required this.page,
     required this.icon,
+    required this.selectedIcon,
     required this.label,
   });
 }
@@ -31,28 +33,33 @@ class _MainScreenState extends State<MainScreen> {
   final List<_NavItem> _items = [
     const _NavItem(
       page: Homescreen(),
-      icon: Icons.home_filled,
-      label: 'Home',
+      icon: Icons.home_outlined,
+      selectedIcon: Icons.home_filled,
+      label: 'Beranda',
     ),
     const _NavItem(
       page: JobScreen(),
       icon: Icons.work_outline_rounded,
-      label: 'Jobs',
+      selectedIcon: Icons.work_rounded,
+      label: 'Loker',
     ),
     const _NavItem(
       page: TrackScreen(),
       icon: Icons.assignment_turned_in_outlined,
-      label: 'Track',
+      selectedIcon: Icons.assignment_turned_in,
+      label: 'Status',
     ),
     const _NavItem(
       page: Scaffold(body: Center(child: Text('Events Screen'))),
       icon: Icons.calendar_today_outlined,
-      label: 'Events',
+      selectedIcon: Icons.calendar_today,
+      label: 'Acara',
     ),
     const _NavItem(
       page: Scaffold(body: Center(child: Text('Profile Screen'))),
       icon: Icons.person_outline_rounded,
-      label: 'Profile',
+      selectedIcon: Icons.person_rounded,
+      label: 'Profil',
     ),
   ];
 
@@ -73,6 +80,7 @@ class _MainScreenState extends State<MainScreen> {
         destinations: _items.map((item) {
           return NavigationDestination(
             icon: Icon(item.icon),
+            selectedIcon: Icon(item.selectedIcon),
             label: item.label,
           );
         }).toList(),
