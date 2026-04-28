@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
+
+class GoogleSignInButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const GoogleSignInButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+          ),
+          side: const BorderSide(color: Colors.black12),
+        ),
+        onPressed: onPressed,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Using network image or asset for Google logo
+            Image.network(
+              'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
+              height: 24,
+              width: 24,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Sign in with Google',
+              style: AppTextStyles.bodySmallBold.copyWith(
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

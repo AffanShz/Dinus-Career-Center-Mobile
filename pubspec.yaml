@@ -7,10 +7,13 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  equatable: ^2.0.8
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_dotenv: ^6.0.0
   google_fonts: ^8.0.2
+  google_sign_in: ^7.2.0
   supabase_flutter: ^2.12.4
 
 dev_dependencies:

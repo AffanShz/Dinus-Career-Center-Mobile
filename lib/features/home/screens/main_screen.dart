@@ -3,6 +3,8 @@ import 'package:dcc_mobile/core/widgets/bottom_navbar.dart';
 import 'package:dcc_mobile/features/home/screens/homescreen.dart';
 import 'package:dcc_mobile/features/job/screens/jobscreen.dart';
 import 'package:dcc_mobile/features/track/screens/trackscreen.dart';
+import 'package:dcc_mobile/features/event/screens/event_screen.dart';
+import 'package:dcc_mobile/features/profile/screens/profile_screen.dart';
 
 /// Data class for navigation items.
 class _NavItem {
@@ -50,13 +52,13 @@ class _MainScreenState extends State<MainScreen> {
       label: 'Status',
     ),
     const _NavItem(
-      page: Scaffold(body: Center(child: Text('Events Screen'))),
+      page: EventScreen(),
       icon: Icons.calendar_today_outlined,
       selectedIcon: Icons.calendar_today,
       label: 'Acara',
     ),
     const _NavItem(
-      page: Scaffold(body: Center(child: Text('Profile Screen'))),
+      page: ProfileScreen(),
       icon: Icons.person_outline_rounded,
       selectedIcon: Icons.person_rounded,
       label: 'Profil',
