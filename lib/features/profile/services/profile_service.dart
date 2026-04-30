@@ -1,51 +1,76 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/profile_model.dart';
+import '../../../core/utils/dinus_email_parser.dart';
 
 class ProfileService {
-  Future<UserProfile> fetchUserProfile() async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
+  final _supabase = Supabase.instance.client;
 
-    return UserProfile(
-      name: 'ANTEK ANTEK ASENG',
-      major: 'Teknik Informatika',
-      university: 'UDINUS',
-      batch: '2024',
-      gpa: '3.87',
-      skills: [
-        'React.js',
-        'Tailwind CSS',
-        'Python',
-        'Machine Learning',
-        'SQL',
-        'UI Design',
-        '+ 8 lainnya',
-      ],
-      experiences: [
-        Experience(
-          date: 'JULY 2024 - PRESENT',
-          title: 'Fullstack Developer Intern',
-          company: 'Global Tech Solutions',
-          description:
-              'Developing scalable web architectures and optimizing database queries for high-traffic applications.',
-          isActive: true,
-        ),
-        Experience(
-          date: 'JAN 2024 - FEB 2024',
-          title: 'Web Developer',
-          company: 'PT. Media Edukasi Teknologi',
-          description:
-              'Developing scalable web architectures and optimizing database queries for high-traffic applications.',
-          isActive: false,
-        ),
-      ],
-      education: [
-        Education(
-          institution: 'Universitas Dian Nuswantoro',
-          degree: 'S1 Teknik Informatika',
-          period: '2024 - 2028',
-          location: 'Semarang, Indonesia',
-        ),
-      ],
-    );
+  Future<UserProfile> fetchUserProfile() async {
+    final user = _supabase.auth.currentUser;
+    final String email = user?.email ?? '';
+    final String nameFromAuth = user?.userMetadata?['full_name'] ?? 'User DCC';
+    final String photoFromAuth = user?.userMetadata?['avatar_url'] ?? '';
+
+    // Always parse email for NIM & bidang as fallback
+    final parsed = DinusEmailParser.parse(email);
+    final String? nimFromEmail = parsed['nim'];
+    final String? bidangFromEmail = parsed['bidang'];
+
+    try {
+      final pelamarData = await _supabase
+          .from('pelamar')
+          .select()
+          .eq('email', email)
+          .maybeSingle();
+
+      if (pelamarData != null) {
+        final profile = UserProfile.fromMap(pelamarData);
+        // If nim or bidang not saved in DB yet, use parsed values as fallback
+        return profile.copyWith(
+          nim: profile.nim ?? nimFromEmail,
+          bidang: profile.bidang ?? bidangFromEmail,
+        );
+      }
+
+      // Fallback: user not in DB yet
+      return UserProfile(
+        id: user?.id ?? '',
+        email: email,
+        name: nameFromAuth,
+        photoUrl: photoFromAuth,
+        nim: nimFromEmail,
+        bidang: bidangFromEmail,
+      );
+    } catch (e) {
+      print('Error fetching profile from Supabase: $e');
+      return UserProfile(
+        id: user?.id ?? '',
+        email: email,
+        name: nameFromAuth,
+        photoUrl: photoFromAuth,
+        nim: nimFromEmail,
+        bidang: bidangFromEmail,
+      );
+    }
+  }
+
+  Future<void> updateProfile(UserProfile profile) async {
+    try {
+      await _supabase
+          .from('pelamar')
+          .update(profile.toMap())
+          .eq('pelamar_id', profile.id);
+
+      // Also update profiles table for consistency if needed
+      await _supabase
+          .from('profiles')
+          .update({'full_name': profile.name})
+          .eq('id', profile.id);
+
+      print('DEBUG: Profile updated successfully');
+    } catch (e) {
+      print('DEBUG: Error updating profile: $e');
+      rethrow;
+    }
   }
 }

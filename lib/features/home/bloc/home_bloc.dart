@@ -15,7 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _onToggleJobBookmark(ToggleJobBookmark event, Emitter<HomeState> emit) {
     final updatedJobs = state.recommendedJobs.map((job) {
-      if (job.title == event.jobTitle) {
+      if (job.judul == event.jobTitle) {
         return job.copyWith(isBookmarked: !job.isBookmarked);
       }
       return job;

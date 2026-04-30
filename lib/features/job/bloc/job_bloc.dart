@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'job_event.dart';
 import 'job_state.dart';
-import '../models/job_model.dart';
 import '../services/job_service.dart';
 
 class JobBloc extends Bloc<JobEvent, JobState> {
@@ -18,7 +17,7 @@ class JobBloc extends Bloc<JobEvent, JobState> {
 
   void _onToggleJobBookmark(ToggleJobBookmark event, Emitter<JobState> emit) {
     final updatedJobs = state.jobs.map((job) {
-      if (job.title == event.jobTitle) {
+      if (job.judul == event.jobTitle) {
         return job.copyWith(isBookmarked: !job.isBookmarked);
       }
       return job;

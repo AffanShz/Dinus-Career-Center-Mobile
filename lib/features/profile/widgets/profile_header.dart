@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import '../models/profile_model.dart';
+import '../screens/edit_profile_screen.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserProfile userProfile;
@@ -13,43 +14,32 @@ class ProfileHeader extends StatelessWidget {
     return Column(
       children: [
         Center(
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary, width: 3),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.asset(
-                      'assets/images/dcc.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+          child: Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.primary, width: 3),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child:
+                    (userProfile.photoUrl != null &&
+                        userProfile.photoUrl!.isNotEmpty)
+                    ? Image.network(
+                        userProfile.photoUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset('assets/images/dcc.png'),
+                      )
+                    : Image.asset(
+                        'assets/images/dcc.png',
+                        fit: BoxFit.cover,
+                      ),
               ),
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.accent,
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(4.0),
-                  child: const Icon(Icons.check, color: Colors.white, size: 12),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -63,16 +53,19 @@ class ProfileHeader extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${userProfile.major} ${userProfile.university}',
-          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.secondary),
+          userProfile.bidang != null && userProfile.bidang!.isNotEmpty
+              ? '${userProfile.bidang}\nUniversitas Dian Nuswantoro'
+              : 'Universitas Dian Nuswantoro',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.secondary, height: 1.4),
         ),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildBadge('Angkatan ${userProfile.batch}'),
+            _buildBadge('NIM ${userProfile.nim ?? "-"}'),
             const SizedBox(width: 8),
-            _buildBadge('IPK ${userProfile.gpa}'),
+            _buildBadge('IPK ${userProfile.ipk ?? "0.0"}'),
           ],
         ),
       ],

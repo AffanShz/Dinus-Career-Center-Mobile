@@ -7,6 +7,7 @@ import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_password_field.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
+import 'package:dcc_mobile/features/auth/widgets/google_sign_in_button.dart';
 import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 
 class LoginForm extends StatefulWidget {
@@ -18,6 +19,15 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +42,10 @@ class _LoginFormState extends State<LoginForm> {
           );
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.redAccent,
+            ),
           );
         }
       },
@@ -54,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Adjust to fit content
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'DCC SSO Login',
@@ -66,13 +79,16 @@ class _LoginFormState extends State<LoginForm> {
                   style: AppTextStyles.bodyExtraSmall,
                 ),
                 const SizedBox(height: 24),
-                const AuthTextField(
-                  label: 'USERNAME',
+                AuthTextField(
+                  label: 'EMAIL',
                   prefixIcon: Icons.person_outline,
-                  hintText: 'A11.202X.XXXXX',
+                  hintText: 'email@student.dinus.ac.id',
+                  controller: _emailController,
                 ),
                 const SizedBox(height: 16),
-                const AuthPasswordField(),
+                AuthPasswordField(
+                  controller: _passwordController,
+                ),
                 const SizedBox(height: 8.0),
                 Align(
                   alignment: Alignment.centerRight,
@@ -103,9 +119,11 @@ class _LoginFormState extends State<LoginForm> {
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() == true) {
-                              // We simulate a login request with dummy data here since text controllers are not yet implemented
                               context.read<AuthBloc>().add(
-                                    const LoginRequested('user', 'password'),
+                                    LoginRequested(
+                                      _emailController.text.trim(),
+                                      _passwordController.text,
+                                    ),
                                   );
                             }
                           },
@@ -135,28 +153,28 @@ class _LoginFormState extends State<LoginForm> {
                           ),
                   ),
                 ),
-                // const SizedBox(height: 16),
-                // Row(
-                //   children: [
-                //     const Expanded(child: Divider()),
-                //     Padding(
-                //       padding: const EdgeInsets.symmetric(horizontal: 16),
-                //       child: Text(
-                //         'OR',
-                //         style: AppTextStyles.bodyExtraSmall,
-                //       ),
-                //     ),
-                //     const Expanded(child: Divider()),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-                // GoogleSignInButton(
-                //   onPressed: state is AuthLoading
-                //       ? () {}
-                //       : () {
-                //           context.read<AuthBloc>().add(GoogleLoginRequested());
-                //         },
-                // ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: AppTextStyles.bodyExtraSmall,
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                GoogleSignInButton(
+                  onPressed: state is AuthLoading
+                      ? () {}
+                      : () {
+                          context.read<AuthBloc>().add(GoogleLoginRequested());
+                        },
+                ),
               ],
             ),
           ),

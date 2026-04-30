@@ -10,6 +10,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       : _profileService = profileService ?? ProfileService(),
         super(const ProfileState()) {
     on<LoadProfile>(_onLoadProfile);
+    on<UpdateProfile>(_onUpdateProfile);
   }
 
   Future<void> _onLoadProfile(
@@ -18,10 +19,24 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final userProfile = await _profileService.fetchUserProfile();
-      emit(state.copyWith(status: ProfileStatus.success, userProfile: userProfile));
-    } catch (_) {
+      final profile = await _profileService.fetchUserProfile();
+      emit(state.copyWith(status: ProfileStatus.success, userProfile: profile));
+    } catch (e) {
+      emit(state.copyWith(status: ProfileStatus.failure));
+    }
+  }
+
+  Future<void> _onUpdateProfile(
+    UpdateProfile event,
+    Emitter<ProfileState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileStatus.loading));
+    try {
+      await _profileService.updateProfile(event.profile);
+      emit(state.copyWith(status: ProfileStatus.success, userProfile: event.profile));
+    } catch (e) {
       emit(state.copyWith(status: ProfileStatus.failure));
     }
   }
 }
+

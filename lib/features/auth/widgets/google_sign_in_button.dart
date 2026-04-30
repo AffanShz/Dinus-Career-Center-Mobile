@@ -18,7 +18,10 @@ class GoogleSignInButton extends StatelessWidget {
           ),
           side: const BorderSide(color: Colors.black12),
         ),
-        onPressed: onPressed,
+        onPressed: () {
+          print('DEBUG: GoogleSignInButton pressed');
+          onPressed();
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -27,6 +30,9 @@ class GoogleSignInButton extends StatelessWidget {
               'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
               height: 24,
               width: 24,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.login, color: Colors.red);
+              },
             ),
             const SizedBox(width: 12),
             Text(

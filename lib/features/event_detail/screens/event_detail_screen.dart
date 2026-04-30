@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
-import '../models/event_model.dart';
+import '../../event/models/event_model.dart';
 
 class EventDetailScreen extends StatelessWidget {
   final EventModel event;

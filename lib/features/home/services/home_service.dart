@@ -1,28 +1,66 @@
-import '../models/job_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../job/models/job_model.dart';
 import '../models/event_model.dart';
 
 class HomeService {
+  final _supabase = Supabase.instance.client;
+
   Future<Map<String, dynamic>> fetchHomeData() async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
+    // Fetch user profile data
+    final user = _supabase.auth.currentUser;
+    String name = user?.userMetadata?['full_name'] ?? 'User DCC';
+    final String email = user?.email ?? '';
+
+    try {
+      final pelamarData = await _supabase
+          .from('pelamar')
+          .select('nama_lengkap')
+          .eq('email', email)
+          .maybeSingle();
+      
+      if (pelamarData != null) {
+        name = pelamarData['nama_lengkap'] ?? name;
+      } else {
+        final profileData = await _supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('email', email)
+            .maybeSingle();
+        if (profileData != null) {
+          name = profileData['full_name'] ?? name;
+        }
+      }
+    } catch (e) {
+      print('Error fetching user name for Home: $e');
+    }
+
+    // Fetch recommended jobs from lowongan table
+    List<JobModel> recommendedJobs = [];
+    try {
+      final response = await _supabase
+          .from('lowongan')
+          .select('''
+            *,
+            perusahaan ( nama_perusahaan, kota, alamat_perusahaan ),
+            jabatan ( nama ),
+            jurusan ( nama ),
+            tipe_pekerjaan ( nama ),
+            sektor ( nama )
+          ''')
+          .eq('status_loker', 'aktif')
+          .limit(3);
+
+      recommendedJobs = (response as List)
+          .map((data) => JobModel.fromMap(data))
+          .toList();
+    } catch (e) {
+      print('Error fetching recommended jobs: $e');
+    }
 
     return {
-      'userName': 'Antek Antek ASENG',
-      'profileCompleteness': 0.75,
-      'recommendedJobs': [
-        Job(
-          title: 'Product Designer',
-          company: 'Google Inc.',
-          location: 'Mountain View, CA',
-          tags: ['FULLTIME', 'Rp50Jt - Rp60Jt'],
-        ),
-        Job(
-          title: 'Frontend Developer',
-          company: 'Microsoft',
-          location: 'Redmond, WA',
-          tags: ['REMOTE', 'Rp40Jt - Rp50Jt'],
-        ),
-      ],
+      'userName': name,
+      'profileCompleteness': 0.75, // Currently static
+      'recommendedJobs': recommendedJobs,
       'upcomingEvent': Event(
         title: 'Tech Career Expo 2024',
         date: 'Oct 24, 2024',

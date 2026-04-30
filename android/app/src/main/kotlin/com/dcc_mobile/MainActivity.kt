@@ -1,4 +1,4 @@
-package com.example.dcc_mobile
+package com.dcc_mobile
 
 import io.flutter.embedding.android.FlutterActivity
 

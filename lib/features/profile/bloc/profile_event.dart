@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../models/profile_model.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
@@ -8,3 +9,13 @@ abstract class ProfileEvent extends Equatable {
 }
 
 class LoadProfile extends ProfileEvent {}
+
+class UpdateProfile extends ProfileEvent {
+  final UserProfile profile;
+
+  const UpdateProfile(this.profile);
+
+  @override
+  List<Object> get props => [profile];
+}
+

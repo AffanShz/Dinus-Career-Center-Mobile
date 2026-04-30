@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.dcc_mobile"
+    namespace = "com.dcc_mobile"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

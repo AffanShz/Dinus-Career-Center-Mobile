@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/job_model.dart';
+import '../../job/models/job_model.dart';
 import '../models/event_model.dart';
 
 enum HomeStatus { initial, loading, success, failure }
@@ -8,7 +8,7 @@ class HomeState extends Equatable {
   final HomeStatus status;
   final String userName;
   final double profileCompleteness;
-  final List<Job> recommendedJobs;
+  final List<JobModel> recommendedJobs;
   final Event? upcomingEvent;
 
   const HomeState({
@@ -23,7 +23,7 @@ class HomeState extends Equatable {
     HomeStatus? status,
     String? userName,
     double? profileCompleteness,
-    List<Job>? recommendedJobs,
+    List<JobModel>? recommendedJobs,
     Event? upcomingEvent,
   }) {
     return HomeState(

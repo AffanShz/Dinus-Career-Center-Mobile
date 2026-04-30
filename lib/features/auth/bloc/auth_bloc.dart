@@ -1,43 +1,61 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
+import 'package:dcc_mobile/features/auth/services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  // final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
-
   AuthBloc() : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<GoogleLoginRequested>(_onGoogleLoginRequested);
   }
 
-  void _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
+  void _onLoginRequested(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
-      // Simulate API call for standard login
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // Add real authentication logic here later
-      if (event.username.isNotEmpty && event.password.isNotEmpty) {
+      final response = await AuthService.signInWithEmail(
+        email: event.username,
+        password: event.password,
+      );
+
+      if (response.session != null) {
         emit(AuthSuccess());
       } else {
-        emit(const AuthFailure('Username and password cannot be empty'));
+        emit(const AuthFailure('Login failed. Please check your credentials.'));
       }
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
   }
 
-  void _onGoogleLoginRequested(GoogleLoginRequested event, Emitter<AuthState> emit) async {
-    // emit(AuthLoading());
-    // try {
-    //   await _googleSignIn.authenticate();
-    //   
-    //   // Here you would usually send the Google account details to your backend
-    //   // For example: final GoogleSignInAuthentication auth = await account.authentication;
-    //   emit(AuthSuccess());
-    // } catch (e) {
-    //   emit(AuthFailure(e.toString()));
-    // }
+  void _onGoogleLoginRequested(
+    GoogleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      print('DEBUG: AuthBloc calling AuthService.signInWithGoogle()');
+      final response = await AuthService.signInWithGoogle();
+
+      if (response == null) {
+        print('DEBUG: AuthBloc received null response (user cancelled)');
+        emit(AuthInitial());
+        return;
+      }
+
+      if (response.session != null) {
+        print('DEBUG: AuthBloc success: Session created');
+        emit(AuthSuccess());
+      } else {
+        print('DEBUG: AuthBloc failure: No session in response');
+        emit(const AuthFailure('Google Sign-In failed. Please try again.'));
+      }
+    } catch (e, stackTrace) {
+      print('DEBUG: AuthBloc caught error: $e');
+      print('DEBUG: StackTrace: $stackTrace');
+      emit(AuthFailure(e.toString()));
+    }
   }
 }
