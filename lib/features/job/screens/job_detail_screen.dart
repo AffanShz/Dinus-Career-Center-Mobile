@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import '../models/job_model.dart';
+import 'job_application_screen.dart';
 
 class JobDetailScreen extends StatelessWidget {
   final JobModel job;
@@ -10,8 +11,6 @@ class JobDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOpen = job.statusLoker.toLowerCase() == 'open';
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -56,22 +55,33 @@ class JobDetailScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
+                        // Logo Perusahaan
                         Container(
                           width: 80,
                           height: 80,
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.divider,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: Colors.grey[300]!),
                           ),
-                          child: Image.asset(
-                            'assets/images/dcc.png',
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.business, size: 40, color: AppColors.primary),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: job.logoPerusahaan != null &&
+                                    job.logoPerusahaan!.isNotEmpty
+                                ? Image.network(
+                                    job.logoPerusahaan!,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.business,
+                                            size: 40, color: AppColors.primary),
+                                  )
+                                : const Icon(Icons.business,
+                                    size: 40, color: AppColors.primary),
                           ),
                         ),
                         const SizedBox(height: 16),
+                        // Judul Lowongan
                         Text(
                           job.judul,
                           textAlign: TextAlign.center,
@@ -81,7 +91,8 @@ class JobDetailScreen extends StatelessWidget {
                             color: AppColors.primary,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
+                        // Nama Perusahaan
                         Text(
                           job.perusahaan,
                           style: GoogleFonts.poppins(
@@ -90,29 +101,101 @@ class JobDetailScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        // Lokasi Perusahaan
+                        if (job.lokasi.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.location_on_outlined,
+                                  size: 14, color: Colors.grey[500]),
+                              const SizedBox(width: 4),
+                              Text(
+                                job.lokasi,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 16),
                         _buildStatusBadge(job.statusLoker),
+                        // Tags (tipe pekerjaan, jurusan, sektor)
+                        if (job.tags.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: job.tags
+                                .map((tag) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: tag.bg,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        tag.label,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: tag.text,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   // Quick Info Section
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildInfoItem(Icons.monetization_on, 'Gaji', job.rangeGaji),
-                      _buildInfoItem(Icons.people, 'Kebutuhan', '${job.jumlahPerson} Orang'),
-                      _buildInfoItem(Icons.calendar_today, 'Deadline', job.batasAkhir),
+                      _buildInfoItem(
+                        Icons.monetization_on_outlined,
+                        'Gaji',
+                        job.rangeGajiText,
+                      ),
+                      _buildInfoItem(
+                        Icons.people_outline,
+                        'Kebutuhan',
+                        job.jumlahPerson != null
+                            ? '${job.jumlahPersonText} Orang'
+                            : '-',
+                      ),
+                      _buildInfoItem(
+                        Icons.calendar_today_outlined,
+                        'Deadline',
+                        job.formattedBatasAkhir,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
-                  // Description Section
+                  // Detail Info (jabatan jika ada)
+                  if (job.jabatan != null && job.jabatan!.isNotEmpty) ...[
+                    _buildInfoRow(Icons.work_outline, 'Jabatan', job.jabatan!),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // Divider
+                  Divider(color: Colors.grey[200], thickness: 1),
+                  const SizedBox(height: 24),
+
+                  // Deskripsi Pekerjaan
                   _buildSectionTitle('Deskripsi Pekerjaan'),
                   const SizedBox(height: 12),
                   Text(
-                    job.detailLowongan,
+                    job.detailLowongan.isNotEmpty
+                        ? job.detailLowongan
+                        : 'Tidak ada deskripsi.',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[800],
@@ -121,7 +204,7 @@ class JobDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Requirements Section
+                  // Kualifikasi / Requirements
                   _buildSectionTitle('Kualifikasi'),
                   const SizedBox(height: 12),
                   ..._buildRequirementsList(job.requirements),
@@ -130,7 +213,7 @@ class JobDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // CTA Button
           Container(
             padding: const EdgeInsets.all(24),
@@ -148,12 +231,17 @@ class JobDetailScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: isOpen ? () {
-                  // TODO: Implement Apply Logic
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Lamaran berhasil dikirim!')),
-                  );
-                } : null,
+                onPressed: job.isAktif
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                JobApplicationScreen(lowonganId: job.id),
+                          ),
+                        );
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.white,
@@ -164,7 +252,7 @@ class JobDetailScreen extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  isOpen ? 'Lamar Sekarang' : 'Lowongan Ditutup',
+                  job.isAktif ? 'Lamar Sekarang' : 'Lowongan Ditutup',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -179,50 +267,83 @@ class JobDetailScreen extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(String status) {
-    final isOpen = status.toLowerCase() == 'open';
+    final isActive = status.toLowerCase() == 'aktif';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isOpen ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+        color: isActive
+            ? Colors.green.withOpacity(0.1)
+            : Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        status.toUpperCase(),
+        isActive ? 'AKTIF' : 'TUTUP',
         style: GoogleFonts.poppins(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: isOpen ? Colors.green : Colors.red,
+          color: isActive ? Colors.green : Colors.red,
         ),
       ),
     );
   }
 
   Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.accent.withOpacity(0.1),
-            shape: BoxShape.circle,
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.accent.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppColors.accent, size: 20),
           ),
-          child: Icon(icon, color: AppColors.accent, size: 20),
-        ),
-        const SizedBox(height: 8),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              color: AppColors.textMuted,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.accent),
+        const SizedBox(width: 8),
         Text(
-          label,
+          '$label: ',
           style: GoogleFonts.poppins(
-            fontSize: 12,
+            fontSize: 14,
             color: AppColors.textMuted,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+        Expanded(
+          child: Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
           ),
         ),
       ],
@@ -241,35 +362,46 @@ class JobDetailScreen extends StatelessWidget {
   }
 
   List<Widget> _buildRequirementsList(String requirements) {
-    if (requirements.isEmpty) return [const Text('-')];
-    
-    // Split by newline or common separators if any
-    final lines = requirements.split('\n').where((line) => line.trim().isNotEmpty).toList();
-    
-    return lines.map((line) => Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 6.0),
-            child: Icon(Icons.circle, size: 6, color: AppColors.accent),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              line.trim().startsWith('-') || line.trim().startsWith('•') 
-                  ? line.trim().substring(1).trim() 
-                  : line.trim(),
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[800],
-                height: 1.5,
+    if (requirements.isEmpty) {
+      return [
+        Text(
+          'Tidak ada kualifikasi yang disebutkan.',
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+        ),
+      ];
+    }
+
+    final lines = requirements
+        .split('\n')
+        .where((line) => line.trim().isNotEmpty)
+        .toList();
+
+    return lines
+        .map((line) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6.0),
+                    child: Icon(Icons.circle, size: 6, color: AppColors.accent),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      line.trim().startsWith('-') || line.trim().startsWith('•')
+                          ? line.trim().substring(1).trim()
+                          : line.trim(),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[800],
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
-    )).toList();
+            ))
+        .toList();
   }
 }

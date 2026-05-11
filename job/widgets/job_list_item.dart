@@ -45,33 +45,6 @@ class JobListItem extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Company Logo
-                Container(
-                  width: 48,
-                  height: 48,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
-                        ? Image.network(
-                            job.logoPerusahaan!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.business,
-                              color: Colors.grey,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.business,
-                            color: Colors.grey,
-                          ),
-                  ),
-                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +52,7 @@ class JobListItem extends StatelessWidget {
                       Text(
                         job.judul,
                         style: GoogleFonts.poppins(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
@@ -90,7 +63,7 @@ class JobListItem extends StatelessWidget {
                       Text(
                         job.perusahaan,
                         style: GoogleFonts.poppins(
-                          fontSize: 13,
+                          fontSize: 14,
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w500,
                         ),
@@ -102,7 +75,7 @@ class JobListItem extends StatelessWidget {
               ],
             ),
             if (job.jabatan != null) ...[  
-              const SizedBox(height: 12),
+              const SizedBox(height: 4),
               Text(
                 job.jabatan!,
                 style: GoogleFonts.poppins(
@@ -118,7 +91,7 @@ class JobListItem extends StatelessWidget {
                 const Icon(Icons.monetization_on_outlined, size: 16, color: AppColors.accent),
                 const SizedBox(width: 8),
                 Text(
-                  job.rangeGajiText,
+                  job.rangeGaji,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -133,9 +106,7 @@ class JobListItem extends StatelessWidget {
                 Icon(Icons.people_outline, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
                 Text(
-                  job.jumlahPerson != null
-                      ? 'Butuh ${job.jumlahPersonText} orang'
-                      : 'Jumlah tidak disebutkan',
+                  "Butuh ${job.jumlahPerson} orang",
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     color: Colors.grey[700],
@@ -152,7 +123,7 @@ class JobListItem extends StatelessWidget {
                     Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey[600]),
                     const SizedBox(width: 8),
                     Text(
-                      job.formattedBatasAkhir,
+                      job.batasAkhir,
                       style: GoogleFonts.poppins(
                         fontSize: 13,
                         color: Colors.grey[700],
@@ -206,8 +177,7 @@ class JobListItem extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(String status) {
-    // Enum status_loker di Supabase: 'aktif' = terbuka
-    final isActive = status.toLowerCase() == 'aktif';
+    final isActive = status.toLowerCase() == 'aktif' || status.toLowerCase() == 'open';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

@@ -6,7 +6,7 @@ class HomeService {
   final _supabase = Supabase.instance.client;
 
   Future<Map<String, dynamic>> fetchHomeData() async {
-    // Fetch user profile data
+    // ── 1. Fetch nama user ────────────────────────────────────────────────
     final user = _supabase.auth.currentUser;
     String name = user?.userMetadata?['full_name'] ?? 'User DCC';
     final String email = user?.email ?? '';
@@ -17,7 +17,7 @@ class HomeService {
           .select('nama_lengkap')
           .eq('email', email)
           .maybeSingle();
-      
+
       if (pelamarData != null) {
         name = pelamarData['nama_lengkap'] ?? name;
       } else {
@@ -31,35 +31,36 @@ class HomeService {
         }
       }
     } catch (e) {
-      print('Error fetching user name for Home: $e');
+      // ignore: avoid_print
+      print('[HomeService] Error fetching user name: $e');
     }
 
-    // Fetch recommended jobs from lowongan table
+    // ── 2. Fetch recommended jobs dari Supabase ───────────────────────────
     List<JobModel> recommendedJobs = [];
     try {
-      final response = await _supabase
-          .from('lowongan')
-          .select('''
-            *,
-            perusahaan ( nama_perusahaan, kota, alamat_perusahaan ),
-            jabatan ( nama ),
-            jurusan ( nama ),
-            tipe_pekerjaan ( nama ),
-            sektor ( nama )
-          ''')
-          .eq('status_loker', 'aktif')
-          .limit(3);
+      final response = await _supabase.from('lowongan').select('''
+        *,
+        perusahaan ( nama_perusahaan, kota, alamat_perusahaan ),
+        jabatan ( nama ),
+        jurusan ( nama ),
+        tipe_pekerjaan ( nama ),
+        sektor ( nama )
+      ''').eq('status_loker', 'aktif').limit(5);
+
+      // ignore: avoid_print
+      print('[HomeService] Fetched ${(response as List).length} lowongan');
 
       recommendedJobs = (response as List)
-          .map((data) => JobModel.fromMap(data))
+          .map((data) => JobModel.fromMap(data as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('Error fetching recommended jobs: $e');
+      // ignore: avoid_print
+      print('[HomeService] Error fetching recommended jobs: $e');
     }
 
     return {
       'userName': name,
-      'profileCompleteness': 0.75, // Currently static
+      'profileCompleteness': 0.75,
       'recommendedJobs': recommendedJobs,
       'upcomingEvent': Event(
         title: 'Tech Career Expo 2024',

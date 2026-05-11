@@ -10,10 +10,10 @@ abstract class HomeEvent extends Equatable {
 class LoadHomeData extends HomeEvent {}
 
 class ToggleJobBookmark extends HomeEvent {
-  final String jobTitle;
+  final String jobId;
 
-  const ToggleJobBookmark(this.jobTitle);
+  const ToggleJobBookmark(this.jobId);
 
   @override
-  List<Object> get props => [jobTitle];
+  List<Object> get props => [jobId];
 }

@@ -4,14 +4,14 @@ import '../models/job_model.dart';
 class JobService {
   final _supabase = Supabase.instance.client;
 
-  /// Fetch jobs dengan full relational join:
+  /// Fetch jobs with full relational join:
   /// lowongan → perusahaan, jabatan, jurusan, tipe_pekerjaan, sektor
   Future<List<JobModel>> fetchJobs({
     String category = 'Semua',
     String query = '',
   }) async {
     try {
-      // Join semua tabel relasi sesuai schema lowongan
+      // Join semua tabel relasi sesuai schema
       var request = _supabase.from('lowongan').select('''
         *,
         perusahaan ( nama_perusahaan, kota, alamat_perusahaan ),
@@ -21,22 +21,21 @@ class JobService {
         sektor ( nama )
       ''');
 
-      // Filter hanya lowongan yang aktif (berdasarkan enum status_loker)
-      request = request.eq('status_loker', 'aktif');
-
-      // Filter pencarian berdasarkan judul lowongan
+      // Filter pencarian berdasarkan judul lowongan atau nama perusahaan
       if (query.isNotEmpty) {
         request = request.ilike('judul', '%$query%');
       }
 
-      final response = await request;
+      // Filter kategori berdasarkan tipe_pekerjaan.nama
+      // Catatan: filter nested relation tidak bisa langsung di Supabase PostgREST,
+      // jadi kita filter di sisi client setelah fetch
+      final response = await request.eq('status_loker', 'aktif');
 
       final List<JobModel> jobs = (response as List)
-          .map((data) => JobModel.fromMap(data as Map<String, dynamic>))
+          .map((data) => JobModel.fromMap(data))
           .toList();
 
-      // Client-side filter berdasarkan tipe_pekerjaan.nama
-      // (filter nested relation tidak didukung langsung oleh PostgREST)
+      // Client-side filter category
       if (category != 'Semua') {
         return jobs.where((job) {
           final tipe = job.tipePekerjaan?.toLowerCase() ?? '';
@@ -46,26 +45,19 @@ class JobService {
 
       return jobs;
     } catch (e) {
-      // ignore: avoid_print
       print('Error fetching jobs from Supabase: $e');
       return [];
     }
   }
 
-  /// Fetch single job detail by lowongan_id (UUID)
+  /// Fetch single job detail by ID
   Future<JobModel?> fetchJobById(String lowonganId) async {
     try {
       final response = await _supabase
           .from('lowongan')
           .select('''
             *,
-            perusahaan (
-              nama_perusahaan,
-              kota,
-              alamat_perusahaan,
-              deskripsi_perusahaan,
-              website_perusahaan
-            ),
+            perusahaan ( nama_perusahaan, kota, alamat_perusahaan, deskripsi_perusahaan, website_perusahaan ),
             jabatan ( nama ),
             jurusan ( nama ),
             tipe_pekerjaan ( nama ),
@@ -75,9 +67,8 @@ class JobService {
           .maybeSingle();
 
       if (response == null) return null;
-      return JobModel.fromMap(response as Map<String, dynamic>);
+      return JobModel.fromMap(response);
     } catch (e) {
-      // ignore: avoid_print
       print('Error fetching job detail: $e');
       return null;
     }

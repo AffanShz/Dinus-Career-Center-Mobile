@@ -8,13 +8,11 @@ import 'package:dcc_mobile/features/profile/screens/profile_screen.dart';
 
 /// Data class for navigation items.
 class _NavItem {
-  final Widget page;
   final IconData icon;
   final IconData selectedIcon;
   final String label;
 
   const _NavItem({
-    required this.page,
     required this.icon,
     required this.selectedIcon,
     required this.label,
@@ -32,33 +30,28 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<_NavItem> _items = [
-    const _NavItem(
-      page: Homescreen(),
+  final List<_NavItem> _navItems = const [
+    _NavItem(
       icon: Icons.home_outlined,
       selectedIcon: Icons.home_filled,
       label: 'Beranda',
     ),
-    const _NavItem(
-      page: JobScreen(),
+    _NavItem(
       icon: Icons.work_outline_rounded,
       selectedIcon: Icons.work_rounded,
       label: 'Loker',
     ),
-    const _NavItem(
-      page: TrackScreen(),
+    _NavItem(
       icon: Icons.assignment_turned_in_outlined,
       selectedIcon: Icons.assignment_turned_in,
       label: 'Status',
     ),
-    const _NavItem(
-      page: EventScreen(),
+    _NavItem(
       icon: Icons.calendar_today_outlined,
       selectedIcon: Icons.calendar_today,
       label: 'Acara',
     ),
-    const _NavItem(
-      page: ProfileScreen(),
+    _NavItem(
       icon: Icons.person_outline_rounded,
       selectedIcon: Icons.person_rounded,
       label: 'Profil',
@@ -67,10 +60,19 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Pages are built here (not as const) so callbacks can reference setState
+    final pages = <Widget>[
+      Homescreen(onSeeAllJobs: () => setState(() => _currentIndex = 1)),
+      const JobScreen(),
+      const TrackScreen(),
+      const EventScreen(),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _items.map((item) => item.page).toList(),
+        children: pages,
       ),
       bottomNavigationBar: AppBottomNavbar(
         currentIndex: _currentIndex,
@@ -79,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
             _currentIndex = index;
           });
         },
-        destinations: _items.map((item) {
+        destinations: _navItems.map((item) {
           return NavigationDestination(
             icon: Icon(item.icon),
             selectedIcon: Icon(item.selectedIcon),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class JobTag {
   final String label;
@@ -13,22 +14,27 @@ class JobTag {
 }
 
 class JobModel {
-  final String id;
-  final String judul;
-  final String detailLowongan;
-  final String requirements;
-  final String jumlahPerson;
-  final String rangeGaji;
-  final String batasAkhir;
-  final String statusLoker;
-  final String perusahaan;
-  final String lokasi;
+  final String id;              // lowongan_id (UUID)
+  final String judul;           // judul (text, required)
+  final String detailLowongan;  // detail_lowongan (text, nullable)
+  final String requirements;    // requirements (text, nullable)
+  final int? jumlahPerson;      // jumlah_person (integer, nullable)
+  final String? rangeGaji;      // range_gaji (text, nullable)
+  final DateTime? batasAkhir;   // batas_akhir (date, nullable)
+  final String statusLoker;     // status_loker (enum: 'aktif' | lainnya)
+  final DateTime? createdAt;    // created_at
+  final DateTime? updatedAt;    // updated_at
 
-  // From relational tables
-  final String? jabatan;       // jabatan.nama
-  final String? jurusan;       // jurusan.nama
-  final String? tipePekerjaan; // tipe_pekerjaan.nama
-  final String? sektor;        // sektor.nama
+  // From perusahaan relation
+  final String perusahaan;      // perusahaan.nama_perusahaan
+  final String lokasi;          // perusahaan.kota
+  final String? logoPerusahaan; // perusahaan.logo_url
+
+  // From relational FK tables
+  final String? jabatan;        // jabatan.nama
+  final String? jurusan;        // jurusan.nama
+  final String? tipePekerjaan;  // tipe_pekerjaan.nama
+  final String? sektor;         // sektor.nama
 
   final bool isBookmarked;
   final List<JobTag> tags;
@@ -38,12 +44,15 @@ class JobModel {
     required this.judul,
     required this.detailLowongan,
     required this.requirements,
-    required this.jumlahPerson,
-    required this.rangeGaji,
-    required this.batasAkhir,
+    this.jumlahPerson,
+    this.rangeGaji,
+    this.batasAkhir,
     required this.statusLoker,
+    this.createdAt,
+    this.updatedAt,
     required this.perusahaan,
     required this.lokasi,
+    this.logoPerusahaan,
     this.jabatan,
     this.jurusan,
     this.tipePekerjaan,
@@ -52,24 +61,80 @@ class JobModel {
     this.tags = const [],
   });
 
+  /// Tanggal batas_akhir diformat menjadi "dd MMM yyyy" (contoh: "31 Des 2025")
+  String get formattedBatasAkhir {
+    if (batasAkhir == null) return 'Tidak ditentukan';
+    return DateFormat('dd MMM yyyy', 'id_ID').format(batasAkhir!);
+  }
+
+  /// Tampilkan jumlah_person dengan fallback '-'
+  String get jumlahPersonText {
+    if (jumlahPerson == null) return '-';
+    return jumlahPerson.toString();
+  }
+
+  /// Tampilkan range_gaji dengan fallback 'Tidak disebutkan'
+  String get rangeGajiText {
+    if (rangeGaji == null || rangeGaji!.isEmpty) return 'Tidak disebutkan';
+    return rangeGaji!;
+  }
+
+  /// Apakah lowongan ini masih aktif/terbuka
+  bool get isAktif => statusLoker.toLowerCase() == 'aktif';
+
   factory JobModel.fromMap(Map<String, dynamic> map) {
     // Nested relation data
     final perusahaanData = map['perusahaan'] as Map<String, dynamic>?;
-    final jabatanData = map['jabatan'] as Map<String, dynamic>?;
-    final jurusanData = map['jurusan'] as Map<String, dynamic>?;
+    final jabatanData    = map['jabatan']       as Map<String, dynamic>?;
+    final jurusanData    = map['jurusan']       as Map<String, dynamic>?;
     final tipePekerjaanData = map['tipe_pekerjaan'] as Map<String, dynamic>?;
-    final sektorData = map['sektor'] as Map<String, dynamic>?;
+    final sektorData     = map['sektor']        as Map<String, dynamic>?;
 
     final String namaPerusahaan =
-        perusahaanData?['nama_perusahaan'] ?? 'DCC Perusahaan';
-    final String lokasiPerusahaan = perusahaanData?['kota'] ?? 'Semarang';
+        perusahaanData?['nama_perusahaan']?.toString() ?? 'DCC Perusahaan';
+    final String lokasiPerusahaan =
+        perusahaanData?['kota']?.toString() ?? 'Semarang';
+    final String? logoUrl = perusahaanData?['logo_url']?.toString();
 
-    final String? namaJabatan = jabatanData?['nama'];
-    final String? namaJurusan = jurusanData?['nama'];
-    final String? namaTipePekerjaan = tipePekerjaanData?['nama'];
-    final String? namaSektor = sektorData?['nama'];
+    final String? namaJabatan        = jabatanData?['nama']?.toString();
+    final String? namaJurusan        = jurusanData?['nama']?.toString();
+    final String? namaTipePekerjaan  = tipePekerjaanData?['nama']?.toString();
+    final String? namaSektor         = sektorData?['nama']?.toString();
 
-    // Auto-generate tags from relational data
+    // Parse batas_akhir (date) → DateTime
+    DateTime? batasAkhirParsed;
+    final rawBatasAkhir = map['batas_akhir'];
+    if (rawBatasAkhir != null) {
+      try {
+        batasAkhirParsed = DateTime.parse(rawBatasAkhir.toString());
+      } catch (_) {
+        batasAkhirParsed = null;
+      }
+    }
+
+    // Parse created_at / updated_at (timestamptz)
+    DateTime? createdAtParsed;
+    final rawCreatedAt = map['created_at'];
+    if (rawCreatedAt != null) {
+      try {
+        createdAtParsed = DateTime.parse(rawCreatedAt.toString()).toLocal();
+      } catch (_) {}
+    }
+
+    DateTime? updatedAtParsed;
+    final rawUpdatedAt = map['updated_at'];
+    if (rawUpdatedAt != null) {
+      try {
+        updatedAtParsed = DateTime.parse(rawUpdatedAt.toString()).toLocal();
+      } catch (_) {}
+    }
+
+    int? parsedJumlahPerson;
+    if (map['jumlah_person'] != null) {
+      parsedJumlahPerson = int.tryParse(map['jumlah_person'].toString());
+    }
+
+    // Auto-generate tags dari data relasional
     final List<JobTag> generatedTags = _buildTags(
       tipePekerjaan: namaTipePekerjaan,
       jurusan: namaJurusan,
@@ -78,15 +143,18 @@ class JobModel {
 
     return JobModel(
       id: map['lowongan_id']?.toString() ?? '',
-      judul: map['judul'] ?? '',
-      detailLowongan: map['detail_lowongan'] ?? '',
-      requirements: map['requirements'] ?? '',
-      jumlahPerson: map['jumlah_person']?.toString() ?? '0',
-      rangeGaji: map['range_gaji'] ?? '',
-      batasAkhir: map['batas_akhir'] ?? '',
-      statusLoker: map['status_loker'] ?? 'aktif',
+      judul: map['judul']?.toString() ?? '',
+      detailLowongan: map['detail_lowongan']?.toString() ?? '',
+      requirements: map['requirements']?.toString() ?? '',
+      jumlahPerson: parsedJumlahPerson,
+      rangeGaji: map['range_gaji']?.toString(),
+      batasAkhir: batasAkhirParsed,
+      statusLoker: map['status_loker']?.toString() ?? 'aktif',
+      createdAt: createdAtParsed,
+      updatedAt: updatedAtParsed,
       perusahaan: namaPerusahaan,
       lokasi: lokasiPerusahaan,
+      logoPerusahaan: logoUrl,
       jabatan: namaJabatan,
       jurusan: namaJurusan,
       tipePekerjaan: namaTipePekerjaan,
@@ -96,7 +164,7 @@ class JobModel {
     );
   }
 
-  /// Build tag chips from relational data
+  /// Build tag chips dari data relasional
   static List<JobTag> _buildTags({
     String? tipePekerjaan,
     String? jurusan,
@@ -136,12 +204,15 @@ class JobModel {
     String? judul,
     String? detailLowongan,
     String? requirements,
-    String? jumlahPerson,
+    int? jumlahPerson,
     String? rangeGaji,
-    String? batasAkhir,
+    DateTime? batasAkhir,
     String? statusLoker,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     String? perusahaan,
     String? lokasi,
+    String? logoPerusahaan,
     String? jabatan,
     String? jurusan,
     String? tipePekerjaan,
@@ -158,8 +229,11 @@ class JobModel {
       rangeGaji: rangeGaji ?? this.rangeGaji,
       batasAkhir: batasAkhir ?? this.batasAkhir,
       statusLoker: statusLoker ?? this.statusLoker,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       perusahaan: perusahaan ?? this.perusahaan,
       lokasi: lokasi ?? this.lokasi,
+      logoPerusahaan: logoPerusahaan ?? this.logoPerusahaan,
       jabatan: jabatan ?? this.jabatan,
       jurusan: jurusan ?? this.jurusan,
       tipePekerjaan: tipePekerjaan ?? this.tipePekerjaan,

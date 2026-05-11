@@ -80,9 +80,10 @@ class AuthService {
     print('DEBUG: Handling post-login data for user: ${user.email}');
 
     try {
-      final email = user.email ?? '';
+      final email = user.email?.toLowerCase() ?? '';
+      final isStudent = email.endsWith('@mhs.dinus.ac.id');
       final parsedData = DinusEmailParser.parse(email);
-      
+
       // Check if profile already exists
       final profile = await _supabase
           .from('profiles')
@@ -92,11 +93,14 @@ class AuthService {
 
       if (profile == null) {
         print('DEBUG: New user detected, inserting into profiles and pelamar');
-        
+
+        // Auto-assign 'pelamar' role for mhs.dinus.ac.id users
+        final assignedRole = isStudent ? 'pelamar' : 'pelamar';
+
         await _supabase.from('profiles').upsert({
           'id': user.id,
           'email': email,
-          'role': 'pelamar',
+          'role': assignedRole,
           'full_name': user.userMetadata?['full_name'] ?? '',
         });
 
@@ -108,25 +112,47 @@ class AuthService {
           'nim': parsedData['nim'],
           'bidang': parsedData['bidang'],
         });
-        
-        print('DEBUG: Successfully inserted user data with parsed NIM: ${parsedData['nim']}');
+
+        print(
+          'DEBUG: Successfully inserted user data with role $assignedRole and parsed NIM: ${parsedData['nim']}',
+        );
       } else {
-        print('DEBUG: User profile already exists. Updating existing data if necessary.');
+        print(
+          'DEBUG: User profile already exists. Updating existing data if necessary.',
+        );
+
+        // Ensure student accounts have 'pelamar' role
+        if (isStudent && profile['role'] != 'pelamar') {
+          await _supabase
+              .from('profiles')
+              .update({'role': 'pelamar'})
+              .eq('id', user.id);
+          print(
+            'DEBUG: Updated existing user role to pelamar (student detected)',
+          );
+        }
+
         // For existing users, update NIM and Bidang if they were parsed successfully
-        // This ensures users who logged in before the parser was added also get their data updated.
         if (parsedData['nim'] != null) {
           final existingPelamar = await _supabase
               .from('pelamar')
               .select('nim, bidang')
               .eq('pelamar_id', user.id)
               .maybeSingle();
-              
-          if (existingPelamar != null && (existingPelamar['nim'] == null || existingPelamar['bidang'] == null)) {
-            await _supabase.from('pelamar').update({
-              'nim': parsedData['nim'],
-              'bidang': parsedData['bidang'],
-            }).eq('pelamar_id', user.id);
-            print('DEBUG: Updated existing user with parsed NIM: ${parsedData['nim']}');
+
+          if (existingPelamar != null &&
+              (existingPelamar['nim'] == null ||
+                  existingPelamar['bidang'] == null)) {
+            await _supabase
+                .from('pelamar')
+                .update({
+                  'nim': parsedData['nim'],
+                  'bidang': parsedData['bidang'],
+                })
+                .eq('pelamar_id', user.id);
+            print(
+              'DEBUG: Updated existing user with parsed NIM: ${parsedData['nim']}',
+            );
           }
         }
       }
@@ -170,7 +196,7 @@ class AuthService {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
     await _supabase.auth.signOut();
-    
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_loginTimeKey);
   }

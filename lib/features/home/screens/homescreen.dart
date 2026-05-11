@@ -13,7 +13,9 @@ import '../widgets/upcoming_events.dart';
 /// Home screen displaying greeting, profile completeness,
 /// recommended jobs, and upcoming events.
 class Homescreen extends StatelessWidget {
-  const Homescreen({super.key});
+  final VoidCallback? onSeeAllJobs;
+
+  const Homescreen({super.key, this.onSeeAllJobs});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,8 @@ class Homescreen extends StatelessWidget {
         body: SafeArea(
           child: BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
-              if (state.status == HomeStatus.loading) {
+              if (state.status == HomeStatus.initial ||
+                  state.status == HomeStatus.loading) {
                 return const Center(child: CircularProgressIndicator());
               }
 
@@ -61,9 +64,10 @@ class Homescreen extends StatelessWidget {
                         // Recommended jobs section
                         RecommendedJobs(
                           jobs: state.recommendedJobs,
-                          onBookmarkToggle: (title) {
-                            context.read<HomeBloc>().add(ToggleJobBookmark(title));
+                          onBookmarkToggle: (jobId) {
+                            context.read<HomeBloc>().add(ToggleJobBookmark(jobId));
                           },
+                          onSeeAll: onSeeAllJobs,
                         ),
                         const SizedBox(height: 32),
 
