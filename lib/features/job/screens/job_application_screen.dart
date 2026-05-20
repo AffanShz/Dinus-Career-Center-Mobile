@@ -24,7 +24,6 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   File? _transkripNilai;
   File? _suratLamaran;
   
-  final TextEditingController _catatanController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
   bool _isLoading = false;
   bool _isPortfolioLink = false;
@@ -70,7 +69,6 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       portofolioLink: _isPortfolioLink ? _linkController.text : null,
       transkipNilai: _transkripNilai,
       suratLamaran: _suratLamaran,
-      catatan: _catatanController.text.isNotEmpty ? _catatanController.text : null,
     );
 
     if (!mounted) return;
@@ -551,34 +549,6 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     onRemove: () => setState(() => _suratLamaran = null),
                   ),
                 ),
-                const SizedBox(height: 24),
-
-                // Catatan
-                Text(
-                  'Catatan Tambahan',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: const Color(0xFF001B3D),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _buildGlassCard(
-                  child: TextField(
-                    controller: _catatanController,
-                    maxLines: 4,
-                    style: GoogleFonts.manrope(fontSize: 14, color: const Color(0xFF191C1E)),
-                    decoration: InputDecoration(
-                      hintText: 'Tuliskan pesan singkat atau informasi tambahan untuk perekrut...',
-                      hintStyle: GoogleFonts.manrope(
-                        fontSize: 14,
-                        color: const Color(0xFF424751).withOpacity(0.5),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -612,7 +582,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                   shadowColor: const Color(0xFF003A75).withOpacity(0.2),
                   backgroundColor: Colors.transparent, // to use gradient via Ink
                 ).copyWith(
-                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
                 ),
                 child: Ink(
                   decoration: BoxDecoration(

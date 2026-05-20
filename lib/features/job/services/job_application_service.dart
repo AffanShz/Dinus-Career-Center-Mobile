@@ -24,7 +24,6 @@ class JobApplicationService {
     String? portofolioLink,
     File? transkipNilai,
     File? suratLamaran,
-    String? catatan,
   }) async {
     try {
       final user = AuthService.currentUser;
@@ -37,25 +36,25 @@ class JobApplicationService {
 
       String? pasFotoUrl;
       if (pasFoto != null) {
-         pasFotoUrl = await uploadFile('berkas', 'pas_foto_${DateTime.now().millisecondsSinceEpoch}.jpg', pasFoto);
+         pasFotoUrl = await uploadFile('berkas-lamaran', 'pas_foto_${DateTime.now().millisecondsSinceEpoch}.jpg', pasFoto);
       }
       String? cvUrl;
       if (cv != null) {
-         cvUrl = await uploadFile('berkas', 'cv_${DateTime.now().millisecondsSinceEpoch}.pdf', cv);
+         cvUrl = await uploadFile('berkas-lamaran', 'cv_${DateTime.now().millisecondsSinceEpoch}.pdf', cv);
       }
       String? portofolioUrl;
       if (portofolioFile != null) {
-         portofolioUrl = await uploadFile('berkas', 'portofolio_${DateTime.now().millisecondsSinceEpoch}.pdf', portofolioFile);
+         portofolioUrl = await uploadFile('berkas-lamaran', 'portofolio_${DateTime.now().millisecondsSinceEpoch}.pdf', portofolioFile);
       } else if (portofolioLink != null && portofolioLink.isNotEmpty) {
          portofolioUrl = portofolioLink;
       }
       String? transkipNilaiUrl;
       if (transkipNilai != null) {
-         transkipNilaiUrl = await uploadFile('berkas', 'transkip_${DateTime.now().millisecondsSinceEpoch}.pdf', transkipNilai);
+         transkipNilaiUrl = await uploadFile('berkas-lamaran', 'transkip_${DateTime.now().millisecondsSinceEpoch}.pdf', transkipNilai);
       }
       String? suratLamaranUrl;
       if (suratLamaran != null) {
-         suratLamaranUrl = await uploadFile('berkas', 'surat_lamaran_${DateTime.now().millisecondsSinceEpoch}.pdf', suratLamaran);
+         suratLamaranUrl = await uploadFile('berkas-lamaran', 'surat_lamaran_${DateTime.now().millisecondsSinceEpoch}.pdf', suratLamaran);
       }
 
       // 1. Insert into berkas_lamaran
@@ -76,7 +75,6 @@ class JobApplicationService {
         'pelamar_id': pelamarId,
         'berkas_lamaran_id': berkasId,
         'status_terakhir': 'applied',
-        'catatan': catatan,
       });
 
       return true;

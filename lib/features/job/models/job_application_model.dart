@@ -47,7 +47,6 @@ class LamaranModel {
   final String pelamarId;
   final String? berkasLamaranId;
   final String statusTerakhir;
-  final String? catatan;
 
   LamaranModel({
     required this.id,
@@ -55,7 +54,6 @@ class LamaranModel {
     required this.pelamarId,
     this.berkasLamaranId,
     this.statusTerakhir = 'applied',
-    this.catatan,
   });
 
   factory LamaranModel.fromMap(Map<String, dynamic> map) {
@@ -65,7 +63,6 @@ class LamaranModel {
       pelamarId: map['pelamar_id'],
       berkasLamaranId: map['berkas_lamaran_id'],
       statusTerakhir: map['status_terakhir'] ?? 'applied',
-      catatan: map['catatan'],
     );
   }
 
@@ -75,7 +72,6 @@ class LamaranModel {
       'pelamar_id': pelamarId,
       if (berkasLamaranId != null) 'berkas_lamaran_id': berkasLamaranId,
       'status_terakhir': statusTerakhir,
-      if (catatan != null) 'catatan': catatan,
     };
   }
 }

@@ -81,81 +81,47 @@ class AuthService {
 
     try {
       final email = user.email?.toLowerCase() ?? '';
-      final isStudent = email.endsWith('@mhs.dinus.ac.id');
       final parsedData = DinusEmailParser.parse(email);
+      final fullName = user.userMetadata?['full_name'] ?? '';
+      final avatarUrl = user.userMetadata?['avatar_url'] ?? '';
 
-      // Check if profile already exists
-      final profile = await _supabase
-          .from('profiles')
+      // 1. Ensure Profile exists
+      await _supabase.from('profiles').upsert({
+        'id': user.id,
+        'email': email,
+        'role': 'pelamar',
+        'full_name': fullName,
+      });
+
+      // 2. Ensure Pelamar record exists
+      final pelamar = await _supabase
+          .from('pelamar')
           .select()
-          .eq('id', user.id)
+          .eq('pelamar_id', user.id)
           .maybeSingle();
 
-      if (profile == null) {
-        print('DEBUG: New user detected, inserting into profiles and pelamar');
-
-        // Auto-assign 'pelamar' role for mhs.dinus.ac.id users
-        final assignedRole = isStudent ? 'pelamar' : 'pelamar';
-
-        await _supabase.from('profiles').upsert({
-          'id': user.id,
-          'email': email,
-          'role': assignedRole,
-          'full_name': user.userMetadata?['full_name'] ?? '',
-        });
-
-        await _supabase.from('pelamar').upsert({
+      if (pelamar == null) {
+        print('DEBUG: Creating missing pelamar record');
+        await _supabase.from('pelamar').insert({
           'pelamar_id': user.id,
           'email': email,
-          'nama_lengkap': user.userMetadata?['full_name'] ?? '',
-          'foto_profil': user.userMetadata?['avatar_url'] ?? '',
+          'nama_lengkap': fullName,
+          'foto_profil': avatarUrl,
           'nim': parsedData['nim'],
           'bidang': parsedData['bidang'],
         });
-
-        print(
-          'DEBUG: Successfully inserted user data with role $assignedRole and parsed NIM: ${parsedData['nim']}',
-        );
       } else {
-        print(
-          'DEBUG: User profile already exists. Updating existing data if necessary.',
-        );
-
-        // Ensure student accounts have 'pelamar' role
-        if (isStudent && profile['role'] != 'pelamar') {
-          await _supabase
-              .from('profiles')
-              .update({'role': 'pelamar'})
-              .eq('id', user.id);
-          print(
-            'DEBUG: Updated existing user role to pelamar (student detected)',
-          );
-        }
-
-        // For existing users, update NIM and Bidang if they were parsed successfully
-        if (parsedData['nim'] != null) {
-          final existingPelamar = await _supabase
-              .from('pelamar')
-              .select('nim, bidang')
-              .eq('pelamar_id', user.id)
-              .maybeSingle();
-
-          if (existingPelamar != null &&
-              (existingPelamar['nim'] == null ||
-                  existingPelamar['bidang'] == null)) {
-            await _supabase
-                .from('pelamar')
-                .update({
-                  'nim': parsedData['nim'],
-                  'bidang': parsedData['bidang'],
-                })
-                .eq('pelamar_id', user.id);
-            print(
-              'DEBUG: Updated existing user with parsed NIM: ${parsedData['nim']}',
-            );
-          }
+        print('DEBUG: Pelamar record already exists');
+        // Update NIM/Bidang if they are currently null
+        if (pelamar['nim'] == null || pelamar['bidang'] == null) {
+           await _supabase.from('pelamar').update({
+            if (pelamar['nim'] == null) 'nim': parsedData['nim'],
+            if (pelamar['bidang'] == null) 'bidang': parsedData['bidang'],
+          }).eq('pelamar_id', user.id);
         }
       }
+
+      print('DEBUG: post-login data handling completed successfully.');
     } catch (e) {
       print('DEBUG: Error in handleAfterLogin: $e');
     }
