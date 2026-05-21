@@ -11,7 +11,7 @@ class TrackState extends Equatable {
   const TrackState({
     this.status = TrackStatus.initial,
     this.applications = const [],
-    this.selectedFilter = 'Semua (12)',
+    this.selectedFilter = 'Semua',
   });
 
   TrackState copyWith({

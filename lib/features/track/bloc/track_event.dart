@@ -10,7 +10,7 @@ abstract class TrackEvent extends Equatable {
 class LoadApplications extends TrackEvent {
   final String filter;
 
-  const LoadApplications({this.filter = 'Semua (12)'});
+  const LoadApplications({this.filter = 'Semua'});
 
   @override
   List<Object> get props => [filter];

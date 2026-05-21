@@ -11,12 +11,12 @@ import '../widgets/application_card.dart';
 class TrackScreen extends StatelessWidget {
   const TrackScreen({super.key});
 
-  final List<String> _filters = const ['Semua (12)', 'Aktif (4)', 'Selesai (8)'];
+  final List<String> _filters = const ['Semua', 'Aktif', 'Selesai'];
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TrackBloc()..add(const LoadApplications()),
+      create: (context) => TrackBloc()..add(const LoadApplications(filter: 'Semua')),
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(

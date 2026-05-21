@@ -34,12 +34,19 @@ class ApplicationCard extends StatelessWidget {
               Container(
                 width: 50,
                 height: 50,
-                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(12),
+                  image: application.logo.startsWith('http')
+                      ? DecorationImage(
+                          image: NetworkImage(application.logo),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: const Icon(Icons.business, color: Colors.white),
+                child: application.logo.startsWith('http')
+                    ? null
+                    : const Icon(Icons.business, color: Colors.white),
               ),
               const SizedBox(width: 16),
               Expanded(
