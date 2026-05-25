@@ -19,6 +19,8 @@ class AuthService {
     );
     if (response.session != null) {
       await _saveLoginTime();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('USER_ID', response.user!.id);
       await handleAfterLogin();
     }
     return response;
@@ -63,6 +65,8 @@ class AuthService {
 
       if (response.session != null) {
         await _saveLoginTime();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('USER_ID', response.user!.id);
         await handleAfterLogin();
       }
       return response;
@@ -165,6 +169,7 @@ class AuthService {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_loginTimeKey);
+    await prefs.remove('USER_ID');
   }
 
   /// Get current session

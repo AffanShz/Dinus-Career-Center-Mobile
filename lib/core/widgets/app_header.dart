@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/features/notification/pages/notification_page.dart';
+import 'package:dcc_mobile/features/notification/widgets/notification_badge.dart';
 
 /// Shared header widget used across Home, Job, and Track screens.
 /// Displays the DCC logo, app title, and notification icon.
@@ -50,10 +52,20 @@ class AppHeader extends StatelessWidget {
             ),
           ],
         ),
-        const Icon(
-          Icons.notifications_none_rounded,
-          color: AppColors.primary,
-          size: 28,
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NotificationPage()),
+            );
+          },
+          child: const NotificationBadge(
+            child: Icon(
+              Icons.notifications_none_rounded,
+              color: AppColors.primary,
+              size: 28,
+            ),
+          ),
         ),
       ],
     );

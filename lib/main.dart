@@ -2,20 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'features/auth/screens/login.dart';
 import 'features/auth/services/auth_service.dart';
+import 'features/notification/services/notification_service.dart';
+import 'features/notification/services/realtime_notification_service.dart';
+// flutter_background_service disabled — conflicts with android plugin isolate guard
+// import 'features/notification/services/notification_background_service.dart';
+import 'core/utils/workmanager_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print('DEBUG: App Starting...');
   await dotenv.load(fileName: '.env');
+  
   // Inisialisasi locale Indonesia untuk format tanggal
   await initializeDateFormatting('id_ID', null);
 
+  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
+
+  // Save credentials for background service
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('SUPABASE_URL', supabaseUrl);
+  await prefs.setString('SUPABASE_ANON_KEY', supabaseAnonKey);
+  
+  final user = Supabase.instance.client.auth.currentUser;
+  if (user != null) {
+    await prefs.setString('USER_ID', user.id);
+  }
+
+  // Initialize Notification Services
+  final notificationService = NotificationService();
+  await notificationService.init();
+  await notificationService.requestPermissions();
+  
+  // Initialize Realtime Notification Service for foreground
+  final realtimeService = RealtimeNotificationService();
+  realtimeService.listenToAuthChanges();
+  realtimeService.init();
+  
+  // flutter_background_service disabled — handled by WorkManager instead
+  
+  // Initialize WorkManager
+  WorkManagerHelper.init();
+  WorkManagerHelper.registerTask();
 
   // Check if session is older than 3 days
   await AuthService.checkSessionAge();

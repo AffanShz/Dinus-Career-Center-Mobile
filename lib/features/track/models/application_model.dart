@@ -69,6 +69,12 @@ class ApplicationModel {
         statusText = const Color(0xFFC62828);
         currentStep = 3;
         break;
+      case 'completed':
+        statusDisplay = 'Completed';
+        statusBg = const Color(0xFFE8F5E9);
+        statusText = const Color(0xFF2E7D32);
+        currentStep = 3;
+        break;
       default:
         statusDisplay = statusRaw.toUpperCase();
         statusBg = const Color(0xFFF5F5F5);

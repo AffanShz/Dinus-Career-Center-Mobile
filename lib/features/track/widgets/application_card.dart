@@ -10,11 +10,15 @@ class ApplicationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompleted = application.status == 'Completed';
+    final bool isRejected = application.status == 'Rejected';
+    final bool isInactive = isCompleted || isRejected;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isRejected ? Colors.grey[50] : AppColors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -31,22 +35,27 @@ class ApplicationCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(12),
-                  image: application.logo.startsWith('http')
-                      ? DecorationImage(
-                          image: NetworkImage(application.logo),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+              ColorFiltered(
+                colorFilter: isRejected
+                    ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
+                    : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(12),
+                    image: application.logo.startsWith('http')
+                        ? DecorationImage(
+                            image: NetworkImage(application.logo),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child: application.logo.startsWith('http')
+                      ? null
+                      : const Icon(Icons.business, color: Colors.white),
                 ),
-                child: application.logo.startsWith('http')
-                    ? null
-                    : const Icon(Icons.business, color: Colors.white),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -58,7 +67,7 @@ class ApplicationCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
+                        color: isRejected ? Colors.grey[600] : AppColors.primary,
                         height: 1.2,
                       ),
                     ),
@@ -68,7 +77,7 @@ class ApplicationCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey[600],
+                        color: isRejected ? Colors.grey[400] : Colors.grey[600],
                       ),
                     ),
                   ],
@@ -98,7 +107,7 @@ class ApplicationCard extends StatelessWidget {
           const SizedBox(height: 32),
 
           // Progress timeline
-          _buildTimeline(application.currentStep),
+          _buildTimeline(application.currentStep, isInactive, isCompleted),
           const SizedBox(height: 32),
 
           const Divider(color: AppColors.divider, thickness: 1.5),
@@ -116,7 +125,7 @@ class ApplicationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[500],
+                      color: Colors.grey[400],
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -125,7 +134,7 @@ class ApplicationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1E293B),
+                      color: isRejected ? Colors.grey[600] : const Color(0xFF1E293B),
                     ),
                   ),
                 ],
@@ -138,7 +147,7 @@ class ApplicationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[500],
+                      color: Colors.grey[400],
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -147,7 +156,7 @@ class ApplicationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF3C56C6),
+                      color: isRejected ? Colors.grey[500] : const Color(0xFF3C56C6),
                     ),
                   ),
                 ],
@@ -159,9 +168,14 @@ class ApplicationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeline(int currentStep) {
+  Widget _buildTimeline(int currentStep, bool isInactive, bool isCompleted) {
     final steps = ['APPLIED', 'REVIEWED', 'INTERVIEW', 'SELESAI'];
-    const activeColor = Color(0xFF3C56C6);
+    Color activeColor = const Color(0xFF3C56C6);
+    if (isCompleted) {
+      activeColor = const Color(0xFF10B981);
+    } else if (isInactive) {
+      activeColor = Colors.grey[400]!;
+    }
     const inactiveColor = Color(0xFFE2E8F0);
 
     return Row(
@@ -169,7 +183,7 @@ class ApplicationCard extends StatelessWidget {
       children: List.generate(steps.length * 2 - 1, (index) {
         if (index % 2 == 0) {
           final stepIdx = index ~/ 2;
-          final isCompleted = stepIdx <= currentStep;
+          final isStepCompleted = stepIdx <= currentStep;
           final isCurrent = stepIdx == currentStep;
           return SizedBox(
             width: 55,
@@ -179,9 +193,9 @@ class ApplicationCard extends StatelessWidget {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: isCompleted ? activeColor : inactiveColor,
+                    color: isStepCompleted ? activeColor : inactiveColor,
                     shape: BoxShape.circle,
-                    border: isCurrent
+                    border: isCurrent && !isInactive
                         ? Border.all(
                             color: activeColor.withOpacity(0.3),
                             width: 6,
@@ -196,7 +210,7 @@ class ApplicationCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: isCompleted ? activeColor : AppColors.navInactive,
+                    color: isStepCompleted ? activeColor : AppColors.navInactive,
                   ),
                 ),
               ],

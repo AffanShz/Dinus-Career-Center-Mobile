@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "376111877306",
+    "project_id": "dinus-career-center",
+    "storage_bucket": "dinus-career-center.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:376111877306:android:6d06e73f9c33506a6f4683",
+        "android_client_info": {
+          "package_name": "com.dcc_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARCcIDj2wKZcv2vskA3LAdp98QyaeQaW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
