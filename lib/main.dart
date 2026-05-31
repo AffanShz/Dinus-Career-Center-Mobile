@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/colors.dart';
 import 'features/auth/screens/login.dart';
+import 'features/home/screens/main_screen.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/notification/services/notification_service.dart';
 import 'features/notification/services/realtime_notification_service.dart';
@@ -58,13 +59,17 @@ void main() async {
   // Check if session is older than 3 days
   await AuthService.checkSessionAge();
 
-  runApp(const MainApp());
+  final initialSession = AuthService.currentSession;
+
+  runApp(MainApp(initialSession: initialSession));
 }
 
 final supabase = Supabase.instance.client;
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final Session? initialSession;
+  
+  const MainApp({super.key, this.initialSession});
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +94,7 @@ class MainApp extends StatelessWidget {
           onSurface: AppColors.onSurface,
         ),
       ),
-      home: const Login(),
+      home: initialSession != null ? const MainScreen() : const Login(),
     );
   }
 }
