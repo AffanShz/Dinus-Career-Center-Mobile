@@ -41,13 +41,13 @@ class Login extends StatelessWidget {
                             Text(
                               'Welcome to DCC Mobile',
                               textAlign: TextAlign.center,
-                              style: AppTextStyles.headingLarge,
+                              style: AppTextStyles.headlineLarge.copyWith(color: Colors.white),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Shape your future career at UDINUS',
                               textAlign: TextAlign.center,
-                              style: AppTextStyles.bodyMedium,
+                              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
                             ),
                             const SizedBox(height: 40),
                             const LoginForm(),
@@ -55,7 +55,7 @@ class Login extends StatelessWidget {
                             Text(
                               '© 2024 Dinus Career Center. All Rights Reserved.',
                               textAlign: TextAlign.center,
-                              style: AppTextStyles.bodyExtraSmallLight,
+                              style: AppTextStyles.bodySmall.copyWith(color: Colors.white60),
                             ),
                             const SizedBox(height: 8),
                           ],

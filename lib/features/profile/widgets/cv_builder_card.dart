@@ -1,114 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class CVBuilderCard extends StatelessWidget {
   const CVBuilderCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'CV Builder',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-            Text(
-              'Edit CV',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.accent,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24.0),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
-            borderRadius: BorderRadius.circular(20),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Resume & Dokumen',
+            style: AppTextStyles.headlineSmall,
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
+          const SizedBox(height: 16),
+          // ATS Resume Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.outlineVariant.withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFA8C8FF),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.description, color: AppColors.primary),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 12,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
+                      Text(
+                        'ATS Resume',
+                        style: AppTextStyles.labelLarge.copyWith(color: AppColors.onPrimaryFixed),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 6,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        height: 6,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
+                      Text(
+                        'Terakhir Diperbarui: 12 Mei 2025',
+                        style: AppTextStyles.bodySmall,
                       ),
                     ],
                   ),
-                  const Icon(Icons.description_outlined, color: Colors.black26),
-                ],
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
+                ),
+                TextButton(
                   onPressed: () {},
-                  icon: const Icon(
-                    Icons.picture_as_pdf_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  label: Text(
-                    'Generate ATS CV (PDF)',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B5998),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
+                  child: Text('Pratinjau', style: AppTextStyles.labelLarge),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Text('Unduh', style: AppTextStyles.labelLarge),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Generate Button
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.auto_awesome, size: 18),
+              label: const Text('Buat ATS Resume'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                foregroundColor: AppColors.primary,
+                side: BorderSide(color: AppColors.primary.withOpacity(0.2)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

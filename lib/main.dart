@@ -3,6 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'core/theme/colors.dart';
 import 'features/auth/screens/login.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/notification/services/notification_service.dart';
@@ -66,9 +68,28 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      theme: ThemeData(
+        useMaterial3: true,
+        primaryColor: AppColors.primary,
+        scaffoldBackgroundColor: AppColors.background,
+        textTheme: GoogleFonts.manropeTextTheme(
+          Theme.of(context).textTheme,
+        ).apply(
+          bodyColor: AppColors.onSurface,
+          displayColor: AppColors.onSurface,
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          primary: AppColors.primary,
+          secondary: AppColors.secondary,
+          surface: AppColors.surface,
+          background: AppColors.background,
+          onSurface: AppColors.onSurface,
+        ),
+      ),
+      home: const Login(),
     );
   }
 }

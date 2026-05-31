@@ -71,12 +71,12 @@ class _LoginFormState extends State<LoginForm> {
               children: [
                 Text(
                   'DCC SSO Login',
-                  style: AppTextStyles.bodySmall,
+                  style: AppTextStyles.headlineSmall,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Please sign in with your student \ncredentials',
-                  style: AppTextStyles.bodyExtraSmall,
+                  style: AppTextStyles.bodySmall,
                 ),
                 const SizedBox(height: 24),
                 AuthTextField(
@@ -96,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
                     onPressed: () {},
                     child: Text(
                       'Forgot Password?',
-                      style: AppTextStyles.bodyExtraSmallBold,
+                      style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -105,7 +105,7 @@ class _LoginFormState extends State<LoginForm> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryLight,
+                      backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
@@ -141,7 +141,7 @@ class _LoginFormState extends State<LoginForm> {
                             children: [
                               Text(
                                 'Login',
-                                style: AppTextStyles.bodySmallBold,
+                                style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
                               ),
                               const SizedBox(width: 8),
                               const Icon(
@@ -161,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'OR',
-                        style: AppTextStyles.bodyExtraSmall,
+                        style: AppTextStyles.bodySmall,
                       ),
                     ),
                     const Expanded(child: Divider()),

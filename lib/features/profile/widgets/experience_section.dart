@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/profile_model.dart';
 
 class ExperienceSection extends StatelessWidget {
@@ -10,28 +10,33 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pengalaman',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Pengalaman',
+            style: AppTextStyles.headlineSmall,
           ),
-        ),
-        const SizedBox(height: 16),
-        ...experiences.asMap().entries.map((entry) {
-          final index = entry.key;
-          final exp = entry.value;
-          return _buildTimelineItem(
-            isFirst: index == 0,
-            isLast: index == experiences.length - 1,
-            experience: exp,
-          );
-        }),
-      ],
+          const SizedBox(height: 16),
+          ...experiences.asMap().entries.map((entry) {
+            final index = entry.key;
+            final exp = entry.value;
+            return _buildTimelineItem(
+              isFirst: index == 0,
+              isLast: index == experiences.length - 1,
+              experience: exp,
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -52,7 +57,7 @@ class ExperienceSection extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: experience.isActive ? AppColors.primaryLight : Colors.grey[300],
+                    color: experience.isActive ? AppColors.primary : AppColors.outlineVariant,
                     shape: BoxShape.circle,
                   ),
                   margin: const EdgeInsets.only(top: 4),
@@ -61,7 +66,7 @@ class ExperienceSection extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 1,
-                      color: Colors.grey[300],
+                      color: AppColors.outlineVariant.withOpacity(0.5),
                       margin: const EdgeInsets.only(top: 4, bottom: 4),
                     ),
                   ),
@@ -77,37 +82,25 @@ class ExperienceSection extends StatelessWidget {
                 children: [
                   Text(
                     experience.date,
-                    style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: experience.isActive ? const Color(0xFF6B8DD6) : Colors.grey,
-                      letterSpacing: 0.5,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: experience.isActive ? AppColors.primary : AppColors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     experience.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                    style: AppTextStyles.labelLarge.copyWith(color: AppColors.onPrimaryFixed),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     experience.company,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.secondary,
-                    ),
+                    style: AppTextStyles.bodySmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     experience.description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: AppColors.textMuted,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.onSurfaceVariant,
                       height: 1.5,
                     ),
                   ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class AppBottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -34,8 +34,7 @@ class AppBottomNavbar extends StatelessWidget {
           data: NavigationBarThemeData(
             indicatorColor: AppColors.navIndicator,
             labelTextStyle: WidgetStateProperty.resolveWith((states) {
-              return GoogleFonts.poppins(
-                fontSize: 12,
+              return AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.primary,
               );

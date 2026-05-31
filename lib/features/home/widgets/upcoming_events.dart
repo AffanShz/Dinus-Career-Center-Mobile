@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/event_model.dart';
 
 class EventCard extends StatelessWidget {
@@ -14,7 +15,7 @@ class EventCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -46,10 +47,8 @@ class EventCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             event.type.toUpperCase(),
-                            style: const TextStyle(
+                            style: AppTextStyles.labelSmall.copyWith(
                               color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -58,7 +57,7 @@ class EventCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -72,11 +71,7 @@ class EventCard extends StatelessWidget {
                   const SizedBox(height: 32),
                   Text(
                     event.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.headlineLarge.copyWith(color: Colors.white),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -91,8 +86,7 @@ class EventCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             event.date,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
+                            style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
                           ),
                         ],
                       ),
@@ -107,8 +101,7 @@ class EventCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             event.time,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
+                            style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
                           ),
                         ],
                       ),
@@ -123,7 +116,7 @@ class EventCard extends StatelessWidget {
               child: Icon(
                 Icons.language,
                 size: 150,
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
             Positioned(
@@ -132,7 +125,7 @@ class EventCard extends StatelessWidget {
               child: Icon(
                 Icons.show_chart,
                 size: 200,
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
           ],
@@ -152,13 +145,9 @@ class UpcomingEvents extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Event yang akan datang',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
+          style: AppTextStyles.headlineSmall,
         ),
         const SizedBox(height: 16),
         EventCard(event: event),

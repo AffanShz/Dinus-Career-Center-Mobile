@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class TechStackSection extends StatelessWidget {
   final List<String> skills;
@@ -9,44 +9,43 @@ class TechStackSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Tech Stack & Skills',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Keahlian',
+            style: AppTextStyles.headlineSmall,
           ),
-        ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 8.0,
-          children: skills.map((skill) {
-            final isMore = skill.startsWith('+');
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isMore ? const Color(0xFFE2E8F0) : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isMore ? Colors.transparent : Colors.black12,
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
+            children: skills.map((skill) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              child: Text(
-                skill,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.primary,
+                child: Text(
+                  skill,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }

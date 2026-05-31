@@ -1,38 +1,23 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../job/models/job_model.dart';
+import '../../profile/services/profile_service.dart';
 import '../models/event_model.dart';
 
 class HomeService {
   final _supabase = Supabase.instance.client;
+  final _profileService = ProfileService();
 
   Future<Map<String, dynamic>> fetchHomeData() async {
-    // ── 1. Fetch nama user ────────────────────────────────────────────────
-    final user = _supabase.auth.currentUser;
-    String name = user?.userMetadata?['full_name'] ?? 'User DCC';
-    final String email = user?.email ?? '';
-
+    // ── 1. Fetch profile and calculate completeness ───────────────────────
+    double completeness = 0.0;
+    String name = 'User DCC';
     try {
-      final pelamarData = await _supabase
-          .from('pelamar')
-          .select('nama_lengkap')
-          .eq('email', email)
-          .maybeSingle();
-
-      if (pelamarData != null) {
-        name = pelamarData['nama_lengkap'] ?? name;
-      } else {
-        final profileData = await _supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('email', email)
-            .maybeSingle();
-        if (profileData != null) {
-          name = profileData['full_name'] ?? name;
-        }
-      }
+      final profile = await _profileService.fetchUserProfile();
+      name = profile.name;
+      completeness = profile.completionPercentage;
     } catch (e) {
       // ignore: avoid_print
-      print('[HomeService] Error fetching user name: $e');
+      print('[HomeService] Error fetching profile: $e');
     }
 
     // ── 2. Fetch recommended jobs dari Supabase ───────────────────────────
@@ -60,7 +45,7 @@ class HomeService {
 
     return {
       'userName': name,
-      'profileCompleteness': 0.75,
+      'profileCompleteness': completeness,
       'recommendedJobs': recommendedJobs,
       'upcomingEvent': Event(
         title: 'Tech Career Expo 2024',

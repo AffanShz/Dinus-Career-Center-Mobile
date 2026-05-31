@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/features/notification/pages/notification_page.dart';
 import 'package:dcc_mobile/features/notification/widgets/notification_badge.dart';
 
@@ -44,11 +44,7 @@ class AppHeader extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               'DCC Mobile',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primaryLight,
-              ),
+              style: AppTextStyles.headlineMedium,
             ),
           ],
         ),

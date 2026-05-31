@@ -199,10 +199,15 @@ class UserProfile {
       bidang: map['bidang'],
       disabilitas: map['disabilitas'],
       // Skills, Experiences, Education usually come from separate tables or JSON columns
-      // For now, keeping them empty or as placeholders
-      skills: [], 
-      experiences: [],
-      education: [],
+      skills: (map['skills'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      experiences: (map['experiences'] as List<dynamic>?)
+              ?.map((e) => Experience.fromMap(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      education: (map['education'] as List<dynamic>?)
+              ?.map((e) => Education.fromMap(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -228,6 +233,33 @@ class UserProfile {
       'bidang': bidang,
       'disabilitas': disabilitas,
     };
+  }
+
+  double get completionPercentage {
+    final fields = [
+      name,
+      photoUrl,
+      tempatLahir,
+      tanggalLahir,
+      noKtp,
+      jenisKelamin,
+      alamat,
+      kota,
+      noHandphone,
+      nim,
+      ipk,
+      bidang,
+    ];
+
+    int filledCount = fields.where((f) => f != null && f.toString().isNotEmpty).length;
+    
+    // Add logic for lists
+    if (skills.isNotEmpty) filledCount++;
+    if (experiences.isNotEmpty) filledCount++;
+    if (education.isNotEmpty) filledCount++;
+
+    const totalFields = 15; // 12 basic fields + 3 lists
+    return (filledCount / totalFields).clamp(0.0, 1.0);
   }
 }
 

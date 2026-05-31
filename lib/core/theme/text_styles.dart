@@ -7,45 +7,67 @@ import 'package:dcc_mobile/core/theme/colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  static final headingLarge = GoogleFonts.poppins(
+  // Headline - Plus Jakarta Sans
+  static final headlineLarge = GoogleFonts.plusJakartaSans(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: AppColors.onPrimaryFixed,
+    letterSpacing: -0.5,
+  );
+
+  static final headlineMedium = GoogleFonts.plusJakartaSans(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: AppColors.onPrimaryFixed,
+  );
+
+  static final headlineSmall = GoogleFonts.plusJakartaSans(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: AppColors.onPrimaryFixed,
+  );
+
+  // Body - Manrope
+  static final bodyLarge = GoogleFonts.manrope(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.onSurface,
+  );
+
+  static final bodyMedium = GoogleFonts.manrope(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.onSurface,
+  );
+
+  static final bodySmall = GoogleFonts.manrope(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: AppColors.onSurfaceVariant,
+  );
+
+  static final labelLarge = GoogleFonts.manrope(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primary,
+  );
+
+  static final labelSmall = GoogleFonts.manrope(
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+    color: AppColors.onSurfaceVariant,
+  );
+
+  // Legacy/Compatibility (to be phased out or updated)
+  static final headingLargeLegacy = GoogleFonts.plusJakartaSans(
     fontSize: 40,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );
 
-  static final bodySmall = GoogleFonts.poppins(
+  static final bodySmallLegacy = GoogleFonts.manrope(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: AppColors.primary,
-  );
-
-  static final bodySmallBold = GoogleFonts.poppins(
-    fontSize: 18,
-    fontWeight: FontWeight.w800,
-    color: AppColors.white,
-  );
-
-  static final bodyMedium = GoogleFonts.poppins(
-    fontSize: 20,
-    fontWeight: FontWeight.w200,
-    color: AppColors.white,
-  );
-
-  static final bodyExtraSmall = GoogleFonts.poppins(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.secondary,
-  );
-
-  static final bodyExtraSmallBold = GoogleFonts.poppins(
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
-    color: AppColors.primaryLight,
-  );
-
-  static final bodyExtraSmallLight = GoogleFonts.poppins(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.white,
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
 import '../screens/job_detail_screen.dart';
 
@@ -27,13 +27,14 @@ class JobListItem extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: AppColors.primary.withOpacity(0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -47,179 +48,82 @@ class JobListItem extends StatelessWidget {
               children: [
                 // Company Logo
                 Container(
-                  width: 48,
-                  height: 48,
-                  margin: const EdgeInsets.only(right: 12),
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
+                    color: AppColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(16),
                     child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
                         ? Image.network(
                             job.logoPerusahaan!,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.business,
-                              color: Colors.grey,
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.business, color: AppColors.onSurfaceVariant),
                           )
-                        : const Icon(
-                            Icons.business,
-                            color: Colors.grey,
-                          ),
+                        : const Icon(Icons.business, color: AppColors.onSurfaceVariant),
                   ),
                 ),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         job.judul,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                        style: AppTextStyles.headlineSmall,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
                       Text(
                         job.perusahaan,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.bodyMedium,
                       ),
                     ],
                   ),
                 ),
-                _buildStatusBadge(job.statusLoker),
+                GestureDetector(
+                  onTap: onBookmarkToggle,
+                  child: Icon(
+                    job.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                    color: job.isBookmarked ? AppColors.primary : AppColors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
-            if (job.jabatan != null) ...[  
-              const SizedBox(height: 12),
-              Text(
-                job.jabatan!,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: AppColors.accent,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               children: [
-                const Icon(Icons.monetization_on_outlined, size: 16, color: AppColors.accent),
+                const Icon(Icons.location_on_outlined, size: 16, color: AppColors.onSurfaceVariant),
                 const SizedBox(width: 8),
-                Text(
-                  job.rangeGajiText,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.people_outline, size: 16, color: Colors.grey[600]),
+                Text(job.lokasi, style: AppTextStyles.bodySmall),
+                const SizedBox(width: 16),
+                const Icon(Icons.monetization_on_outlined, size: 16, color: AppColors.onSurfaceVariant),
                 const SizedBox(width: 8),
-                Text(
-                  job.jumlahPerson != null
-                      ? 'Butuh ${job.jumlahPersonText} orang'
-                      : 'Jumlah tidak disebutkan',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                  ),
-                ),
+                Text(job.rangeGajiText, style: AppTextStyles.bodySmall),
               ],
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text(
-                      job.formattedBatasAkhir,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: Icon(
-                    job.isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-                    color: job.isBookmarked ? AppColors.primary : Colors.grey[400],
-                    size: 24,
-                  ),
-                  onPressed: onBookmarkToggle,
-                ),
-              ],
-            ),
-            if (job.tags.isNotEmpty) ...[  
-              const SizedBox(height: 10),
+            if (job.tags.isNotEmpty) ...[
+              const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
-                runSpacing: 4,
-                children: job.tags
-                    .map((tag) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: tag.bg,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            tag.label,
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: tag.text,
-                            ),
-                          ),
-                        ))
-                    .toList(),
+                runSpacing: 8,
+                children: job.tags.take(2).map((tag) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    tag.label,
+                    style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
+                  ),
+                )).toList(),
               ),
             ],
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge(String status) {
-    // Enum status_loker di Supabase: 'aktif' = terbuka
-    final isActive = status.toLowerCase() == 'aktif';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        isActive ? 'AKTIF' : 'TUTUP',
-        style: GoogleFonts.poppins(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: isActive ? Colors.green : Colors.red,
         ),
       ),
     );

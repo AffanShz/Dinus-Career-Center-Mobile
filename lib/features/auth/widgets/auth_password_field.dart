@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class AuthPasswordField extends StatefulWidget {
   final String label;
@@ -30,17 +32,14 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF032D60),
-          ),
+          style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: widget.controller,
           autovalidateMode: widget.autovalidateMode,
           obscureText: _obscureText,
+          style: AppTextStyles.bodyMedium,
           validator:
               widget.validator ??
               (value) {
@@ -54,41 +53,41 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
               },
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-            prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+            hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.outlineVariant),
+            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.onSurfaceVariant),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
               borderSide: const BorderSide(
-                color: Color(0xFF032D60),
+                color: AppColors.primary,
                 width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
-              borderSide: const BorderSide(color: Colors.red),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
             ),
             suffixIcon: IconButton(
               icon: Icon(
                 _obscureText
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
-                color: Colors.grey,
+                color: AppColors.onSurfaceVariant,
               ),
               onPressed: () {
                 setState(() {

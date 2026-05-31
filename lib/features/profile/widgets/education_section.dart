@@ -1,101 +1,128 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/profile_model.dart';
 
 class EducationSection extends StatelessWidget {
   final List<Education> educationList;
+  final String? gpa;
+  final String? nim;
 
-  const EducationSection({super.key, required this.educationList});
+  const EducationSection({
+    super.key, 
+    required this.educationList,
+    this.gpa,
+    this.nim,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pendidikan',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...educationList.map((edu) => _buildEducationItem(edu)),
-      ],
-    );
-  }
-
-  Widget _buildEducationItem(Education edu) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0x0D000000),
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+        color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 48,
-            width: 48,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.school_outlined,
-                color: Color(0xFF6B8DD6),
-                size: 24,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Informasi Akademik',
+                style: AppTextStyles.headlineSmall,
               ),
-            ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFDBCA),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.star, size: 14, color: Color(0xFF783200)),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${gpa ?? "0.0"} IPK',
+                      style: AppTextStyles.labelSmall.copyWith(color: const Color(0xFF783200)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  edu.institution,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+          const SizedBox(height: 16),
+          if (educationList.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Universitas', style: AppTextStyles.bodySmall),
+                  Text('Universitas Dian Nuswantoro', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('NIM', style: AppTextStyles.bodySmall),
+                            Text(nim ?? '-', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Tingkat Pendidikan', style: AppTextStyles.bodySmall),
+                            Text('Sarjana (S1)', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  edu.degree,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: AppColors.secondary,
+                ],
+              ),
+            )
+          else
+            ...educationList.map((edu) => Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Universitas', style: AppTextStyles.bodySmall),
+                  Text(edu.institution, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('NIM', style: AppTextStyles.bodySmall),
+                            Text(nim ?? '-', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Tingkat Pendidikan', style: AppTextStyles.bodySmall),
+                            Text(edu.degree, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${edu.period} • ${edu.location}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10,
-                    color: AppColors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
+                ],
+              ),
+            )),
         ],
       ),
     );
