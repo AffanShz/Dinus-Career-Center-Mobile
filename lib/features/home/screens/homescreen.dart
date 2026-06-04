@@ -50,7 +50,7 @@ class Homescreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Shared app header
-                        const AppHeader(),
+                        AppHeader(photoUrl: state.userProfile?.photoUrl),
                         const SizedBox(height: 32),
 
                         // Greeting section
@@ -58,7 +58,7 @@ class Homescreen extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Profile completeness card
-                        ProfileCard(completeness: state.profileCompleteness),
+                        ProfileCard(userProfile: state.userProfile),
                         const SizedBox(height: 32),
 
                         // Recommended jobs section

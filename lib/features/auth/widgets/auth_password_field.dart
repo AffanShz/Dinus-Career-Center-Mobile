@@ -11,7 +11,7 @@ class AuthPasswordField extends StatefulWidget {
 
   const AuthPasswordField({
     super.key,
-    this.label = 'PASSWORD',
+    this.label = 'KATA SANDI',
     this.hintText,
     this.controller,
     this.validator,
@@ -44,10 +44,10 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
               widget.validator ??
               (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
+                  return 'Silakan masukkan kata sandi Anda';
                 }
                 if (value.length < 8) {
-                  return 'Password must be at least 8 characters long';
+                  return 'Kata sandi minimal harus 8 karakter';
                 }
                 return null;
               },

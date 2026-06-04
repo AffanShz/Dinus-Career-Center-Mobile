@@ -48,7 +48,6 @@ void main() async {
   // Initialize Realtime Notification Service for foreground
   final realtimeService = RealtimeNotificationService();
   realtimeService.listenToAuthChanges();
-  realtimeService.init();
   
   // flutter_background_service disabled — handled by WorkManager instead
   

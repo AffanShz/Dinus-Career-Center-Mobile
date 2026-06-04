@@ -14,9 +14,9 @@ class ExperienceSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest.withOpacity(0.7),
+        color: AppColors.surfaceContainerLowest.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.15)),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class ExperienceSection extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 1,
-                      color: AppColors.outlineVariant.withOpacity(0.5),
+                      color: AppColors.outlineVariant.withValues(alpha: 0.5),
                       margin: const EdgeInsets.only(top: 4, bottom: 4),
                     ),
                   ),

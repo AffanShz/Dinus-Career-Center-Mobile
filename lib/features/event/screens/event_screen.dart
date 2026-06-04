@@ -81,7 +81,7 @@ class EventScreen extends StatelessWidget {
 
   Widget _buildSectionHeader() {
     return Text(
-      'Upcoming Events',
+      'Event Mendatang',
       style: GoogleFonts.poppins(
         fontSize: 20,
         fontWeight: FontWeight.bold,

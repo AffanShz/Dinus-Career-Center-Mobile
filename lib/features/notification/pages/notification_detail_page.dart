@@ -67,7 +67,7 @@ class NotificationDetailPage extends StatelessWidget {
             const SizedBox(height: 32),
             if (notification.tipe == 'interview' && notification.linkZoom != null)
               _buildActionButton(
-                label: 'Join Interview',
+                label: 'Gabung Interview',
                 icon: Icons.video_call_rounded,
                 onPressed: () {
                   // TODO: Launch zoom link

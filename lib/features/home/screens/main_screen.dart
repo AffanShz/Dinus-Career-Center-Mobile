@@ -29,6 +29,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  late final List<Widget> _pages;
 
   final List<_NavItem> _navItems = const [
     _NavItem(
@@ -59,20 +60,23 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    // Pages are built here (not as const) so callbacks can reference setState
-    final pages = <Widget>[
+  void initState() {
+    super.initState();
+    _pages = [
       Homescreen(onSeeAllJobs: () => setState(() => _currentIndex = 1)),
       const JobScreen(),
       const TrackScreen(),
       const EventScreen(),
       const ProfileScreen(),
     ];
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: pages,
+        children: _pages,
       ),
       bottomNavigationBar: AppBottomNavbar(
         currentIndex: _currentIndex,

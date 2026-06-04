@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../profile/models/profile_model.dart';
+import '../../profile/screens/edit_profile_screen.dart';
+import '../../profile/bloc/profile_bloc.dart';
 
 class ProfileCard extends StatelessWidget {
-  final double completeness;
+  final UserProfile? userProfile;
 
-  const ProfileCard({super.key, required this.completeness});
+  const ProfileCard({super.key, this.userProfile});
 
   @override
   Widget build(BuildContext context) {
+    final completeness = userProfile?.completionPercentage ?? 0.0;
     final percentage = (completeness * 100).toInt();
     return Container(
       width: double.infinity,
@@ -37,12 +42,12 @@ class ProfileCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Profile Completion',
+                      'Kelengkapan Profil',
                       style: AppTextStyles.headlineSmall,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Complete your profile to increase recruiter visibility',
+                      'Lengkapi profil Anda untuk meningkatkan visibilitas bagi perekrut',
                       style: AppTextStyles.bodySmall,
                     ),
                   ],
@@ -89,7 +94,19 @@ class ProfileCard extends StatelessWidget {
                 ],
               ),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (userProfile != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => ProfileBloc(),
+                          child: EditProfileScreen(profile: userProfile!),
+                        ),
+                      ),
+                    );
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   foregroundColor: Colors.white,

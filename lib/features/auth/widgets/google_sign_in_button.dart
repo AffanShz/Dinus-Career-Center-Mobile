@@ -30,13 +30,14 @@ class GoogleSignInButton extends StatelessWidget {
               'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
               height: 24,
               width: 24,
+              cacheWidth: 72, // Roughly 3x the display size for sharpness
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(Icons.login, color: Colors.red);
               },
             ),
             const SizedBox(width: 12),
             Text(
-              'Sign in with Google',
+              'Masuk dengan Google',
               style: AppTextStyles.labelLarge.copyWith(
                 color: Colors.black87,
               ),

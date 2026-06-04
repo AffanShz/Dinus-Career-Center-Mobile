@@ -75,7 +75,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Please sign in with your student \ncredentials',
+                  'Silakan masuk dengan kredensial mahasiswa Anda',
                   style: AppTextStyles.bodySmall,
                 ),
                 const SizedBox(height: 24),
@@ -88,6 +88,7 @@ class _LoginFormState extends State<LoginForm> {
                 const SizedBox(height: 16),
                 AuthPasswordField(
                   controller: _passwordController,
+                  hintText: 'Masukkan kata sandi',
                 ),
                 const SizedBox(height: 8.0),
                 Align(
@@ -95,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
                   child: TextButton(
                     onPressed: () {},
                     child: Text(
-                      'Forgot Password?',
+                      'Lupa Kata Sandi?',
                       style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
                     ),
                   ),
@@ -140,7 +141,7 @@ class _LoginFormState extends State<LoginForm> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Login',
+                                'Masuk',
                                 style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
                               ),
                               const SizedBox(width: 8),
@@ -160,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'OR',
+                        'ATAU',
                         style: AppTextStyles.bodySmall,
                       ),
                     ),

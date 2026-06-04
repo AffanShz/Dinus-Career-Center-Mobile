@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../repositories/notification_repository.dart';
 import '../services/realtime_notification_service.dart';
@@ -16,15 +17,22 @@ class NotificationBadge extends StatefulWidget {
 
 class _NotificationBadgeState extends State<NotificationBadge> {
   int _unreadCount = 0;
+  StreamSubscription? _subscription;
 
   @override
   void initState() {
     super.initState();
     _fetchInitialCount();
     // Listen to realtime notifications to refresh count
-    RealtimeNotificationService().notificationStream.listen((_) {
+    _subscription = RealtimeNotificationService().notificationStream.listen((_) {
       _fetchInitialCount();
     });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _fetchInitialCount() async {

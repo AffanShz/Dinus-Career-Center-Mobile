@@ -25,11 +25,11 @@ class ProfileScreen extends StatelessWidget {
         body: SafeArea(
           child: BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
-              if (state.status == ProfileStatus.loading) {
+              if (state.status == ProfileStatus.loading && state.userProfile == null) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state.status == ProfileStatus.failure) {
+              if (state.status == ProfileStatus.failure && state.userProfile == null) {
                 return const Center(child: Text('Gagal memuat profil'));
               }
 
@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 32),
                       
                       // 2. Profile Completion Card
-                      ProfileCompletionCard(completionPercentage: profile.completionPercentage),
+                      ProfileCompletionCard(userProfile: profile),
                       const SizedBox(height: 24),
                       
                       // 3. Contact Information Card

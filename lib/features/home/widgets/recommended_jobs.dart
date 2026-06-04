@@ -132,18 +132,18 @@ class RecommendedJobs extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recommended Jobs',
+              'Rekomendasi Pekerjaan',
               style: AppTextStyles.headlineSmall,
             ),
             TextButton(
               onPressed: onSeeAll,
-              child: Text('See All', style: AppTextStyles.labelLarge),
+              child: Text('Lihat Semua', style: AppTextStyles.labelLarge),
             ),
           ],
         ),
         const SizedBox(height: 12),
         if (jobs.isEmpty)
-          const Center(child: Text('No recommended jobs found'))
+          const Center(child: Text('Tidak ada rekomendasi pekerjaan'))
         else
           SizedBox(
             height: 180,

@@ -22,7 +22,7 @@ class ProfileHeader extends StatelessWidget {
             border: Border.all(color: AppColors.white, width: 4),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -34,7 +34,23 @@ class ProfileHeader extends StatelessWidget {
                     userProfile.photoUrl!.isNotEmpty)
                 ? Image.network(
                     userProfile.photoUrl!,
+                    key: ValueKey(userProfile.photoUrl), // Force reload on URL change
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: AppColors.surfaceContainerLow,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
                     errorBuilder: (context, error, stackTrace) =>
                         Image.asset('assets/images/dcc.png'),
                   )

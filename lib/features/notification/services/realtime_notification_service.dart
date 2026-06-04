@@ -11,17 +11,21 @@ class RealtimeNotificationService {
 
   final _supabase = Supabase.instance.client;
   RealtimeChannel? _channel;
+  bool _isListeningToAuth = false;
   final _notificationController = StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get notificationStream => _notificationController.stream;
 
   void listenToAuthChanges() {
+    if (_isListeningToAuth) return;
+    _isListeningToAuth = true;
+    
     _supabase.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
 
-      if (event == AuthChangeEvent.signedIn && session != null) {
-        print('DEBUG: AuthChangeEvent.signedIn - Initializing Realtime Notifications');
+      if ((event == AuthChangeEvent.signedIn || event == AuthChangeEvent.initialSession) && session != null) {
+        print('DEBUG: AuthChangeEvent.${event.name} - Initializing Realtime Notifications');
         init();
       } else if (event == AuthChangeEvent.signedOut) {
         print('DEBUG: AuthChangeEvent.signedOut - Disposing Realtime Notifications');
@@ -38,8 +42,11 @@ class RealtimeNotificationService {
       return;
     }
     
-    // Unsubscribe from existing channel if any
-    _channel?.unsubscribe();
+    // Check if we are already subscribed to this user's channel to avoid redundancy
+    if (_channel != null) {
+      print('DEBUG: Realtime already subscribed, skipping re-init');
+      return;
+    }
 
     print('DEBUG: Subscribing to notifications for user: ${user.id}');
     _channel = _supabase

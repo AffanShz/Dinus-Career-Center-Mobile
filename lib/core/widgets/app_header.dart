@@ -5,9 +5,11 @@ import 'package:dcc_mobile/features/notification/pages/notification_page.dart';
 import 'package:dcc_mobile/features/notification/widgets/notification_badge.dart';
 
 /// Shared header widget used across Home, Job, and Track screens.
-/// Displays the DCC logo, app title, and notification icon.
+/// Displays the DCC logo/Profile pic, app title, and notification icon.
 class AppHeader extends StatelessWidget {
-  const AppHeader({super.key});
+  final String? photoUrl;
+
+  const AppHeader({super.key, this.photoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +30,28 @@ class AppHeader extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(22),
-                child: Image.asset(
-                  'assets/images/dcc.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.person,
-                      color: AppColors.primary,
-                      size: 24,
-                    );
-                  },
-                ),
+                child: (photoUrl != null && photoUrl!.isNotEmpty)
+                    ? Image.network(
+                        photoUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/dcc.png',
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        'assets/images/dcc.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                            size: 24,
+                          );
+                        },
+                      ),
               ),
             ),
             const SizedBox(width: 12),

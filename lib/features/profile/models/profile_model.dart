@@ -88,7 +88,7 @@ class UserProfile {
   final String? ipk;
   final String? bidang;
   final String? disabilitas;
-  
+
   final List<String> skills;
   final List<Experience> experiences;
   final List<Education> education;
@@ -176,6 +176,41 @@ class UserProfile {
   }
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
+    // Helper to normalize data from DB (lowercase) to UI format
+    String? normalizeForUI(String? s) {
+      if (s == null || s.isEmpty) return s;
+      final lower = s.toLowerCase();
+      // Handle special cases
+      if (lower == 'laki-laki') return 'Laki-laki';
+      // status_perkawinan: map DB enum values → UI labels
+      if (lower == 'belum menikah') return 'Belum Menikah';
+      if (lower == 'menikah') return 'Menikah';
+      if (lower == 'cerai') return 'Cerai';
+      if (lower == 'islam') return 'Islam';
+      if (lower == 'kristen') return 'Kristen';
+      if (lower == 'katolik') return 'Katolik';
+      if (lower == 'hindu') return 'Hindu';
+      if (lower == 'buddha' || lower == 'budha') return 'Buddha';
+      if (lower == 'konghucu') return 'Konghucu';
+
+      // Handle education acronyms — DB enum is UPPERCASE, keep as-is
+      if ([
+        'sma/smk',
+        'd1',
+        'd2',
+        'd3',
+        'd4',
+        's1',
+        's2',
+        's3',
+      ].contains(lower)) {
+        return lower.toUpperCase();
+      }
+
+      // Default: Capitalize first letter
+      return lower[0].toUpperCase() + lower.substring(1);
+    }
+
     return UserProfile(
       id: map['pelamar_id'] ?? '',
       email: map['email'] ?? '',
@@ -184,54 +219,80 @@ class UserProfile {
       tempatLahir: map['tempat_lahir'],
       tanggalLahir: map['tanggal_lahir'],
       noKtp: map['no_ktp'],
-      jenisKelamin: map['jenis_kelamin'],
+      jenisKelamin: normalizeForUI(map['jenis_kelamin']),
       alamat: map['alamat'],
       kota: map['kota'],
-      kodePos: map['kode_pos'],
+      kodePos: map['kode_pos']?.toString(), // Ensure it's a string
       noTelepon: map['no_telepon'],
       noHandphone: map['no_handphone'],
       kewarganegaraan: map['kewarganegaraan'],
-      statusPerkawinan: map['status_perkawinan'],
-      agama: map['agama'],
-      pendidikanTertinggi: map['pendidikan_tertinggi'],
+      statusPerkawinan: normalizeForUI(map['status_perkawinan']),
+      agama: normalizeForUI(map['agama']),
+      pendidikanTertinggi: normalizeForUI(map['pendidikan_tertinggi']),
       nim: map['nim'],
       ipk: map['ipk']?.toString(),
       bidang: map['bidang'],
       disabilitas: map['disabilitas'],
-      // Skills, Experiences, Education usually come from separate tables or JSON columns
-      skills: (map['skills'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      experiences: (map['experiences'] as List<dynamic>?)
+      skills:
+          (map['skills'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      experiences:
+          (map['experiences'] as List<dynamic>?)
               ?.map((e) => Experience.fromMap(e as Map<String, dynamic>))
               .toList() ??
           [],
-      education: (map['education'] as List<dynamic>?)
+      education:
+          (map['education'] as List<dynamic>?)
               ?.map((e) => Education.fromMap(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
   }
 
+  /// Helper to convert empty string to null (Supabase enum columns reject empty strings)
+  static String? _nullIfEmpty(String? s) =>
+      (s == null || s.trim().isEmpty) ? null : s.trim();
+
   Map<String, dynamic> toMap() {
+    // Convert status_perkawinan UI label → DB enum value
+    String? statusPerkawinanDb;
+    if (statusPerkawinan == 'Belum Menikah') {
+      statusPerkawinanDb = 'belum menikah';
+    } else if (statusPerkawinan == 'Menikah') {
+      statusPerkawinanDb = 'menikah';
+    } else if (statusPerkawinan == 'Cerai') {
+      statusPerkawinanDb = 'cerai';
+    }
+
     return {
-      'nama_lengkap': name,
-      'foto_profil': photoUrl,
-      'tempat_lahir': tempatLahir,
-      'tanggal_lahir': tanggalLahir,
-      'no_ktp': noKtp,
-      'jenis_kelamin': jenisKelamin,
-      'alamat': alamat,
-      'kota': kota,
-      'kode_pos': kodePos,
-      'no_telepon': noTelepon,
-      'no_handphone': noHandphone,
-      'kewarganegaraan': kewarganegaraan,
-      'status_perkawinan': statusPerkawinan,
-      'agama': agama,
-      'pendidikan_tertinggi': pendidikanTertinggi,
-      'nim': nim,
-      'ipk': ipk != null ? double.tryParse(ipk!) : null,
-      'bidang': bidang,
+      'pelamar_id': id,
+      'email': _nullIfEmpty(email),
+      'nama_lengkap': _nullIfEmpty(name),
+      'foto_profil': _nullIfEmpty(photoUrl),
+      'tempat_lahir': _nullIfEmpty(tempatLahir),
+      'tanggal_lahir': _nullIfEmpty(tanggalLahir),
+      'no_ktp': _nullIfEmpty(noKtp),
+      'jenis_kelamin': _nullIfEmpty(jenisKelamin?.toLowerCase()),
+      'alamat': _nullIfEmpty(alamat),
+      'kota': _nullIfEmpty(kota),
+      'kode_pos': _nullIfEmpty(kodePos),
+      'no_telepon': _nullIfEmpty(noTelepon),
+      'no_handphone': _nullIfEmpty(noHandphone),
+      'kewarganegaraan': _nullIfEmpty(kewarganegaraan),
+      // DB enum values: 'belum menikah' | 'menikah' | 'cerai'
+      'status_perkawinan': statusPerkawinanDb,
+      'agama': _nullIfEmpty(agama?.toLowerCase()),
+      // DB enum values: 'SMA/SMK' | 'D1' | 'D2' | 'D3' | 'D4' | 'S1' | 'S2' | 'S3'
+      'pendidikan_tertinggi': _nullIfEmpty(pendidikanTertinggi),
+      'nim': _nullIfEmpty(nim),
+      'ipk': (ipk != null && ipk!.isNotEmpty) ? double.tryParse(ipk!) : null,
+      'bidang': _nullIfEmpty(bidang),
       'disabilitas': disabilitas,
+      'skills': skills,
+      'experiences': experiences.map((e) => e.toMap()).toList(),
+      'education': education.map((e) => e.toMap()).toList(),
     };
   }
 
@@ -251,8 +312,10 @@ class UserProfile {
       bidang,
     ];
 
-    int filledCount = fields.where((f) => f != null && f.toString().isNotEmpty).length;
-    
+    int filledCount = fields
+        .where((f) => f != null && f.toString().isNotEmpty)
+        .length;
+
     // Add logic for lists
     if (skills.isNotEmpty) filledCount++;
     if (experiences.isNotEmpty) filledCount++;
@@ -262,4 +325,3 @@ class UserProfile {
     return (filledCount / totalFields).clamp(0.0, 1.0);
   }
 }
-
