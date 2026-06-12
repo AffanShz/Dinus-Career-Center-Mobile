@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_state.dart';
 import '../bloc/job_bloc.dart';
 import '../bloc/job_event.dart';
 import '../bloc/job_state.dart';
@@ -47,7 +49,12 @@ class JobScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const AppHeader(),
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, profileState) {
+                            return AppHeader(
+                                photoUrl: profileState.userProfile?.photoUrl);
+                          },
+                        ),
                         const SizedBox(height: 32),
                         JobSearchBar(
                           onSearch: (query) {

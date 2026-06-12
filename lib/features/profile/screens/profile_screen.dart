@@ -19,90 +19,97 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileBloc()..add(LoadProfile()),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
-          child: BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, state) {
-              if (state.status == ProfileStatus.loading && state.userProfile == null) {
-                return const Center(child: CircularProgressIndicator());
-              }
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: BlocBuilder<ProfileBloc, ProfileState>(
+          builder: (context, state) {
+            if (state.status == ProfileStatus.loading &&
+                state.userProfile == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (state.status == ProfileStatus.failure && state.userProfile == null) {
-                return const Center(child: Text('Gagal memuat profil'));
-              }
+            if (state.status == ProfileStatus.failure &&
+                state.userProfile == null) {
+              return const Center(child: Text('Gagal memuat profil'));
+            }
 
-              if (state.userProfile == null) {
-                return const Center(child: Text('Profil tidak ditemukan'));
-              }
+            if (state.userProfile == null) {
+              return const Center(child: Text('Profil tidak ditemukan'));
+            }
 
-              final profile = state.userProfile!;
+            final profile = state.userProfile!;
 
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<ProfileBloc>().add(LoadProfile());
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-                  child: Column(
-                    children: [
-                      // 1. Profile Header
-                      ProfileHeader(userProfile: profile),
-                      const SizedBox(height: 32),
-                      
-                      // 2. Profile Completion Card
-                      if (profile.completionPercentage < 1.0) ...[
-                        ProfileCompletionCard(userProfile: profile),
-                        const SizedBox(height: 24),
-                      ],
-                      
-                      // 3. Contact Information Card
-                      ContactInfoSection(
-                        email: profile.email,
-                        phone: profile.noHandphone,
-                        city: profile.kota,
-                      ),
-                      const SizedBox(height: 24),
-                      
-                      // 4. Academic Information Card
-                      AcademicInfoSection(
-                        gpa: profile.ipk,
-                        nim: profile.nim,
-                        bidang: profile.bidang,
-                      ),
-                      const SizedBox(height: 24),
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<ProfileBloc>().add(LoadProfile());
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 24.0),
+                child: Column(
+                  children: [
+                    // 1. Profile Header
+                    ProfileHeader(userProfile: profile),
+                    const SizedBox(height: 32),
 
-                      // 5. Education History Card
-                      EducationSection(
-                        educationList: profile.education,
-                        pendidikanTertinggi: profile.pendidikanTertinggi,
-                      ),
+                    // 2. Profile Completion Card
+                    if (profile.completionPercentage < 1.0) ...[
+                      ProfileCompletionCard(userProfile: profile),
                       const SizedBox(height: 24),
-                      
-                      // 6. Skills Card
-                      TechStackSection(skills: profile.skills.isEmpty ? ['Fullstack Development', 'Mobile Development', 'UI/UX Design'] : profile.skills),
-                      const SizedBox(height: 24),
-                      
-                      // 7. Experience Card
-                      ExperienceSection(experiences: profile.experiences),
-                      const SizedBox(height: 24),
-                      
-                      // 7. Resume & Documents Card
-                      const CVBuilderCard(),
-                      const SizedBox(height: 24),
-                      
-                      // 8. Account Settings Card
-                      const AccountSettingsSection(),
-                      const SizedBox(height: 32),
                     ],
-                  ),
+
+                    // 3. Contact Information Card
+                    ContactInfoSection(
+                      email: profile.email,
+                      phone: profile.noHandphone,
+                      city: profile.kota,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 4. Academic Information Card
+                    AcademicInfoSection(
+                      gpa: profile.ipk,
+                      nim: profile.nim,
+                      bidang: profile.bidang,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 5. Education History Card
+                    EducationSection(
+                      educationList: profile.education,
+                      pendidikanTertinggi: profile.pendidikanTertinggi,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 6. Skills Card
+                    TechStackSection(
+                        skills: profile.skills.isEmpty
+                            ? [
+                                'Fullstack Development',
+                                'Mobile Development',
+                                'UI/UX Design'
+                              ]
+                            : profile.skills),
+                    const SizedBox(height: 24),
+
+                    // 7. Experience Card
+                    ExperienceSection(experiences: profile.experiences),
+                    const SizedBox(height: 24),
+
+                    // 7. Resume & Documents Card
+                    const CVBuilderCard(),
+                    const SizedBox(height: 24),
+
+                    // 8. Account Settings Card
+                    const AccountSettingsSection(),
+                    const SizedBox(height: 32),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

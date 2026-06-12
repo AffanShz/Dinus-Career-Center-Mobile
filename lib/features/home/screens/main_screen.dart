@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/core/widgets/bottom_navbar.dart';
 import 'package:dcc_mobile/features/home/screens/homescreen.dart';
 import 'package:dcc_mobile/features/job/screens/jobscreen.dart';
 import 'package:dcc_mobile/features/track/screens/trackscreen.dart';
 import 'package:dcc_mobile/features/event/screens/event_screen.dart';
 import 'package:dcc_mobile/features/profile/screens/profile_screen.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_event.dart';
 
 /// Data class for navigation items.
 class _NavItem {
@@ -73,25 +76,28 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: AppBottomNavbar(
-        currentIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: _navItems.map((item) {
-          return NavigationDestination(
-            icon: Icon(item.icon),
-            selectedIcon: Icon(item.selectedIcon),
-            label: item.label,
-          );
-        }).toList(),
+    return BlocProvider(
+      create: (context) => ProfileBloc()..add(LoadProfile()),
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: AppBottomNavbar(
+          currentIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          destinations: _navItems.map((item) {
+            return NavigationDestination(
+              icon: Icon(item.icon),
+              selectedIcon: Icon(item.selectedIcon),
+              label: item.label,
+            );
+          }).toList(),
+        ),
       ),
     );
   }

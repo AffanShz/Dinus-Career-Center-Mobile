@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_event.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_state.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -38,6 +41,7 @@ class Homescreen extends StatelessWidget {
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<HomeBloc>().add(LoadHomeData());
+                  context.read<ProfileBloc>().add(LoadProfile());
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -50,7 +54,12 @@ class Homescreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Shared app header
-                        AppHeader(photoUrl: state.userProfile?.photoUrl),
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, profileState) {
+                            return AppHeader(
+                                photoUrl: profileState.userProfile?.photoUrl);
+                          },
+                        ),
                         const SizedBox(height: 32),
 
                         // Greeting section
@@ -58,7 +67,8 @@ class Homescreen extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Profile completeness card
-                        if (state.userProfile != null && state.userProfile!.completionPercentage < 1.0) ...[
+                        if (state.userProfile != null &&
+                            state.userProfile!.completionPercentage < 1.0) ...[
                           ProfileCard(userProfile: state.userProfile),
                           const SizedBox(height: 32),
                         ],
@@ -67,7 +77,9 @@ class Homescreen extends StatelessWidget {
                         RecommendedJobs(
                           jobs: state.recommendedJobs,
                           onBookmarkToggle: (jobId) {
-                            context.read<HomeBloc>().add(ToggleJobBookmark(jobId));
+                            context
+                                .read<HomeBloc>()
+                                .add(ToggleJobBookmark(jobId));
                           },
                           onSeeAll: onSeeAllJobs,
                         ),

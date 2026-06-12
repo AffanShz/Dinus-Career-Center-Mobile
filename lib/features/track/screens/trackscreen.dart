@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_state.dart';
 import '../bloc/track_bloc.dart';
 import '../bloc/track_event.dart';
 import '../bloc/track_state.dart';
@@ -36,7 +38,12 @@ class TrackScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const AppHeader(),
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, profileState) {
+                            return AppHeader(
+                                photoUrl: profileState.userProfile?.photoUrl);
+                          },
+                        ),
                         const SizedBox(height: 32),
                         StatusFilter(
                           filters: _filters,

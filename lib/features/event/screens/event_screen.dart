@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
+import 'package:dcc_mobile/features/profile/bloc/profile_state.dart';
 import '../bloc/event_bloc.dart';
 import '../bloc/event_event.dart';
 import '../bloc/event_state.dart';
@@ -36,7 +38,13 @@ class EventScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const AppHeader(),
+                            BlocBuilder<ProfileBloc, ProfileState>(
+                              builder: (context, profileState) {
+                                return AppHeader(
+                                    photoUrl:
+                                        profileState.userProfile?.photoUrl);
+                              },
+                            ),
                             const SizedBox(height: 32),
                             _buildSectionHeader(),
                             const SizedBox(height: 24),
