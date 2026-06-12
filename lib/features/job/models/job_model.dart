@@ -28,7 +28,7 @@ class JobModel {
   // From perusahaan relation
   final String perusahaan;      // perusahaan.nama_perusahaan
   final String lokasi;          // perusahaan.kota
-  final String? logoPerusahaan; // perusahaan.logo_url
+  final String? logoPerusahaan; // perusahaan.logo
 
   // From relational FK tables
   final String? jabatan;        // jabatan.nama
@@ -37,6 +37,7 @@ class JobModel {
   final String? sektor;         // sektor.nama
 
   final bool isBookmarked;
+  final bool isApplied;
   final List<JobTag> tags;
 
   JobModel({
@@ -58,6 +59,7 @@ class JobModel {
     this.tipePekerjaan,
     this.sektor,
     this.isBookmarked = false,
+    this.isApplied = false,
     this.tags = const [],
   });
 
@@ -94,7 +96,7 @@ class JobModel {
         perusahaanData?['nama_perusahaan']?.toString() ?? 'DCC Perusahaan';
     final String lokasiPerusahaan =
         perusahaanData?['kota']?.toString() ?? 'Semarang';
-    final String? logoUrl = perusahaanData?['logo_url']?.toString();
+    final String? logoUrl = perusahaanData?['logo']?.toString();
 
     final String? namaJabatan        = jabatanData?['nama']?.toString();
     final String? namaJurusan        = jurusanData?['nama']?.toString();
@@ -160,6 +162,7 @@ class JobModel {
       tipePekerjaan: namaTipePekerjaan,
       sektor: namaSektor,
       isBookmarked: false,
+      isApplied: map['is_applied'] ?? false,
       tags: generatedTags,
     );
   }
@@ -218,6 +221,7 @@ class JobModel {
     String? tipePekerjaan,
     String? sektor,
     bool? isBookmarked,
+    bool? isApplied,
     List<JobTag>? tags,
   }) {
     return JobModel(
@@ -239,6 +243,7 @@ class JobModel {
       tipePekerjaan: tipePekerjaan ?? this.tipePekerjaan,
       sektor: sektor ?? this.sektor,
       isBookmarked: isBookmarked ?? this.isBookmarked,
+      isApplied: isApplied ?? this.isApplied,
       tags: tags ?? this.tags,
     );
   }

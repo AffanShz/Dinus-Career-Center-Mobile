@@ -27,8 +27,23 @@ class ApplicationModel {
   });
 
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
-    final lowongan = map['lowongan'] as Map<String, dynamic>? ?? {};
-    final perusahaan = lowongan['perusahaan'] as Map<String, dynamic>? ?? {};
+    // Helper to get a Map from potentially nested List or Map results
+    Map<String, dynamic> getMap(dynamic data) {
+      if (data == null) return {};
+      if (data is Map<String, dynamic>) return data;
+      if (data is List && data.isNotEmpty) {
+        return data.first as Map<String, dynamic>;
+      }
+      return {};
+    }
+
+    final lowongan = getMap(map['lowongan']);
+    final perusahaan = getMap(lowongan['perusahaan']);
+
+    // Debug: log when lowongan data is missing (likely RLS-blocked inactive job)
+    if (lowongan.isEmpty) {
+      print('WARN: ApplicationModel - lowongan data is null/empty for lamaran_id: ${map['lamaran_id']}, lowongan_id: ${map['lowongan_id']}');
+    }
     
     final statusRaw = map['status_terakhir']?.toString().toLowerCase() ?? 'applied';
     
@@ -89,7 +104,7 @@ class ApplicationModel {
       id: map['lamaran_id']?.toString() ?? '',
       role: lowongan['judul']?.toString() ?? 'Unknown Role',
       company: perusahaan['nama_perusahaan']?.toString() ?? 'Unknown Company',
-      logo: perusahaan['logo_url']?.toString() ?? 'assets/images/dcc.png',
+      logo: perusahaan['logo']?.toString() ?? 'assets/images/dcc.png',
       status: statusDisplay,
       statusBg: statusBg,
       statusText: statusText,

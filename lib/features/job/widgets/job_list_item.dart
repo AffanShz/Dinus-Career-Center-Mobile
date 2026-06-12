@@ -81,6 +81,24 @@ class JobListItem extends StatelessWidget {
                         job.perusahaan,
                         style: AppTextStyles.bodyMedium,
                       ),
+                      if (job.isApplied) ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Terdaftar',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.green,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -107,20 +125,41 @@ class JobListItem extends StatelessWidget {
             ),
             if (job.tags.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: job.tags.take(2).map((tag) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: job.tags.take(2).map((tag) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          tag.label,
+                          style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
+                        ),
+                      )).toList(),
+                    ),
                   ),
-                  child: Text(
-                    tag.label,
-                    style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        size: 14,
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        job.formattedBatasAkhir,
+                        style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
+                      ),
+                    ],
                   ),
-                )).toList(),
+                ],
               ),
             ],
           ],

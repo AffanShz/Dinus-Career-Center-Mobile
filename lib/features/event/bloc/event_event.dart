@@ -11,7 +11,7 @@ abstract class EventEvent extends Equatable {
 class LoadEvents extends EventEvent {}
 
 class ToggleBookmarkEvent extends EventEvent {
-  final String eventId;
+  final int eventId;
 
   const ToggleBookmarkEvent(this.eventId);
 

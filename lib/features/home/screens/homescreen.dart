@@ -58,8 +58,10 @@ class Homescreen extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Profile completeness card
-                        ProfileCard(userProfile: state.userProfile),
-                        const SizedBox(height: 32),
+                        if (state.userProfile != null && state.userProfile!.completionPercentage < 1.0) ...[
+                          ProfileCard(userProfile: state.userProfile),
+                          const SizedBox(height: 32),
+                        ],
 
                         // Recommended jobs section
                         RecommendedJobs(

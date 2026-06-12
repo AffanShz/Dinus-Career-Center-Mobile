@@ -9,10 +9,7 @@ import '../bloc/profile_bloc.dart';
 class ProfileCompletionCard extends StatelessWidget {
   final UserProfile userProfile;
 
-  const ProfileCompletionCard({
-    super.key,
-    required this.userProfile,
-  });
+  const ProfileCompletionCard({super.key, required this.userProfile});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +20,9 @@ class ProfileCompletionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.15),
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.04),
@@ -87,7 +86,9 @@ class ProfileCompletionCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: completionPercentage,
                   backgroundColor: AppColors.surfaceContainerHigh,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primary,
+                  ),
                   minHeight: 8,
                 ),
               ),
@@ -135,7 +136,9 @@ class ProfileCompletionCard extends StatelessWidget {
                     ),
                     child: Text(
                       'Lengkapi Profil',
-                      style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
+                      style: AppTextStyles.labelLarge.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

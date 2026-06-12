@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import '../models/event_model.dart';
 import '../../event_detail/screens/event_detail_screen.dart';
@@ -16,6 +17,10 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dateStr = DateFormat('d MMM yyyy').format(event.eventDate);
+    final category = event.category ?? 'EVENT';
+    final tagColor = _getCategoryColor(category);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -52,7 +57,7 @@ class EventCard extends StatelessWidget {
                     height: 180,
                     width: double.infinity,
                     color: const Color(0xFF1E293B),
-                    child: Image.asset(event.imageUrl, fit: BoxFit.cover),
+                    child: _buildImage(event.imageUrl),
                   ),
                 ),
                 Positioned(
@@ -65,13 +70,13 @@ class EventCard extends StatelessWidget {
                         const Color(0xFF1E5BBF).withOpacity(0.8),
                       ),
                       const SizedBox(width: 8),
-                      _buildTag(event.tag, event.tagColor.withOpacity(0.8)),
+                      _buildTag(category, tagColor.withOpacity(0.8)),
                     ],
                   ),
                 ),
               ],
             ),
-    
+
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -115,7 +120,7 @@ class EventCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        event.date,
+                        dateStr,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.grey[700],
@@ -127,10 +132,10 @@ class EventCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(event.locationIcon, size: 16, color: Colors.grey[600]),
+                      Icon(Icons.location_on_outlined, size: 16, color: Colors.grey[600]),
                       const SizedBox(width: 8),
                       Text(
-                        event.location,
+                        event.locationName ?? 'TBA',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.grey[700],
@@ -148,6 +153,21 @@ class EventCard extends StatelessWidget {
     );
   }
 
+  Widget _buildImage(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return const Center(child: Icon(Icons.image, color: Colors.white));
+    }
+    if (imageUrl.startsWith('http')) {
+      return Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+        return const Center(child: Icon(Icons.broken_image, color: Colors.white));
+      });
+    } else {
+      return Image.asset(imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+        return const Center(child: Icon(Icons.broken_image, color: Colors.white));
+      });
+    }
+  }
+
   Widget _buildTag(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -156,7 +176,7 @@ class EventCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        label,
+        label.toUpperCase(),
         style: const TextStyle(
           color: Colors.white,
           fontSize: 10,
@@ -165,5 +185,18 @@ class EventCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toUpperCase()) {
+      case 'WEBINAR':
+        return const Color(0xFF1E293B);
+      case 'WORKSHOP':
+        return const Color(0xFFBC5919);
+      case 'CAREER WORKSHOP':
+        return const Color(0xFF6B8DD6);
+      default:
+        return const Color(0xFF6B8DD6);
+    }
   }
 }

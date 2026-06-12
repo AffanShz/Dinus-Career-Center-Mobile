@@ -40,9 +40,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime? _selectedTanggalLahir;
   bool _isSaving = false; // true when Save button pressed (vs photo upload)
 
-  // Skills/Keahlian and Experience
+  // Skills/Keahlian, Experience, and Education
   List<String> _skills = [];
   List<Experience> _experiences = [];
+  List<Education> _education = [];
 
   @override
   void initState() {
@@ -82,6 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     _skills = List<String>.from(widget.profile.skills);
     _experiences = List<Experience>.from(widget.profile.experiences);
+    _education = List<Education>.from(widget.profile.education);
   }
 
   @override
@@ -184,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       disabilitas: _disabilitasController.text,
       skills: _skills,
       experiences: _experiences,
-      education: widget.profile.education,
+      education: _education,
     );
     context.read<ProfileBloc>().add(UpdateProfile(updatedProfile));
   }
@@ -289,6 +291,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _buildPersonalDetailsSection(profile),
                     const SizedBox(height: 24),
                     _buildAcademicInfoSection(profile),
+                    const SizedBox(height: 24),
+                    _buildEducationSection(),
                     const SizedBox(height: 24),
                     _buildSkillsSection(),
                     const SizedBox(height: 24),
@@ -655,12 +659,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ],
           ),
-          _buildDropdownField(
-            'Pendidikan Tertinggi',
-            ['SMA/SMK', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'],
-            _selectedPendidikan,
-            (val) => setState(() => _selectedPendidikan = val),
-          ),
         ],
       ),
     );
@@ -785,7 +783,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Icons.add_circle_outline,
                   color: AppColors.primary,
                 ),
-                onPressed: _showAddExperienceDialog,
+                onPressed: () => _showExperienceBottomSheet(),
               ),
             ],
           ),
@@ -831,6 +829,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     IconButton(
                       icon: const Icon(
+                        Icons.edit_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      onPressed: () => _showExperienceBottomSheet(editIndex: index),
+                    ),
+                    IconButton(
+                      icon: const Icon(
                         Icons.delete_outline,
                         color: AppColors.error,
                         size: 20,
@@ -850,85 +856,376 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _showAddExperienceDialog() {
-    final titleController = TextEditingController();
-    final companyController = TextEditingController();
-    final dateController = TextEditingController();
-    final descController = TextEditingController();
-    bool isActive = false;
+  void _showExperienceBottomSheet({int? editIndex}) {
+    final isEdit = editIndex != null;
+    final existing = isEdit ? _experiences[editIndex] : null;
 
-    showDialog(
+    final titleController = TextEditingController(text: existing?.title ?? '');
+    final companyController = TextEditingController(text: existing?.company ?? '');
+    final dateController = TextEditingController(text: existing?.date ?? '');
+    final descController = TextEditingController(text: existing?.description ?? '');
+    bool isActive = existing?.isActive ?? false;
+
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
-        builder: (context, setStateDialog) => AlertDialog(
-          title: const Text('Tambah Pengalaman'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Posisi/Jabatan',
+        builder: (context, setStateSheet) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  blurRadius: 32,
+                  offset: const Offset(0, -8),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.outlineVariant.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    isEdit ? 'Edit Pengalaman' : 'Tambah Pengalaman',
+                    style: AppTextStyles.headlineSmall,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSheetTextField('Posisi/Jabatan', titleController),
+                  const SizedBox(height: 16),
+                  _buildSheetTextField('Perusahaan', companyController),
+                  const SizedBox(height: 16),
+                  _buildSheetTextField('Periode (Mth YYYY - Mth YYYY)', dateController),
+                  const SizedBox(height: 16),
+                  _buildSheetTextField('Deskripsi', descController, maxLines: 2),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: isActive,
+                        onChanged: (val) {
+                          setStateSheet(() => isActive = val ?? false);
+                        },
+                        activeColor: AppColors.primary,
+                      ),
+                      Text(
+                        'Masih bekerja disini',
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (titleController.text.isNotEmpty &&
+                            companyController.text.isNotEmpty) {
+                          final newExp = Experience(
+                            title: titleController.text,
+                            company: companyController.text,
+                            date: dateController.text,
+                            description: descController.text,
+                            isActive: isActive,
+                          );
+                          setState(() {
+                            if (isEdit) {
+                              _experiences[editIndex] = newExp;
+                            } else {
+                              _experiences.add(newExp);
+                            }
+                          });
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        isEdit ? 'Simpan' : 'Tambah',
+                        style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEducationSection() {
+    return _buildGlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Pendidikan', style: AppTextStyles.headlineSmall),
+              IconButton(
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  color: AppColors.primary,
+                ),
+                onPressed: () => _showEducationBottomSheet(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildDropdownField(
+            'Pendidikan Tertinggi',
+            ['SMA/SMK', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'],
+            _selectedPendidikan,
+            (val) => setState(() => _selectedPendidikan = val),
+          ),
+          const SizedBox(height: 8),
+          if (_education.isEmpty)
+            Text(
+              'Belum ada riwayat pendidikan ditambahkan.',
+              style: AppTextStyles.bodySmall,
+            )
+          else
+            ..._education.asMap().entries.map((entry) {
+              final index = entry.key;
+              final edu = entry.value;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.3),
                   ),
                 ),
-                TextField(
-                  controller: companyController,
-                  decoration: const InputDecoration(labelText: 'Perusahaan'),
-                ),
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Periode (Mth YYYY - Mth YYYY)',
-                  ),
-                ),
-                TextField(
-                  controller: descController,
-                  decoration: const InputDecoration(labelText: 'Deskripsi'),
-                  maxLines: 2,
-                ),
-                Row(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Checkbox(
-                      value: isActive,
-                      onChanged: (val) {
-                        setStateDialog(() => isActive = val ?? false);
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(edu.institution, style: AppTextStyles.labelLarge),
+                          Text(edu.degree, style: AppTextStyles.bodySmall),
+                          const SizedBox(height: 4),
+                          Text(
+                            edu.period,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 10,
+                            ),
+                          ),
+                          if (edu.location.isNotEmpty)
+                            Text(
+                              edu.location,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                fontSize: 10,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.edit_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      onPressed: () => _showEducationBottomSheet(editIndex: index),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _education.removeAt(index);
+                        });
                       },
                     ),
-                    const Text('Masih bekerja disini'),
                   ],
+                ),
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  void _showEducationBottomSheet({int? editIndex}) {
+    final isEdit = editIndex != null;
+    final existing = isEdit ? _education[editIndex] : null;
+
+    final institutionController = TextEditingController(text: existing?.institution ?? '');
+    final degreeController = TextEditingController(text: existing?.degree ?? '');
+    final periodController = TextEditingController(text: existing?.period ?? '');
+    final locationController = TextEditingController(text: existing?.location ?? '');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                blurRadius: 32,
+                offset: const Offset(0, -8),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.outlineVariant.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isEdit ? 'Edit Pendidikan' : 'Tambah Pendidikan',
+                  style: AppTextStyles.headlineSmall,
+                ),
+                const SizedBox(height: 24),
+                _buildSheetTextField('Institusi', institutionController),
+                const SizedBox(height: 16),
+                _buildSheetTextField('Gelar/Jenjang (contoh: S1 Teknik Informatika)', degreeController),
+                const SizedBox(height: 16),
+                _buildSheetTextField('Periode (Mth YYYY - Mth YYYY)', periodController),
+                const SizedBox(height: 16),
+                _buildSheetTextField('Lokasi', locationController),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (institutionController.text.isNotEmpty &&
+                          degreeController.text.isNotEmpty) {
+                        final newEdu = Education(
+                          institution: institutionController.text,
+                          degree: degreeController.text,
+                          period: periodController.text,
+                          location: locationController.text,
+                        );
+                        setState(() {
+                          if (isEdit) {
+                            _education[editIndex] = newEdu;
+                          } else {
+                            _education.add(newEdu);
+                          }
+                        });
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      isEdit ? 'Simpan' : 'Tambah',
+                      style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (titleController.text.isNotEmpty &&
-                    companyController.text.isNotEmpty) {
-                  setState(() {
-                    _experiences.add(
-                      Experience(
-                        title: titleController.text,
-                        company: companyController.text,
-                        date: dateController.text,
-                        description: descController.text,
-                        isActive: isActive,
-                      ),
-                    );
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Tambah'),
-            ),
-          ],
         ),
       ),
+    );
+  }
+
+  /// Styled text field for use inside bottom sheets
+  Widget _buildSheetTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Text(
+            label,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ),
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          style: AppTextStyles.bodyMedium,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColors.surfaceContainerLow,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 14,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

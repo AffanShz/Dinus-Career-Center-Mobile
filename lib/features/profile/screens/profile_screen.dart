@@ -9,6 +9,7 @@ import '../widgets/profile_completion_card.dart';
 import '../widgets/cv_builder_card.dart';
 import '../widgets/tech_stack_section.dart';
 import '../widgets/experience_section.dart';
+import '../widgets/academic_info_section.dart';
 import '../widgets/education_section.dart';
 import '../widgets/contact_info_section.dart';
 import '../widgets/account_settings_section.dart';
@@ -53,8 +54,10 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 32),
                       
                       // 2. Profile Completion Card
-                      ProfileCompletionCard(userProfile: profile),
-                      const SizedBox(height: 24),
+                      if (profile.completionPercentage < 1.0) ...[
+                        ProfileCompletionCard(userProfile: profile),
+                        const SizedBox(height: 24),
+                      ],
                       
                       // 3. Contact Information Card
                       ContactInfoSection(
@@ -65,18 +68,25 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       // 4. Academic Information Card
-                      EducationSection(
-                        educationList: profile.education,
+                      AcademicInfoSection(
                         gpa: profile.ipk,
                         nim: profile.nim,
+                        bidang: profile.bidang,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 5. Education History Card
+                      EducationSection(
+                        educationList: profile.education,
+                        pendidikanTertinggi: profile.pendidikanTertinggi,
                       ),
                       const SizedBox(height: 24),
                       
-                      // 5. Skills Card
+                      // 6. Skills Card
                       TechStackSection(skills: profile.skills.isEmpty ? ['Fullstack Development', 'Mobile Development', 'UI/UX Design'] : profile.skills),
                       const SizedBox(height: 24),
                       
-                      // 6. Experience Card
+                      // 7. Experience Card
                       ExperienceSection(experiences: profile.experiences),
                       const SizedBox(height: 24),
                       

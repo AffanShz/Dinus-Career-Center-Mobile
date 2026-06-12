@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import '../../event/models/event_model.dart';
 
@@ -102,10 +104,15 @@ class EventDetailScreen extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.4,
       width: double.infinity,
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(event.imageUrl),
-          fit: BoxFit.cover,
-        ),
+        color: const Color(0xFF1E293B),
+        image: event.imageUrl != null && event.imageUrl!.isNotEmpty
+            ? DecorationImage(
+                image: event.imageUrl!.startsWith('http')
+                    ? NetworkImage(event.imageUrl!) as ImageProvider
+                    : AssetImage(event.imageUrl!) as ImageProvider,
+                fit: BoxFit.cover,
+              )
+            : null,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -119,26 +126,32 @@ class EventDetailScreen extends StatelessWidget {
             ],
           ),
         ),
+        child: event.imageUrl == null || event.imageUrl!.isEmpty
+            ? const Center(child: Icon(Icons.image, size: 64, color: Colors.white54))
+            : null,
       ),
     );
   }
 
   Widget _buildEventTitle() {
+    final category = event.category ?? 'EVENT';
+    const tagColor = Color(0xFF6B8DD6);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: event.tagColor.withOpacity(0.15),
+            color: tagColor.withOpacity(0.15),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            event.tag,
+            category.toUpperCase(),
             style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: event.tagColor,
+              color: tagColor,
             ),
           ),
         ),
@@ -157,13 +170,16 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDateTimeCards() {
+    final dateStr = DateFormat('d MMM yyyy').format(event.eventDate);
+    final timeStr = event.endTime != null ? '${event.startTime} - ${event.endTime}' : event.startTime;
+
     return Row(
       children: [
         Expanded(
           child: _buildInfoCard(
             icon: Icons.calendar_today_outlined,
             label: 'TANGGAL',
-            value: event.date,
+            value: dateStr,
           ),
         ),
         const SizedBox(width: 16),
@@ -171,7 +187,7 @@ class EventDetailScreen extends StatelessWidget {
           child: _buildInfoCard(
             icon: Icons.access_time,
             label: 'WAKTU',
-            value: event.time,
+            value: timeStr,
           ),
         ),
       ],
@@ -257,6 +273,7 @@ class EventDetailScreen extends StatelessWidget {
               child: Image.asset(
                 'assets/images/dcc.png',
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.business),
               ),
             ),
           ),
@@ -274,20 +291,21 @@ class EventDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  event.location,
+                  event.locationName ?? 'TBA',
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
-                Text(
-                  event.address,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey[500],
+                if (event.address != null)
+                  Text(
+                    event.address!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -311,7 +329,7 @@ class EventDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          event.description,
+          event.description ?? 'Tidak ada deskripsi tersedia.',
           style: GoogleFonts.poppins(
             fontSize: 14,
             color: Colors.blueGrey[700],
@@ -323,6 +341,12 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBenefits() {
+    if (event.benefits == null || event.benefits!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final benefitList = event.benefits!.split(RegExp(r'\n|,')).where((s) => s.trim().isNotEmpty).toList();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -342,17 +366,23 @@ class EventDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...event.benefits.map((benefit) => Padding(
+          ...benefitList.map((benefit) => Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check_circle, size: 20, color: Color(0xFF1E293B)),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 2.0),
+                      child: Icon(Icons.check_circle, size: 18, color: Color(0xFF1E293B)),
+                    ),
                     const SizedBox(width: 12),
-                    Text(
-                      benefit,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: const Color(0xFF475569),
+                    Expanded(
+                      child: Text(
+                        benefit.trim(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: const Color(0xFF475569),
+                        ),
                       ),
                     ),
                   ],
@@ -364,6 +394,8 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   Widget _buildSpeakerSection() {
+    if (event.speakers.isEmpty) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -376,55 +408,75 @@ class EventDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(60),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        ...event.speakers.map((speaker) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(60),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: NetworkImage(event.speakerImage),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      event.speakerName,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: speaker.image != null && speaker.image!.isNotEmpty
+                        ? NetworkImage(speaker.image!)
+                        : null,
+                    child: speaker.image == null || speaker.image!.isEmpty
+                        ? const Icon(Icons.person, color: Colors.grey)
+                        : null,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          speaker.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        if (speaker.title != null)
+                          Text(
+                            speaker.title!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
                     ),
-                    Text(
-                      event.speakerRole,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Icon(Icons.verified, color: AppColors.accent, size: 20),
+                  const SizedBox(width: 8),
+                ],
               ),
-              const Icon(Icons.verified, color: AppColors.accent, size: 20),
-              const SizedBox(width: 8),
-            ],
-          ),
-        ),
+            )),
       ],
     );
+  }
+
+  Future<void> _launchURL(String? urlString) async {
+    if (urlString == null || urlString.isEmpty) return;
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $urlString');
+      }
+    } catch (e) {
+      debugPrint('Error launching URL: $e');
+    }
   }
 
   Widget _buildBottomActionBar() {
@@ -451,7 +503,7 @@ class EventDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'INVESTASI',
+                    'STATUS',
                     style: GoogleFonts.poppins(
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
@@ -459,9 +511,9 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    event.price,
+                    (event.status ?? 'DRAFT').toUpperCase(),
                     style: GoogleFonts.poppins(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
@@ -471,10 +523,13 @@ class EventDetailScreen extends StatelessWidget {
               const SizedBox(width: 32),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: event.registrationLink != null && event.registrationLink!.isNotEmpty
+                      ? () => _launchURL(event.registrationLink)
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

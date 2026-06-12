@@ -306,7 +306,12 @@ class UserProfile {
       jenisKelamin,
       alamat,
       kota,
+      kodePos,
       noHandphone,
+      kewarganegaraan,
+      statusPerkawinan,
+      agama,
+      pendidikanTertinggi,
       nim,
       ipk,
       bidang,
@@ -321,7 +326,7 @@ class UserProfile {
     if (experiences.isNotEmpty) filledCount++;
     if (education.isNotEmpty) filledCount++;
 
-    const totalFields = 15; // 12 basic fields + 3 lists
+    const totalFields = 20; // 17 basic fields + 3 lists
     return (filledCount / totalFields).clamp(0.0, 1.0);
   }
 }

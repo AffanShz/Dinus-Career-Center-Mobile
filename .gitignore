@@ -50,4 +50,6 @@ app.*.map.json
 .env
 
 # Agent specific
-GEMINI.md
+*GEMINI.md
+*CLAUDE.md
+.agent/

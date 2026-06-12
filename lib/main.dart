@@ -18,23 +18,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print('DEBUG: App Starting...');
   await dotenv.load(fileName: '.env');
-  
+
   // Inisialisasi locale Indonesia untuk format tanggal
   await initializeDateFormatting('id_ID', null);
 
   final supabaseUrl = dotenv.env['SUPABASE_URL']!;
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
   // Save credentials for background service
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('SUPABASE_URL', supabaseUrl);
   await prefs.setString('SUPABASE_ANON_KEY', supabaseAnonKey);
-  
+
   final user = Supabase.instance.client.auth.currentUser;
   if (user != null) {
     await prefs.setString('USER_ID', user.id);
@@ -44,13 +41,13 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.init();
   await notificationService.requestPermissions();
-  
+
   // Initialize Realtime Notification Service for foreground
   final realtimeService = RealtimeNotificationService();
   realtimeService.listenToAuthChanges();
-  
+
   // flutter_background_service disabled — handled by WorkManager instead
-  
+
   // Initialize WorkManager
   WorkManagerHelper.init();
   WorkManagerHelper.registerTask();
@@ -67,7 +64,7 @@ final supabase = Supabase.instance.client;
 
 class MainApp extends StatelessWidget {
   final Session? initialSession;
-  
+
   const MainApp({super.key, this.initialSession});
 
   @override
@@ -78,12 +75,11 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
         primaryColor: AppColors.primary,
         scaffoldBackgroundColor: AppColors.background,
-        textTheme: GoogleFonts.manropeTextTheme(
-          Theme.of(context).textTheme,
-        ).apply(
-          bodyColor: AppColors.onSurface,
-          displayColor: AppColors.onSurface,
-        ),
+        textTheme: GoogleFonts.manropeTextTheme(Theme.of(context).textTheme)
+            .apply(
+              bodyColor: AppColors.onSurface,
+              displayColor: AppColors.onSurface,
+            ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,

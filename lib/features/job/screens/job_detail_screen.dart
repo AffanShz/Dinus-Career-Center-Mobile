@@ -231,7 +231,7 @@ class JobDetailScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: job.isAktif
+                onPressed: (job.isAktif && !job.isApplied)
                     ? () {
                         Navigator.push(
                           context,
@@ -243,16 +243,19 @@ class JobDetailScreen extends StatelessWidget {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: job.isApplied ? Colors.green : AppColors.primary,
                   foregroundColor: AppColors.white,
-                  disabledBackgroundColor: Colors.grey[300],
+                  disabledBackgroundColor: job.isApplied ? Colors.green.withOpacity(0.1) : Colors.grey[300],
+                  disabledForegroundColor: job.isApplied ? Colors.green : Colors.grey[600],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),
                 child: Text(
-                  job.isAktif ? 'Lamar Sekarang' : 'Lowongan Ditutup',
+                  job.isApplied
+                      ? 'Anda sudah mendaftar'
+                      : (job.isAktif ? 'Lamar Sekarang' : 'Lowongan Ditutup'),
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
