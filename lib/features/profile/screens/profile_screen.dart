@@ -99,10 +99,11 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // 7. Resume & Documents Card
-                    const CVBuilderCard(),
+                    CVBuilderCard(profile: profile),
                     const SizedBox(height: 24),
 
                     // 8. Account Settings Card
+
                     const AccountSettingsSection(),
                     const SizedBox(height: 32),
                   ],

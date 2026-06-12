@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
+import '../models/profile_model.dart';
+import '../screens/cv_screen.dart';
 
 class CVBuilderCard extends StatelessWidget {
-  const CVBuilderCard({super.key});
+  final UserProfile profile;
+
+  const CVBuilderCard({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -52,19 +56,22 @@ class CVBuilderCard extends StatelessWidget {
                         style: AppTextStyles.labelLarge.copyWith(color: AppColors.onPrimaryFixed),
                       ),
                       Text(
-                        'Terakhir Diperbarui: 12 Mei 2025',
+                        'Siap untuk diunduh',
                         style: AppTextStyles.bodySmall,
                       ),
                     ],
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
-                  child: Text('Pratinjau', style: AppTextStyles.labelLarge),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text('Unduh', style: AppTextStyles.labelLarge),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CVScreen(profile: profile),
+                      ),
+                    );
+                  },
+                  child: Text('Buka', style: AppTextStyles.labelLarge),
                 ),
               ],
             ),
@@ -74,7 +81,14 @@ class CVBuilderCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CVScreen(profile: profile),
+                  ),
+                );
+              },
               icon: const Icon(Icons.auto_awesome, size: 18),
               label: const Text('Buat ATS Resume'),
               style: OutlinedButton.styleFrom(
