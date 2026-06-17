@@ -4,10 +4,23 @@ import 'package:dcc_mobile/core/theme/colors.dart';
 import '../models/job_model.dart';
 import 'job_application_screen.dart';
 
-class JobDetailScreen extends StatelessWidget {
+class JobDetailScreen extends StatefulWidget {
   final JobModel job;
 
   const JobDetailScreen({super.key, required this.job});
+
+  @override
+  State<JobDetailScreen> createState() => _JobDetailScreenState();
+}
+
+class _JobDetailScreenState extends State<JobDetailScreen> {
+  late bool _isApplied;
+
+  @override
+  void initState() {
+    super.initState();
+    _isApplied = widget.job.isApplied;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,23 +80,31 @@ class JobDetailScreen extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: job.logoPerusahaan != null &&
-                                    job.logoPerusahaan!.isNotEmpty
+                            child:
+                                widget.job.logoPerusahaan != null &&
+                                    widget.job.logoPerusahaan!.isNotEmpty
                                 ? Image.network(
-                                    job.logoPerusahaan!,
+                                    widget.job.logoPerusahaan!,
                                     fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.business,
-                                            size: 40, color: AppColors.primary),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.business,
+                                              size: 40,
+                                              color: AppColors.primary,
+                                            ),
                                   )
-                                : const Icon(Icons.business,
-                                    size: 40, color: AppColors.primary),
+                                : const Icon(
+                                    Icons.business,
+                                    size: 40,
+                                    color: AppColors.primary,
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 16),
                         // Judul Lowongan
                         Text(
-                          job.judul,
+                          widget.job.judul,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
                             fontSize: 22,
@@ -94,7 +115,7 @@ class JobDetailScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         // Nama Perusahaan
                         Text(
-                          job.perusahaan,
+                          widget.job.perusahaan,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             color: AppColors.textMuted,
@@ -102,16 +123,19 @@ class JobDetailScreen extends StatelessWidget {
                           ),
                         ),
                         // Lokasi Perusahaan
-                        if (job.lokasi.isNotEmpty) ...[
+                        if (widget.job.lokasi.isNotEmpty) ...[
                           const SizedBox(height: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.location_on_outlined,
-                                  size: 14, color: Colors.grey[500]),
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 14,
+                                color: Colors.grey[500],
+                              ),
                               const SizedBox(width: 4),
                               Text(
-                                job.lokasi,
+                                widget.job.lokasi,
                                 style: GoogleFonts.poppins(
                                   fontSize: 13,
                                   color: Colors.grey[500],
@@ -121,31 +145,35 @@ class JobDetailScreen extends StatelessWidget {
                           ),
                         ],
                         const SizedBox(height: 16),
-                        _buildStatusBadge(job.statusLoker),
+                        _buildStatusBadge(widget.job.statusLoker),
                         // Tags (tipe pekerjaan, jurusan, sektor)
-                        if (job.tags.isNotEmpty) ...[
+                        if (widget.job.tags.isNotEmpty) ...[
                           const SizedBox(height: 16),
                           Wrap(
                             alignment: WrapAlignment.center,
                             spacing: 8,
                             runSpacing: 6,
-                            children: job.tags
-                                .map((tag) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: tag.bg,
-                                        borderRadius: BorderRadius.circular(20),
+                            children: widget.job.tags
+                                .map(
+                                  (tag) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: tag.bg,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      tag.label,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: tag.text,
                                       ),
-                                      child: Text(
-                                        tag.label,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: tag.text,
-                                        ),
-                                      ),
-                                    ))
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                           ),
                         ],
@@ -161,27 +189,32 @@ class JobDetailScreen extends StatelessWidget {
                       _buildInfoItem(
                         Icons.monetization_on_outlined,
                         'Gaji',
-                        job.rangeGajiText,
+                        widget.job.rangeGajiText,
                       ),
                       _buildInfoItem(
                         Icons.people_outline,
                         'Kebutuhan',
-                        job.jumlahPerson != null
-                            ? '${job.jumlahPersonText} Orang'
+                        widget.job.jumlahPerson != null
+                            ? '${widget.job.jumlahPersonText} Orang'
                             : '-',
                       ),
                       _buildInfoItem(
                         Icons.calendar_today_outlined,
                         'Deadline',
-                        job.formattedBatasAkhir,
+                        widget.job.formattedBatasAkhir,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
 
                   // Detail Info (jabatan jika ada)
-                  if (job.jabatan != null && job.jabatan!.isNotEmpty) ...[
-                    _buildInfoRow(Icons.work_outline, 'Jabatan', job.jabatan!),
+                  if (widget.job.jabatan != null &&
+                      widget.job.jabatan!.isNotEmpty) ...[
+                    _buildInfoRow(
+                      Icons.work_outline,
+                      'Jabatan',
+                      widget.job.jabatan!,
+                    ),
                     const SizedBox(height: 12),
                   ],
 
@@ -193,8 +226,8 @@ class JobDetailScreen extends StatelessWidget {
                   _buildSectionTitle('Deskripsi Pekerjaan'),
                   const SizedBox(height: 12),
                   Text(
-                    job.detailLowongan.isNotEmpty
-                        ? job.detailLowongan
+                    widget.job.detailLowongan.isNotEmpty
+                        ? widget.job.detailLowongan
                         : 'Tidak ada deskripsi.',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
@@ -207,7 +240,7 @@ class JobDetailScreen extends StatelessWidget {
                   // Kualifikasi / Requirements
                   _buildSectionTitle('Kualifikasi'),
                   const SizedBox(height: 12),
-                  ..._buildRequirementsList(job.requirements),
+                  ..._buildRequirementsList(widget.job.requirements),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -231,31 +264,45 @@ class JobDetailScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: (job.isAktif && !job.isApplied)
-                    ? () {
-                        Navigator.push(
+                onPressed: (widget.job.isAktif && !_isApplied)
+                    ? () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                JobApplicationScreen(lowonganId: job.id),
+                                JobApplicationScreen(lowonganId: widget.job.id),
                           ),
                         );
+
+                        if (result == true && mounted) {
+                          setState(() {
+                            _isApplied = true;
+                          });
+                        }
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: job.isApplied ? Colors.green : AppColors.primary,
+                  backgroundColor: _isApplied
+                      ? Colors.green
+                      : AppColors.primary,
                   foregroundColor: AppColors.white,
-                  disabledBackgroundColor: job.isApplied ? Colors.green.withOpacity(0.1) : Colors.grey[300],
-                  disabledForegroundColor: job.isApplied ? Colors.green : Colors.grey[600],
+                  disabledBackgroundColor: _isApplied
+                      ? Colors.green.withOpacity(0.1)
+                      : Colors.grey[300],
+                  disabledForegroundColor: _isApplied
+                      ? Colors.green
+                      : Colors.grey[600],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),
                 child: Text(
-                  job.isApplied
+                  _isApplied
                       ? 'Anda sudah mendaftar'
-                      : (job.isAktif ? 'Lamar Sekarang' : 'Lowongan Ditutup'),
+                      : (widget.job.isAktif
+                            ? 'Lamar Sekarang'
+                            : 'Lowongan Ditutup'),
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -334,10 +381,7 @@ class JobDetailScreen extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: AppColors.textMuted,
-          ),
+          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMuted),
         ),
         Expanded(
           child: Text(
@@ -380,31 +424,33 @@ class JobDetailScreen extends StatelessWidget {
         .toList();
 
     return lines
-        .map((line) => Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 6.0),
-                    child: Icon(Icons.circle, size: 6, color: AppColors.accent),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      line.trim().startsWith('-') || line.trim().startsWith('•')
-                          ? line.trim().substring(1).trim()
-                          : line.trim(),
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[800],
-                        height: 1.5,
-                      ),
+        .map(
+          (line) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 6.0),
+                  child: Icon(Icons.circle, size: 6, color: AppColors.accent),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    line.trim().startsWith('-') || line.trim().startsWith('•')
+                        ? line.trim().substring(1).trim()
+                        : line.trim(),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[800],
+                      height: 1.5,
                     ),
                   ),
-                ],
-              ),
-            ))
+                ),
+              ],
+            ),
+          ),
+        )
         .toList();
   }
 }

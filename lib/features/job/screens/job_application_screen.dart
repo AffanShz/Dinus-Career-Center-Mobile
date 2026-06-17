@@ -81,7 +81,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Lamaran berhasil dikirim')),
       );
-      Navigator.pop(context); // Go back after success
+      Navigator.pop(context, true); // Go back with success result
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.')),

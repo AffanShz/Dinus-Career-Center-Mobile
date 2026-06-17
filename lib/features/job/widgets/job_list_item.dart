@@ -6,12 +6,10 @@ import '../screens/job_detail_screen.dart';
 
 class JobListItem extends StatelessWidget {
   final JobModel job;
-  final VoidCallback onBookmarkToggle;
 
   const JobListItem({
     super.key,
     required this.job,
-    required this.onBookmarkToggle,
   });
 
   @override
@@ -100,13 +98,6 @@ class JobListItem extends StatelessWidget {
                         ),
                       ],
                     ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onBookmarkToggle,
-                  child: Icon(
-                    job.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: job.isBookmarked ? AppColors.primary : AppColors.onSurfaceVariant,
                   ),
                 ),
               ],

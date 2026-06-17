@@ -273,12 +273,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: 120,
-                ),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -297,6 +292,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _buildSkillsSection(),
                     const SizedBox(height: 24),
                     _buildExperienceSection(),
+                    const SizedBox(height: 48),
+
+                    // Actions Section (Moved from sticky bottom to here)
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: BorderSide(
+                                color: AppColors.outlineVariant.withValues(
+                                  alpha: 0.4,
+                                ),
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Batal',
+                              style: AppTextStyles.labelLarge.copyWith(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: const LinearGradient(
+                                colors: [
+                                  AppColors.primary,
+                                  AppColors.secondary
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.25),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: isLoading ? null : _saveProfile,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Simpan',
+                                    style: AppTextStyles.labelLarge.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -305,107 +386,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   color: Colors.black12,
                   child: const Center(child: CircularProgressIndicator()),
                 ),
-              // Sticky Bottom Bar
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface.withValues(alpha: 0.9),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.06),
-                        blurRadius: 32,
-                        offset: const Offset(0, -8),
-                      ),
-                    ],
-                    border: Border(
-                      top: BorderSide(
-                        color: AppColors.outlineVariant.withValues(alpha: 0.1),
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            side: BorderSide(
-                              color: AppColors.outlineVariant.withValues(
-                                alpha: 0.4,
-                              ),
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Batal',
-                            style: AppTextStyles.labelLarge.copyWith(
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: const LinearGradient(
-                              colors: [AppColors.primary, AppColors.secondary],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.25),
-                                blurRadius: 24,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: isLoading ? null : _saveProfile,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Simpan',
-                                  style: AppTextStyles.labelLarge.copyWith(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           );
         },
@@ -441,89 +421,120 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Foto Profil', style: AppTextStyles.headlineSmall),
-          const SizedBox(height: 24),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.surfaceContainerLowest,
-                    width: 4,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.12),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
+              Text('Foto Profil', style: AppTextStyles.headlineSmall),
+              if (profile.photoUrl != null && profile.photoUrl!.isNotEmpty)
+                GestureDetector(
+                  onTap: isLoading ? null : _deleteImage,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(48),
-                  child:
-                      (profile.photoUrl != null &&
-                          profile.photoUrl!.isNotEmpty)
-                      ? Image.network(
-                          profile.photoUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              Image.asset('assets/images/dcc.png'),
-                        )
-                      : Image.asset('assets/images/dcc.png', fit: BoxFit.cover),
-                ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _pickAndUploadImage,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
-                        foregroundColor: AppColors.primary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        'Ubah Foto',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                    if (profile.photoUrl != null && profile.photoUrl!.isNotEmpty)
-                    TextButton(
-                      onPressed: isLoading ? null : _deleteImage,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        'Hapus Foto',
-                        style: AppTextStyles.labelSmall.copyWith(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.delete_outline_rounded,
                           color: AppColors.error,
+                          size: 14,
                         ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Hapus',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: AppColors.error,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: Stack(
+              children: [
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.white,
+                      width: 4,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child:
+                        (profile.photoUrl != null &&
+                                profile.photoUrl!.isNotEmpty)
+                            ? Image.network(
+                                profile.photoUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    Image.asset('assets/images/dcc.png'),
+                              )
+                            : Image.asset(
+                                'assets/images/dcc.png',
+                                fit: BoxFit.cover,
+                              ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: isLoading ? null : _pickAndUploadImage,
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt_rounded,
+                        color: Colors.white,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Rekomendasi: Kotak, min 500x500px, bawah 2MB.',
-                      style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
-                    ),
-                  ],
+                  ),
                 ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: Text(
+              'Rekomendasi: Kotak, min 500x500px, di bawah 2MB.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodySmall.copyWith(
+                fontSize: 11,
+                color: Colors.grey[500],
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -842,9 +853,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _experiences.removeAt(index);
-                        });
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Hapus Pengalaman?'),
+                            content: const Text(
+                                'Apakah Anda yakin ingin menghapus pengalaman ini?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Batal'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _experiences.removeAt(index);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                style: TextButton.styleFrom(
+                                    foregroundColor: AppColors.error),
+                                child: const Text('Hapus'),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -1066,9 +1099,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _education.removeAt(index);
-                        });
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Hapus Pendidikan?'),
+                            content: const Text(
+                                'Apakah Anda yakin ingin menghapus riwayat pendidikan ini?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Batal'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _education.removeAt(index);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                style: TextButton.styleFrom(
+                                    foregroundColor: AppColors.error),
+                                child: const Text('Hapus'),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],

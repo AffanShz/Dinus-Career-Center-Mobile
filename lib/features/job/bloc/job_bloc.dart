@@ -12,13 +12,13 @@ class JobBloc extends Bloc<JobEvent, JobState> {
     on<LoadJobs>(_onLoadJobs);
     on<ChangeCategory>(_onChangeCategory);
     on<SearchJobs>(_onSearchJobs);
-    on<ToggleJobBookmark>(_onToggleJobBookmark);
+    on<ApplyJobSuccess>(_onApplyJobSuccess);
   }
 
-  void _onToggleJobBookmark(ToggleJobBookmark event, Emitter<JobState> emit) {
+  void _onApplyJobSuccess(ApplyJobSuccess event, Emitter<JobState> emit) {
     final updatedJobs = state.jobs.map((job) {
-      if (job.judul == event.jobTitle) {
-        return job.copyWith(isBookmarked: !job.isBookmarked);
+      if (job.id == event.jobId) {
+        return job.copyWith(isApplied: true);
       }
       return job;
     }).toList();

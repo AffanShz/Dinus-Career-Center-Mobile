@@ -8,12 +8,3 @@ abstract class HomeEvent extends Equatable {
 }
 
 class LoadHomeData extends HomeEvent {}
-
-class ToggleJobBookmark extends HomeEvent {
-  final String jobId;
-
-  const ToggleJobBookmark(this.jobId);
-
-  @override
-  List<Object> get props => [jobId];
-}

@@ -8,6 +8,8 @@ import 'package:dcc_mobile/features/event/screens/event_screen.dart';
 import 'package:dcc_mobile/features/profile/screens/profile_screen.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_event.dart';
+import 'package:dcc_mobile/features/job/bloc/job_bloc.dart';
+import 'package:dcc_mobile/features/job/bloc/job_event.dart';
 
 /// Data class for navigation items.
 class _NavItem {
@@ -76,8 +78,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileBloc()..add(LoadProfile()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ProfileBloc()..add(LoadProfile())),
+        BlocProvider(create: (context) => JobBloc()..add(const LoadJobs())),
+      ],
       child: Scaffold(
         body: IndexedStack(
           index: _currentIndex,

@@ -32,20 +32,10 @@ class JobScreen extends StatelessWidget {
         body: SafeArea(
           child: BlocBuilder<JobBloc, JobState>(
             builder: (context, state) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<JobBloc>().add(LoadJobs(
-                        category: state.selectedCategory,
-                        query: state.searchQuery,
-                      ));
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 16.0,
-                    ),
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -55,54 +45,78 @@ class JobScreen extends StatelessWidget {
                                 photoUrl: profileState.userProfile?.photoUrl);
                           },
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         JobSearchBar(
                           onSearch: (query) {
                             context.read<JobBloc>().add(SearchJobs(query));
                           },
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         CategoryFilter(
                           categories: _categories,
                           selectedCategory: state.selectedCategory,
                           onCategorySelected: (category) {
-                            context.read<JobBloc>().add(ChangeCategory(category));
+                            context
+                                .read<JobBloc>()
+                                .add(ChangeCategory(category));
                           },
                         ),
-                        const SizedBox(height: 24),
-                        _buildSectionHeader(state.jobs.length),
-                        const SizedBox(height: 16),
-                        if (state.status == JobStatus.loading)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        else if (state.status == JobStatus.failure)
-                          const Center(child: Text('Gagal memuat lowongan'))
-                        else if (state.jobs.isEmpty)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: Text('Tidak ada lowongan ditemukan'),
-                            ),
-                          )
-                        else
-                          Column(
-                            children: state.jobs
-                                .map((job) => JobListItem(
-                                      job: job,
-                                      onBookmarkToggle: () {
-                                        context.read<JobBloc>().add(ToggleJobBookmark(job.judul));
-                                      },
-                                    ))
-                                .toList(),
-                          ),
                       ],
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<JobBloc>().add(LoadJobs(
+                              category: state.selectedCategory,
+                              query: state.searchQuery,
+                            ));
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionHeader(state.jobs.length),
+                              const SizedBox(height: 16),
+                              if (state.status == JobStatus.loading)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(32.0),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              else if (state.status == JobStatus.failure)
+                                const Center(
+                                    child: Text('Gagal memuat lowongan'))
+                              else if (state.jobs.isEmpty)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(32.0),
+                                    child:
+                                        Text('Tidak ada lowongan ditemukan'),
+                                  ),
+                                )
+                              else
+                                Column(
+                                  children: state.jobs
+                                      .map((job) => JobListItem(
+                                            job: job,
+                                          ))
+                                      .toList(),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             },
           ),

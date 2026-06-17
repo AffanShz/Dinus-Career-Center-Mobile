@@ -35,11 +35,11 @@ class SearchJobs extends JobEvent {
   List<Object> get props => [query];
 }
 
-class ToggleJobBookmark extends JobEvent {
-  final String jobTitle;
+class ApplyJobSuccess extends JobEvent {
+  final String jobId;
 
-  const ToggleJobBookmark(this.jobTitle);
+  const ApplyJobSuccess(this.jobId);
 
   @override
-  List<Object> get props => [jobTitle];
+  List<Object> get props => [jobId];
 }

@@ -62,7 +62,6 @@ class EventModel extends Equatable {
   final String? status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final bool isBookmarked;
   final List<EventSpeaker> speakers;
 
   const EventModel({
@@ -84,7 +83,6 @@ class EventModel extends Equatable {
     this.status,
     this.createdAt,
     this.updatedAt,
-    this.isBookmarked = false,
     this.speakers = const [],
   });
 
@@ -139,9 +137,7 @@ class EventModel extends Equatable {
     };
   }
 
-  EventModel copyWith({
-    bool? isBookmarked,
-  }) {
+  EventModel copyWith() {
     return EventModel(
       id: id,
       title: title,
@@ -161,7 +157,6 @@ class EventModel extends Equatable {
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      isBookmarked: isBookmarked ?? this.isBookmarked,
       speakers: speakers,
     );
   }
@@ -186,7 +181,6 @@ class EventModel extends Equatable {
         status,
         createdAt,
         updatedAt,
-        isBookmarked,
         speakers,
       ];
 }

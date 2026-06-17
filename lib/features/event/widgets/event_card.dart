@@ -7,12 +7,10 @@ import '../../event_detail/screens/event_detail_screen.dart';
 
 class EventCard extends StatelessWidget {
   final EventModel event;
-  final VoidCallback onBookmarkToggle;
 
   const EventCard({
     super.key,
     required this.event,
-    required this.onBookmarkToggle,
   });
 
   @override
@@ -82,33 +80,14 @@ class EventCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          event.title,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                            height: 1.3,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          event.isBookmarked
-                              ? Icons.bookmark
-                              : Icons.bookmark_border_rounded,
-                          color: event.isBookmarked
-                              ? AppColors.primary
-                              : Colors.grey[400],
-                          size: 28,
-                        ),
-                        onPressed: onBookmarkToggle,
-                      ),
-                    ],
+                  Text(
+                    event.title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                      height: 1.3,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(

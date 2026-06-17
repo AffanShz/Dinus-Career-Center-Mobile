@@ -67,19 +67,6 @@ class EventDetailScreen extends StatelessWidget {
               icon: Icons.arrow_back,
               onPressed: () => Navigator.pop(context),
             ),
-            Row(
-              children: [
-                _buildCircleButton(
-                  icon: Icons.share_outlined,
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 12),
-                _buildCircleButton(
-                  icon: event.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                  onPressed: () {},
-                ),
-              ],
-            ),
           ],
         ),
       ),

@@ -38,62 +38,65 @@ class Homescreen extends StatelessWidget {
                 return const Center(child: Text('Gagal memuat data'));
               }
 
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HomeBloc>().add(LoadHomeData());
-                  context.read<ProfileBloc>().add(LoadProfile());
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 16.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Shared app header
-                        BlocBuilder<ProfileBloc, ProfileState>(
-                          builder: (context, profileState) {
-                            return AppHeader(
-                                photoUrl: profileState.userProfile?.photoUrl);
-                          },
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Greeting section
-                        GreetingSection(userName: state.userName),
-                        const SizedBox(height: 32),
-
-                        // Profile completeness card
-                        if (state.userProfile != null &&
-                            state.userProfile!.completionPercentage < 1.0) ...[
-                          ProfileCard(userProfile: state.userProfile),
-                          const SizedBox(height: 32),
-                        ],
-
-                        // Recommended jobs section
-                        RecommendedJobs(
-                          jobs: state.recommendedJobs,
-                          onBookmarkToggle: (jobId) {
-                            context
-                                .read<HomeBloc>()
-                                .add(ToggleJobBookmark(jobId));
-                          },
-                          onSeeAll: onSeeAllJobs,
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Upcoming events section
-                        if (state.upcomingEvent != null) ...[
-                          UpcomingEvents(event: state.upcomingEvent!),
-                          const SizedBox(height: 32),
-                        ],
-                      ],
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    child: BlocBuilder<ProfileBloc, ProfileState>(
+                      builder: (context, profileState) {
+                        return AppHeader(
+                            photoUrl: profileState.userProfile?.photoUrl);
+                      },
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HomeBloc>().add(LoadHomeData());
+                        context.read<ProfileBloc>().add(LoadProfile());
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0,
+                            vertical: 16.0,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 16),
+                              // Greeting section
+                              GreetingSection(userName: state.userName),
+                              const SizedBox(height: 32),
+
+                              // Profile completeness card
+                              if (state.userProfile != null &&
+                                  state.userProfile!.completionPercentage <
+                                      1.0) ...[
+                                ProfileCard(userProfile: state.userProfile),
+                                const SizedBox(height: 32),
+                              ],
+
+                              // Recommended jobs section
+                              RecommendedJobs(
+                                jobs: state.recommendedJobs,
+                                onSeeAll: onSeeAllJobs,
+                              ),
+                              const SizedBox(height: 32),
+
+                              // Upcoming events section
+                              if (state.upcomingEvent != null) ...[
+                                UpcomingEvents(event: state.upcomingEvent!),
+                                const SizedBox(height: 32),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             },
           ),

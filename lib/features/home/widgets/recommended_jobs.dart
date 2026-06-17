@@ -8,12 +8,10 @@ import '../../job/screens/job_detail_screen.dart';
 /// Menampilkan: logo perusahaan, judul, nama perusahaan, lokasi, dan 1 tag.
 class HomeJobCard extends StatelessWidget {
   final JobModel job;
-  final VoidCallback onBookmarkToggle;
 
   const HomeJobCard({
     super.key,
     required this.job,
-    required this.onBookmarkToggle,
   });
 
   @override
@@ -45,36 +43,24 @@ class HomeJobCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
-                        ? Image.network(
-                            job.logoPerusahaan!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.business, color: AppColors.onSurfaceVariant),
-                          )
-                        : const Icon(Icons.business, color: AppColors.onSurfaceVariant),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onBookmarkToggle,
-                  child: Icon(
-                    job.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: job.isBookmarked ? AppColors.primary : AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
+                    ? Image.network(
+                        job.logoPerusahaan!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.business, color: AppColors.onSurfaceVariant),
+                      )
+                    : const Icon(Icons.business, color: AppColors.onSurfaceVariant),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -113,13 +99,11 @@ class HomeJobCard extends StatelessWidget {
 
 class RecommendedJobs extends StatelessWidget {
   final List<JobModel> jobs;
-  final Function(String) onBookmarkToggle;
   final VoidCallback? onSeeAll;
 
   const RecommendedJobs({
     super.key,
     required this.jobs,
-    required this.onBookmarkToggle,
     this.onSeeAll,
   });
 
@@ -156,7 +140,6 @@ class RecommendedJobs extends StatelessWidget {
                 final job = jobs[index];
                 return HomeJobCard(
                   job: job,
-                  onBookmarkToggle: () => onBookmarkToggle(job.id),
                 );
               },
             ),

@@ -27,37 +27,41 @@ void main() async {
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
-  // Save credentials for background service
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('SUPABASE_URL', supabaseUrl);
-  await prefs.setString('SUPABASE_ANON_KEY', supabaseAnonKey);
-
-  final user = Supabase.instance.client.auth.currentUser;
-  if (user != null) {
-    await prefs.setString('USER_ID', user.id);
-  }
-
-  // Initialize Notification Services
-  final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermissions();
-
-  // Initialize Realtime Notification Service for foreground
-  final realtimeService = RealtimeNotificationService();
-  realtimeService.listenToAuthChanges();
-
-  // flutter_background_service disabled — handled by WorkManager instead
-
-  // Initialize WorkManager
-  WorkManagerHelper.init();
-  WorkManagerHelper.registerTask();
-
-  // Check if session is older than 3 days
+  // Check if session is older than 3 days (must happen before reading session)
   await AuthService.checkSessionAge();
 
   final initialSession = AuthService.currentSession;
 
   runApp(MainApp(initialSession: initialSession));
+
+  // Defer non-critical initialization to after the first frame renders.
+  // This prevents blocking the main thread and avoids ANR crashes.
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    // Save credentials for background service
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('SUPABASE_URL', supabaseUrl);
+    await prefs.setString('SUPABASE_ANON_KEY', supabaseAnonKey);
+
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      await prefs.setString('USER_ID', user.id);
+    }
+
+    // Initialize Notification Services
+    final notificationService = NotificationService();
+    await notificationService.init();
+    await notificationService.requestPermissions();
+
+    // Initialize Realtime Notification Service for foreground
+    final realtimeService = RealtimeNotificationService();
+    realtimeService.listenToAuthChanges();
+
+    // flutter_background_service disabled — handled by WorkManager instead
+
+    // Initialize WorkManager
+    WorkManagerHelper.init();
+    WorkManagerHelper.registerTask();
+  });
 }
 
 final supabase = Supabase.instance.client;

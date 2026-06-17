@@ -71,10 +71,10 @@ class HomeService {
       'userProfile': userProfile,
       'recommendedJobs': recommendedJobs,
       'upcomingEvent': Event(
-        title: 'Tech Career Expo 2024',
-        date: '24 Okt 2024',
-        time: '10:00 WIB',
-        type: 'WEBINAR LANGSUNG',
+        title: 'Dinus Career Center Job Fair 2027',
+        date: '15-16 Juni 2027',
+        time: '08:00 - 16:00 WIB',
+        type: 'JOB FAIR',
       ),
     };
   }

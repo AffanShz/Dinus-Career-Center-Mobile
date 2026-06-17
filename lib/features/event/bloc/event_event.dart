@@ -9,12 +9,3 @@ abstract class EventEvent extends Equatable {
 }
 
 class LoadEvents extends EventEvent {}
-
-class ToggleBookmarkEvent extends EventEvent {
-  final int eventId;
-
-  const ToggleBookmarkEvent(this.eventId);
-
-  @override
-  List<Object> get props => [eventId];
-}

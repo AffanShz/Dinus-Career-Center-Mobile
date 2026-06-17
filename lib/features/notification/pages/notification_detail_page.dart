@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/notification_model.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   final NotificationModel notification;
@@ -65,12 +66,21 @@ class NotificationDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            if (notification.tipe == 'interview' && notification.linkZoom != null)
+            if (notification.tipe == 'interview' && notification.linkZoom != null && notification.linkZoom!.isNotEmpty)
               _buildActionButton(
                 label: 'Gabung Interview',
                 icon: Icons.video_call_rounded,
-                onPressed: () {
-                  // TODO: Launch zoom link
+                onPressed: () async {
+                  final url = Uri.parse(notification.linkZoom!);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Tidak dapat membuka link Zoom')),
+                      );
+                    }
+                  }
                 },
               ),
             if ((notification.tipe == 'lamaran' ||

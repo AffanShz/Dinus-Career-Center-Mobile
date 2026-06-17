@@ -86,11 +86,9 @@ class JobScreen extends StatelessWidget {
                             children: state.jobs
                                 .map((job) => JobListItem(
                                       job: job,
-                                      onBookmarkToggle: () {
-                                        context.read<JobBloc>().add(ToggleJobBookmark(job.judul));
-                                      },
                                     ))
                                 .toList(),
+
                           ),
                       ],
                     ),

@@ -10,17 +10,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       : _homeService = homeService ?? HomeService(),
         super(const HomeState()) {
     on<LoadHomeData>(_onLoadHomeData);
-    on<ToggleJobBookmark>(_onToggleJobBookmark);
-  }
-
-  void _onToggleJobBookmark(ToggleJobBookmark event, Emitter<HomeState> emit) {
-    final updatedJobs = state.recommendedJobs.map((job) {
-      if (job.id == event.jobId) {
-        return job.copyWith(isBookmarked: !job.isBookmarked);
-      }
-      return job;
-    }).toList();
-    emit(state.copyWith(recommendedJobs: updatedJobs));
   }
 
   Future<void> _onLoadHomeData(

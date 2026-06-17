@@ -18,23 +18,17 @@ class TrackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TrackBloc()..add(const LoadApplications(filter: 'Semua')),
+      create: (context) =>
+          TrackBloc()..add(const LoadApplications(filter: 'Semua')),
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
           child: BlocBuilder<TrackBloc, TrackState>(
             builder: (context, state) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<TrackBloc>().add(LoadApplications(filter: state.selectedFilter));
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 16.0,
-                    ),
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -44,7 +38,7 @@ class TrackScreen extends StatelessWidget {
                                 photoUrl: profileState.userProfile?.photoUrl);
                           },
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         StatusFilter(
                           filters: _filters,
                           selectedFilter: state.selectedFilter,
@@ -52,33 +46,56 @@ class TrackScreen extends StatelessWidget {
                             context.read<TrackBloc>().add(ChangeFilter(filter));
                           },
                         ),
-                        const SizedBox(height: 32),
-                        if (state.status == TrackStatus.loading)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        else if (state.status == TrackStatus.failure)
-                          const Center(child: Text('Gagal memuat data pelacakan'))
-                        else if (state.applications.isEmpty)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: Text('Tidak ada lamaran ditemukan'),
-                            ),
-                          )
-                        else
-                          Column(
-                            children: state.applications
-                                .map((app) => ApplicationCard(application: app))
-                                .toList(),
-                          ),
                       ],
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<TrackBloc>().add(
+                            LoadApplications(filter: state.selectedFilter));
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (state.status == TrackStatus.loading)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(32.0),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              else if (state.status == TrackStatus.failure)
+                                const Center(
+                                    child: Text('Gagal memuat data pelacakan'))
+                              else if (state.applications.isEmpty)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(32.0),
+                                    child: Text('Tidak ada lamaran ditemukan'),
+                                  ),
+                                )
+                              else
+                                Column(
+                                  children: state.applications
+                                      .map((app) =>
+                                          ApplicationCard(application: app))
+                                      .toList(),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             },
           ),

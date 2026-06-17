@@ -36,7 +36,6 @@ class JobModel {
   final String? tipePekerjaan;  // tipe_pekerjaan.nama
   final String? sektor;         // sektor.nama
 
-  final bool isBookmarked;
   final bool isApplied;
   final List<JobTag> tags;
 
@@ -58,7 +57,6 @@ class JobModel {
     this.jurusan,
     this.tipePekerjaan,
     this.sektor,
-    this.isBookmarked = false,
     this.isApplied = false,
     this.tags = const [],
   });
@@ -161,7 +159,6 @@ class JobModel {
       jurusan: namaJurusan,
       tipePekerjaan: namaTipePekerjaan,
       sektor: namaSektor,
-      isBookmarked: false,
       isApplied: map['is_applied'] ?? false,
       tags: generatedTags,
     );
@@ -220,7 +217,6 @@ class JobModel {
     String? jurusan,
     String? tipePekerjaan,
     String? sektor,
-    bool? isBookmarked,
     bool? isApplied,
     List<JobTag>? tags,
   }) {
@@ -242,7 +238,6 @@ class JobModel {
       jurusan: jurusan ?? this.jurusan,
       tipePekerjaan: tipePekerjaan ?? this.tipePekerjaan,
       sektor: sektor ?? this.sektor,
-      isBookmarked: isBookmarked ?? this.isBookmarked,
       isApplied: isApplied ?? this.isApplied,
       tags: tags ?? this.tags,
     );

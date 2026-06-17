@@ -10,7 +10,6 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       : _eventService = eventService ?? EventService(),
         super(const EventState()) {
     on<LoadEvents>(_onLoadEvents);
-    on<ToggleBookmarkEvent>(_onToggleBookmark);
   }
 
   Future<void> _onLoadEvents(LoadEvents event, Emitter<EventState> emit) async {
@@ -21,15 +20,5 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     } catch (_) {
       emit(state.copyWith(status: EventStatus.failure));
     }
-  }
-
-  void _onToggleBookmark(ToggleBookmarkEvent event, Emitter<EventState> emit) {
-    final updatedEvents = state.events.map((e) {
-      if (e.id == event.eventId) {
-        return e.copyWith(isBookmarked: !e.isBookmarked);
-      }
-      return e;
-    }).toList();
-    emit(state.copyWith(events: updatedEvents));
   }
 }

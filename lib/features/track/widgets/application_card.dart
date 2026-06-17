@@ -10,19 +10,22 @@ class ApplicationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isCompleted = application.status == 'Completed';
+    final bool isAccepted = application.status == 'Accepted';
     final bool isRejected = application.status == 'Rejected';
-    final bool isInactive = isCompleted || isRejected;
+    final bool isCompleted = application.status == 'Completed';
+    final bool isFinal = isCompleted || isRejected || isAccepted;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isRejected ? Colors.grey[50] : AppColors.white,
+        color: isRejected ? const Color(0xFFFFFBFA) : AppColors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: isRejected 
+                ? Colors.red.withOpacity(0.04)
+                : Colors.black.withOpacity(0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -67,7 +70,7 @@ class ApplicationCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: isRejected ? Colors.grey[600] : AppColors.primary,
+                        color: isRejected ? const Color(0xFFC62828) : AppColors.primary,
                         height: 1.2,
                       ),
                     ),
@@ -77,7 +80,7 @@ class ApplicationCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: isRejected ? Colors.grey[400] : Colors.grey[600],
+                        color: isRejected ? Colors.red[300] : Colors.grey[600],
                       ),
                     ),
                   ],
@@ -107,7 +110,7 @@ class ApplicationCard extends StatelessWidget {
           const SizedBox(height: 32),
 
           // Progress timeline
-          _buildTimeline(application.currentStep, isInactive, isCompleted),
+          _buildTimeline(application.currentStep, isFinal, isCompleted, isAccepted, isRejected),
           const SizedBox(height: 32),
 
           const Divider(color: AppColors.divider, thickness: 1.5),
@@ -156,7 +159,7 @@ class ApplicationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: isRejected ? Colors.grey[500] : const Color(0xFF3C56C6),
+                      color: isRejected ? const Color(0xFFC62828) : const Color(0xFF3C56C6),
                     ),
                   ),
                 ],
@@ -168,14 +171,16 @@ class ApplicationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeline(int currentStep, bool isInactive, bool isCompleted) {
-    final steps = ['APPLIED', 'REVIEWED', 'INTERVIEW', 'SELESAI'];
+  Widget _buildTimeline(int currentStep, bool isFinal, bool isCompleted, bool isAccepted, bool isRejected) {
+    final steps = ['APPLIED', 'REVIEWED', 'INTERVIEW', isRejected ? 'DITOLAK' : 'SELESAI'];
     Color activeColor = const Color(0xFF3C56C6);
-    if (isCompleted) {
-      activeColor = const Color(0xFF10B981);
-    } else if (isInactive) {
-      activeColor = Colors.grey[400]!;
+    
+    if (isCompleted || isAccepted) {
+      activeColor = const Color(0xFF10B981); // Green
+    } else if (isRejected) {
+      activeColor = const Color(0xFFEF4444); // Red
     }
+    
     const inactiveColor = Color(0xFFE2E8F0);
 
     return Row(
@@ -195,7 +200,7 @@ class ApplicationCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isStepCompleted ? activeColor : inactiveColor,
                     shape: BoxShape.circle,
-                    border: isCurrent && !isInactive
+                    border: isCurrent && !isFinal
                         ? Border.all(
                             color: activeColor.withOpacity(0.3),
                             width: 6,

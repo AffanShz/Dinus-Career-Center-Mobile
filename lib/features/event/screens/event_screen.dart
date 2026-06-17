@@ -22,6 +22,15 @@ class EventScreen extends StatelessWidget {
         body: SafeArea(
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: BlocBuilder<ProfileBloc, ProfileState>(
+                  builder: (context, profileState) {
+                    return AppHeader(
+                        photoUrl: profileState.userProfile?.photoUrl);
+                  },
+                ),
+              ),
               Expanded(
                 child: BlocBuilder<EventBloc, EventState>(
                   builder: (context, state) {
@@ -38,14 +47,7 @@ class EventScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            BlocBuilder<ProfileBloc, ProfileState>(
-                              builder: (context, profileState) {
-                                return AppHeader(
-                                    photoUrl:
-                                        profileState.userProfile?.photoUrl);
-                              },
-                            ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 16),
                             _buildSectionHeader(),
                             const SizedBox(height: 24),
                             if (state.status == EventStatus.loading)
@@ -67,10 +69,6 @@ class EventScreen extends StatelessWidget {
                             else
                               ...state.events.map((event) => EventCard(
                                     event: event,
-                                    onBookmarkToggle: () {
-                                      context.read<EventBloc>().add(
-                                          ToggleBookmarkEvent(event.id));
-                                    },
                                   )),
                             const SizedBox(height: 32),
                           ],

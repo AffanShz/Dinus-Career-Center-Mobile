@@ -6,12 +6,10 @@ import '../screens/job_detail_screen.dart';
 
 class JobListItem extends StatelessWidget {
   final JobModel job;
-  final VoidCallback onBookmarkToggle;
 
   const JobListItem({
     super.key,
     required this.job,
-    required this.onBookmarkToggle,
   });
 
   @override
@@ -116,34 +114,20 @@ class JobListItem extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text(
-                      job.batasAkhir,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: Icon(
-                    job.isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-                    color: job.isBookmarked ? AppColors.primary : Colors.grey[400],
-                    size: 24,
+                Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey[600]),
+                const SizedBox(width: 8),
+                Text(
+                  job.batasAkhir,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: Colors.grey[700],
                   ),
-                  onPressed: onBookmarkToggle,
                 ),
               ],
             ),
-            if (job.tags.isNotEmpty) ...[  
+            if (job.tags.isNotEmpty) ...[
+  
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
