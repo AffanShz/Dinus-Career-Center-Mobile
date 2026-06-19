@@ -19,12 +19,15 @@ class ApplicationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isRejected ? const Color(0xFFFFFBFA) : AppColors.white,
+        color: isRejected ? const Color(0xFFFFF8F8) : AppColors.white,
         borderRadius: BorderRadius.circular(24),
+        border: isRejected 
+            ? Border.all(color: const Color(0xFFFCA5A5).withOpacity(0.4), width: 1.5)
+            : null,
         boxShadow: [
           BoxShadow(
             color: isRejected 
-                ? Colors.red.withOpacity(0.04)
+                ? const Color(0xFFEF4444).withOpacity(0.08)
                 : Colors.black.withOpacity(0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
@@ -38,26 +41,29 @@ class ApplicationCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ColorFiltered(
-                colorFilter: isRejected
-                    ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
-                    : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(12),
-                    image: application.logo.startsWith('http')
-                        ? DecorationImage(
-                            image: NetworkImage(application.logo),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ColorFiltered(
+                  colorFilter: isRejected
+                      ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
+                      : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
+                      borderRadius: BorderRadius.circular(12),
+                      image: application.logo.startsWith('http')
+                          ? DecorationImage(
+                              image: NetworkImage(application.logo),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: application.logo.startsWith('http')
+                        ? null
+                        : const Icon(Icons.business, color: Colors.white),
                   ),
-                  child: application.logo.startsWith('http')
-                      ? null
-                      : const Icon(Icons.business, color: Colors.white),
                 ),
               ),
               const SizedBox(width: 16),
