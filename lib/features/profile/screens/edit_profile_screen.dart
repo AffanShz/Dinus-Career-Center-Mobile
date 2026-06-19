@@ -127,7 +127,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (result == null || result.files.single.path == null) return;
 
     if (mounted) {
-      context.read<ProfileBloc>().add(UploadProfilePicture(File(result.files.single.path!)));
+      context.read<ProfileBloc>().add(
+        UploadProfilePicture(File(result.files.single.path!)),
+      );
     }
   }
 
@@ -136,7 +138,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Foto Profil?'),
-        content: const Text('Apakah Anda yakin ingin menghapus foto profil Anda?'),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus foto profil Anda?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -161,7 +165,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         context.read<ProfileBloc>().state.userProfile?.photoUrl ??
         widget.profile.photoUrl;
 
-    setState(() => _isSaving = true); // Mark as saving so listener can navigate back
+    setState(
+      () => _isSaving = true,
+    ); // Mark as saving so listener can navigate back
     final updatedProfile = UserProfile(
       id: widget.profile.id,
       email: widget.profile.email,
@@ -195,6 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Column(
           children: [
@@ -269,11 +276,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         builder: (context, state) {
           final profile = state.userProfile ?? widget.profile;
           final isLoading = state.status == ProfileStatus.loading;
+          final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
           return Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.fromLTRB(24, 24, 24, keyboardHeight + 110),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -292,93 +300,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _buildSkillsSection(),
                     const SizedBox(height: 24),
                     _buildExperienceSection(),
-                    const SizedBox(height: 48),
-
-                    // Actions Section (Moved from sticky bottom to here)
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: BorderSide(
-                                color: AppColors.outlineVariant.withValues(
-                                  alpha: 0.4,
-                                ),
-                                width: 1.5,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              'Batal',
-                              style: AppTextStyles.labelLarge.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                colors: [
-                                  AppColors.primary,
-                                  AppColors.secondary
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.25),
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: isLoading ? null : _saveProfile,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Simpan',
-                                    style: AppTextStyles.labelLarge.copyWith(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.check_circle_outline,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 24),
                   ],
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    border: Border(
+                      top: BorderSide(
+                        color: AppColors.outlineVariant.withValues(alpha: 0.15),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: _buildActionsRow(isLoading),
                 ),
               ),
               if (isLoading)
@@ -390,6 +331,84 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildActionsRow(bool isLoading) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: BorderSide(
+                color: AppColors.outlineVariant.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Batal',
+              style: AppTextStyles.labelLarge.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                colors: [AppColors.primary, AppColors.secondary],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: isLoading ? null : _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Simpan',
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -429,8 +448,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 GestureDetector(
                   onTap: isLoading ? null : _deleteImage,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -465,10 +486,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.white,
-                      width: 4,
-                    ),
+                    border: Border.all(color: AppColors.white, width: 4),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.primary.withValues(alpha: 0.15),
@@ -481,17 +499,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderRadius: BorderRadius.circular(60),
                     child:
                         (profile.photoUrl != null &&
-                                profile.photoUrl!.isNotEmpty)
-                            ? Image.network(
-                                profile.photoUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                    Image.asset('assets/images/dcc.png'),
-                              )
-                            : Image.asset(
-                                'assets/images/dcc.png',
-                                fit: BoxFit.cover,
-                              ),
+                            profile.photoUrl!.isNotEmpty)
+                        ? Image.network(
+                            profile.photoUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                Image.asset('assets/images/dcc.png'),
+                          )
+                        : Image.asset(
+                            'assets/images/dcc.png',
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 Positioned(
@@ -844,7 +862,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         color: AppColors.primary,
                         size: 20,
                       ),
-                      onPressed: () => _showExperienceBottomSheet(editIndex: index),
+                      onPressed: () =>
+                          _showExperienceBottomSheet(editIndex: index),
                     ),
                     IconButton(
                       icon: const Icon(
@@ -858,7 +877,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           builder: (context) => AlertDialog(
                             title: const Text('Hapus Pengalaman?'),
                             content: const Text(
-                                'Apakah Anda yakin ingin menghapus pengalaman ini?'),
+                              'Apakah Anda yakin ingin menghapus pengalaman ini?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
@@ -872,7 +892,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   Navigator.pop(context);
                                 },
                                 style: TextButton.styleFrom(
-                                    foregroundColor: AppColors.error),
+                                  foregroundColor: AppColors.error,
+                                ),
                                 child: const Text('Hapus'),
                               ),
                             ],
@@ -894,9 +915,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final existing = isEdit ? _experiences[editIndex] : null;
 
     final titleController = TextEditingController(text: existing?.title ?? '');
-    final companyController = TextEditingController(text: existing?.company ?? '');
+    final companyController = TextEditingController(
+      text: existing?.company ?? '',
+    );
     final dateController = TextEditingController(text: existing?.date ?? '');
-    final descController = TextEditingController(text: existing?.description ?? '');
+    final descController = TextEditingController(
+      text: existing?.description ?? '',
+    );
     bool isActive = existing?.isActive ?? false;
 
     showModalBottomSheet(
@@ -911,7 +936,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary.withValues(alpha: 0.08),
@@ -946,9 +973,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(height: 16),
                   _buildSheetTextField('Perusahaan', companyController),
                   const SizedBox(height: 16),
-                  _buildSheetTextField('Periode (Mth YYYY - Mth YYYY)', dateController),
+                  _buildSheetTextField(
+                    'Periode (Mth YYYY - Mth YYYY)',
+                    dateController,
+                  ),
                   const SizedBox(height: 16),
-                  _buildSheetTextField('Deskripsi', descController, maxLines: 2),
+                  _buildSheetTextField(
+                    'Deskripsi',
+                    descController,
+                    maxLines: 2,
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -999,7 +1033,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       child: Text(
                         isEdit ? 'Simpan' : 'Tambah',
-                        style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
+                        style: AppTextStyles.labelLarge.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -1064,7 +1100,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(edu.institution, style: AppTextStyles.labelLarge),
+                          Text(
+                            edu.institution,
+                            style: AppTextStyles.labelLarge,
+                          ),
                           Text(edu.degree, style: AppTextStyles.bodySmall),
                           const SizedBox(height: 4),
                           Text(
@@ -1090,7 +1129,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         color: AppColors.primary,
                         size: 20,
                       ),
-                      onPressed: () => _showEducationBottomSheet(editIndex: index),
+                      onPressed: () =>
+                          _showEducationBottomSheet(editIndex: index),
                     ),
                     IconButton(
                       icon: const Icon(
@@ -1104,7 +1144,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           builder: (context) => AlertDialog(
                             title: const Text('Hapus Pendidikan?'),
                             content: const Text(
-                                'Apakah Anda yakin ingin menghapus riwayat pendidikan ini?'),
+                              'Apakah Anda yakin ingin menghapus riwayat pendidikan ini?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
@@ -1118,7 +1159,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   Navigator.pop(context);
                                 },
                                 style: TextButton.styleFrom(
-                                    foregroundColor: AppColors.error),
+                                  foregroundColor: AppColors.error,
+                                ),
                                 child: const Text('Hapus'),
                               ),
                             ],
@@ -1139,10 +1181,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final isEdit = editIndex != null;
     final existing = isEdit ? _education[editIndex] : null;
 
-    final institutionController = TextEditingController(text: existing?.institution ?? '');
-    final degreeController = TextEditingController(text: existing?.degree ?? '');
-    final periodController = TextEditingController(text: existing?.period ?? '');
-    final locationController = TextEditingController(text: existing?.location ?? '');
+    final institutionController = TextEditingController(
+      text: existing?.institution ?? '',
+    );
+    final degreeController = TextEditingController(
+      text: existing?.degree ?? '',
+    );
+    final periodController = TextEditingController(
+      text: existing?.period ?? '',
+    );
+    final locationController = TextEditingController(
+      text: existing?.location ?? '',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -1188,9 +1238,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 24),
                 _buildSheetTextField('Institusi', institutionController),
                 const SizedBox(height: 16),
-                _buildSheetTextField('Gelar/Jenjang (contoh: S1 Teknik Informatika)', degreeController),
+                _buildSheetTextField(
+                  'Gelar/Jenjang (contoh: S1 Teknik Informatika)',
+                  degreeController,
+                ),
                 const SizedBox(height: 16),
-                _buildSheetTextField('Periode (Mth YYYY - Mth YYYY)', periodController),
+                _buildSheetTextField(
+                  'Periode (Mth YYYY - Mth YYYY)',
+                  periodController,
+                ),
                 const SizedBox(height: 16),
                 _buildSheetTextField('Lokasi', locationController),
                 const SizedBox(height: 24),
@@ -1226,7 +1282,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     child: Text(
                       isEdit ? 'Simpan' : 'Tambah',
-                      style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
+                      style: AppTextStyles.labelLarge.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -1239,7 +1297,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   /// Styled text field for use inside bottom sheets
-  Widget _buildSheetTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildSheetTextField(
+    String label,
+    TextEditingController controller, {
+    int maxLines = 1,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1269,10 +1331,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
