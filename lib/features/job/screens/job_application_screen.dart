@@ -8,7 +8,7 @@ class JobApplicationScreen extends StatefulWidget {
   final String lowonganId;
 
   const JobApplicationScreen({Key? key, required this.lowonganId})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<JobApplicationScreen> createState() => _JobApplicationScreenState();
@@ -20,15 +20,17 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   File? _pasFoto;
   File? _cv;
   File? _portofolioFile;
-  String? _portofolioLink;
   File? _transkripNilai;
   File? _suratLamaran;
-  
+
   final TextEditingController _linkController = TextEditingController();
   bool _isLoading = false;
   bool _isPortfolioLink = false;
 
-  Future<void> _pickFile(Function(File?) onPicked, {List<String>? allowedExtensions}) async {
+  Future<void> _pickFile(
+    Function(File?) onPicked, {
+    List<String>? allowedExtensions,
+  }) async {
     try {
       FilePickerResult? result = await FilePicker.pickFiles(
         type: allowedExtensions == null ? FileType.any : FileType.custom,
@@ -42,15 +44,18 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking file: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
       }
     }
   }
 
   Future<void> _submitApplication() async {
-    if (_cv == null || _pasFoto == null || _transkripNilai == null || _suratLamaran == null) {
+    if (_cv == null ||
+        _pasFoto == null ||
+        _transkripNilai == null ||
+        _suratLamaran == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Harap lengkapi semua berkas wajib')),
       );
@@ -78,13 +83,17 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
     });
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lamaran berhasil dikirim')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Lamaran berhasil dikirim')));
       Navigator.pop(context, true); // Go back with success result
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.')),
+        const SnackBar(
+          content: Text(
+            'Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.',
+          ),
+        ),
       );
     }
   }
@@ -102,7 +111,10 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.7),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFC2C6D3).withOpacity(0.15), width: 1.5),
+        border: Border.all(
+          color: const Color(0xFFC2C6D3).withOpacity(0.15),
+          width: 1.5,
+        ),
       ),
       child: child,
     );
@@ -121,7 +133,11 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFC2C6D3), width: 2, style: BorderStyle.solid),
+          border: Border.all(
+            color: const Color(0xFFC2C6D3),
+            width: 2,
+            style: BorderStyle.solid,
+          ),
         ),
         child: Row(
           children: [
@@ -132,7 +148,11 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                 color: Color(0xFF00519E),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.description, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.description,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -177,7 +197,10 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFC2C6D3), width: 2), // Simulate dashed by using a lighter border or dashed package. Standard border here.
+          border: Border.all(
+            color: const Color(0xFFC2C6D3),
+            width: 2,
+          ), // Simulate dashed by using a lighter border or dashed package. Standard border here.
         ),
         child: Column(
           children: [
@@ -256,33 +279,53 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6E8EA),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text('Wajib', style: GoogleFonts.manrope(fontSize: 10, color: const Color(0xFF424751))),
+                      child: Text(
+                        'Wajib',
+                        style: GoogleFonts.manrope(
+                          fontSize: 10,
+                          color: const Color(0xFF424751),
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 _buildGlassCard(
                   child: InkWell(
-                    onTap: () => _pickFile((f) => _pasFoto = f, allowedExtensions: ['jpg', 'jpeg', 'png']),
+                    onTap: () => _pickFile(
+                      (f) => _pasFoto = f,
+                      allowedExtensions: ['jpg', 'jpeg', 'png'],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFC2C6D3), width: 2),
+                        border: Border.all(
+                          color: const Color(0xFFC2C6D3),
+                          width: 2,
+                        ),
                       ),
                       child: Column(
                         children: [
                           if (_pasFoto != null)
                             ClipRVM(
                               radius: BorderRadius.circular(32),
-                              child: Image.file(_pasFoto!, width: 64, height: 64, fit: BoxFit.cover),
+                              child: Image.file(
+                                _pasFoto!,
+                                width: 64,
+                                height: 64,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           else
                             Container(
@@ -292,7 +335,11 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                 color: Color(0xFFE0E3E5),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.person, color: Color(0xFF727782), size: 32),
+                              child: const Icon(
+                                Icons.person,
+                                color: Color(0xFF727782),
+                                size: 32,
+                              ),
                             ),
                           const SizedBox(height: 12),
                           Text(
@@ -331,12 +378,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6E8EA),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text('Wajib', style: GoogleFonts.manrope(fontSize: 10, color: const Color(0xFF424751))),
+                      child: Text(
+                        'Wajib',
+                        style: GoogleFonts.manrope(
+                          fontSize: 10,
+                          color: const Color(0xFF424751),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -347,7 +403,8 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     title: 'Unggah CV',
                     subtitle: 'PDF maks 5MB',
                     currentFile: _cv,
-                    onTap: () => _pickFile((f) => _cv = f, allowedExtensions: ['pdf']),
+                    onTap: () =>
+                        _pickFile((f) => _cv = f, allowedExtensions: ['pdf']),
                     onRemove: () => setState(() => _cv = null),
                   ),
                 ),
@@ -366,12 +423,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF2F4F6),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text('Opsional', style: GoogleFonts.manrope(fontSize: 10, color: const Color(0xFF424751))),
+                      child: Text(
+                        'Opsional',
+                        style: GoogleFonts.manrope(
+                          fontSize: 10,
+                          color: const Color(0xFF424751),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -391,14 +457,26 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                             children: [
                               Expanded(
                                 child: InkWell(
-                                  onTap: () => setState(() => _isPortfolioLink = false),
+                                  onTap: () =>
+                                      setState(() => _isPortfolioLink = false),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: !_isPortfolioLink ? Colors.white : Colors.transparent,
+                                      color: !_isPortfolioLink
+                                          ? Colors.white
+                                          : Colors.transparent,
                                       borderRadius: BorderRadius.circular(8),
                                       boxShadow: !_isPortfolioLink
-                                          ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)]
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.05,
+                                                ),
+                                                blurRadius: 4,
+                                              ),
+                                            ]
                                           : [],
                                     ),
                                     alignment: Alignment.center,
@@ -407,7 +485,9 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: !_isPortfolioLink ? const Color(0xFF003A75) : const Color(0xFF424751),
+                                        color: !_isPortfolioLink
+                                            ? const Color(0xFF003A75)
+                                            : const Color(0xFF424751),
                                       ),
                                     ),
                                   ),
@@ -415,14 +495,26 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  onTap: () => setState(() => _isPortfolioLink = true),
+                                  onTap: () =>
+                                      setState(() => _isPortfolioLink = true),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: _isPortfolioLink ? Colors.white : Colors.transparent,
+                                      color: _isPortfolioLink
+                                          ? Colors.white
+                                          : Colors.transparent,
                                       borderRadius: BorderRadius.circular(8),
                                       boxShadow: _isPortfolioLink
-                                          ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)]
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.05,
+                                                ),
+                                                blurRadius: 4,
+                                              ),
+                                            ]
                                           : [],
                                     ),
                                     alignment: Alignment.center,
@@ -431,7 +523,9 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: _isPortfolioLink ? const Color(0xFF003A75) : const Color(0xFF424751),
+                                        color: _isPortfolioLink
+                                            ? const Color(0xFF003A75)
+                                            : const Color(0xFF424751),
                                       ),
                                     ),
                                   ),
@@ -447,31 +541,51 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                             title: 'Unggah Portofolio',
                             subtitle: 'PDF maks 10MB',
                             currentFile: _portofolioFile,
-                            onTap: () => _pickFile((f) => _portofolioFile = f, allowedExtensions: ['pdf']),
-                            onRemove: () => setState(() => _portofolioFile = null),
+                            onTap: () => _pickFile(
+                              (f) => _portofolioFile = f,
+                              allowedExtensions: ['pdf'],
+                            ),
+                            onRemove: () =>
+                                setState(() => _portofolioFile = null),
                           )
                         else
                           Container(
                             padding: const EdgeInsets.all(16),
                             child: TextField(
                               controller: _linkController,
-                              style: GoogleFonts.manrope(fontSize: 14, color: const Color(0xFF191C1E)),
+                              style: GoogleFonts.manrope(
+                                fontSize: 14,
+                                color: const Color(0xFF191C1E),
+                              ),
                               decoration: InputDecoration(
-                                hintText: 'Masukkan URL portofolio (mis. Behance, Dribbble)',
+                                hintText:
+                                    'Masukkan URL portofolio (mis. Behance, Dribbble)',
                                 hintStyle: GoogleFonts.manrope(
                                   fontSize: 14,
-                                  color: const Color(0xFF424751).withOpacity(0.5),
+                                  color: const Color(
+                                    0xFF424751,
+                                  ).withOpacity(0.5),
                                 ),
-                                prefixIcon: const Icon(Icons.link, color: Color(0xFF727782)),
+                                prefixIcon: const Icon(
+                                  Icons.link,
+                                  color: Color(0xFF727782),
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: const Color(0xFFC2C6D3)),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFFC2C6D3),
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFF003A75)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF003A75),
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                               ),
                             ),
                           ),
@@ -494,12 +608,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6E8EA),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text('Wajib', style: GoogleFonts.manrope(fontSize: 10, color: const Color(0xFF424751))),
+                      child: Text(
+                        'Wajib',
+                        style: GoogleFonts.manrope(
+                          fontSize: 10,
+                          color: const Color(0xFF424751),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -510,7 +633,10 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     title: 'Pilih File Transkrip',
                     subtitle: 'PDF maks 5MB',
                     currentFile: _transkripNilai,
-                    onTap: () => _pickFile((f) => _transkripNilai = f, allowedExtensions: ['pdf']),
+                    onTap: () => _pickFile(
+                      (f) => _transkripNilai = f,
+                      allowedExtensions: ['pdf'],
+                    ),
                     onRemove: () => setState(() => _transkripNilai = null),
                   ),
                 ),
@@ -529,12 +655,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6E8EA),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text('Wajib', style: GoogleFonts.manrope(fontSize: 10, color: const Color(0xFF424751))),
+                      child: Text(
+                        'Wajib',
+                        style: GoogleFonts.manrope(
+                          fontSize: 10,
+                          color: const Color(0xFF424751),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -545,14 +680,17 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     title: 'Unggah Surat Lamaran',
                     subtitle: 'PDF maks 5MB',
                     currentFile: _suratLamaran,
-                    onTap: () => _pickFile((f) => _suratLamaran = f, allowedExtensions: ['pdf']),
+                    onTap: () => _pickFile(
+                      (f) => _suratLamaran = f,
+                      allowedExtensions: ['pdf'],
+                    ),
                     onRemove: () => setState(() => _suratLamaran = null),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Floating Button Action
           Positioned(
             bottom: 0,
@@ -573,17 +711,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
               ),
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submitApplication,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 8,
-                  shadowColor: const Color(0xFF003A75).withOpacity(0.2),
-                  backgroundColor: Colors.transparent, // to use gradient via Ink
-                ).copyWith(
-                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                ),
+                style:
+                    ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 8,
+                      shadowColor: const Color(0xFF003A75).withOpacity(0.2),
+                      backgroundColor:
+                          Colors.transparent, // to use gradient via Ink
+                    ).copyWith(
+                      backgroundColor: WidgetStateProperty.all(
+                        Colors.transparent,
+                      ),
+                    ),
                 child: Ink(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
@@ -600,7 +742,10 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                         ? const SizedBox(
                             height: 24,
                             width: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -614,7 +759,11 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(Icons.send, color: Colors.white, size: 20),
+                              const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ],
                           ),
                   ),
@@ -631,13 +780,11 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
 class ClipRVM extends StatelessWidget {
   final BorderRadius radius;
   final Widget child;
-  const ClipRVM({Key? key, required this.radius, required this.child}) : super(key: key);
+  const ClipRVM({Key? key, required this.radius, required this.child})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: radius,
-      child: child,
-    );
+    return ClipRRect(borderRadius: radius, child: child);
   }
 }

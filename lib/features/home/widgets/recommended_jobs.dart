@@ -55,7 +55,7 @@ class HomeJobCard extends StatelessWidget {
                 child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
                     ? Image.network(
                         job.logoPerusahaan!,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
                             const Icon(Icons.business, color: AppColors.onSurfaceVariant),
                       )

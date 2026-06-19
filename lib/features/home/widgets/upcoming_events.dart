@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/event_model.dart';
@@ -10,19 +11,30 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+    return GestureDetector(
+      onTap: () async {
+        final Uri url = Uri.parse('https://cc.dinus.ac.id/tiket_JF27/');
+        try {
+          if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+            debugPrint('Could not launch $url');
+          }
+        } catch (e) {
+          debugPrint('Error launching URL: $e');
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
             Container(
@@ -131,8 +143,9 @@ class EventCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class UpcomingEvents extends StatelessWidget {

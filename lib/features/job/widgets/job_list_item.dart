@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
 import '../screens/job_detail_screen.dart';
+import '../bloc/job_bloc.dart';
+import '../bloc/job_event.dart';
 
 class JobListItem extends StatelessWidget {
   final JobModel job;
@@ -15,13 +18,16 @@ class JobListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
             builder: (context) => JobDetailScreen(job: job),
           ),
         );
+        if (result == true && context.mounted) {
+          context.read<JobBloc>().add(ApplyJobSuccess(job.id));
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -57,7 +63,7 @@ class JobListItem extends StatelessWidget {
                     child: job.logoPerusahaan != null && job.logoPerusahaan!.isNotEmpty
                         ? Image.network(
                             job.logoPerusahaan!,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) =>
                                 const Icon(Icons.business, color: AppColors.onSurfaceVariant),
                           )

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dcc_mobile/core/theme/colors.dart';
 
 class EventSearchBar extends StatelessWidget {
   const EventSearchBar({super.key});
