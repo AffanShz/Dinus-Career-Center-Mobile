@@ -66,17 +66,33 @@ class Homescreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 16),
-                              // Greeting section
-                              GreetingSection(userName: state.userName),
-                              const SizedBox(height: 32),
-
-                              // Profile completeness card
-                              if (state.userProfile != null &&
-                                  state.userProfile!.completionPercentage <
-                                      1.0) ...[
-                                ProfileCard(userProfile: state.userProfile),
-                                const SizedBox(height: 32),
-                              ],
+                              // Greeting + profile completeness — sumber profil
+                              // tunggal dari ProfileBloc.
+                              BlocBuilder<ProfileBloc, ProfileState>(
+                                builder: (context, profileState) {
+                                  final userProfile = profileState.userProfile;
+                                  final name = userProfile?.name;
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      GreetingSection(
+                                        userName: (name != null &&
+                                                name.isNotEmpty)
+                                            ? name
+                                            : 'User DCC',
+                                      ),
+                                      const SizedBox(height: 32),
+                                      if (userProfile != null &&
+                                          userProfile.completionPercentage <
+                                              1.0) ...[
+                                        ProfileCard(userProfile: userProfile),
+                                        const SizedBox(height: 32),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              ),
 
                               // Recommended jobs section
                               RecommendedJobs(

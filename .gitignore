@@ -53,3 +53,4 @@ app.*.map.json
 *GEMINI.md
 *CLAUDE.md
 .agent/
+.claude/

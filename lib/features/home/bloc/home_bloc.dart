@@ -22,9 +22,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       emit(state.copyWith(
         status: HomeStatus.success,
-        userName: data['userName'],
-        profileCompleteness: data['profileCompleteness'],
-        userProfile: data['userProfile'],
         recommendedJobs: data['recommendedJobs'],
         upcomingEvent: data['upcomingEvent'],
       ));

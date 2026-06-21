@@ -1,28 +1,13 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../job/models/job_model.dart';
-import '../../profile/models/profile_model.dart';
-import '../../profile/services/profile_service.dart';
 import '../models/event_model.dart';
 
 class HomeService {
   final _supabase = Supabase.instance.client;
-  final _profileService = ProfileService();
 
   Future<Map<String, dynamic>> fetchHomeData() async {
-    // ── 1. Fetch profile and calculate completeness ───────────────────────
-    double completeness = 0.0;
-    String name = 'User DCC';
-    UserProfile? userProfile;
-    try {
-      userProfile = await _profileService.fetchUserProfile();
-      name = userProfile.name;
-      completeness = userProfile.completionPercentage;
-    } catch (e) {
-      // ignore: avoid_print
-      print('[HomeService] Error fetching profile: $e');
-    }
-
-    // ── 2. Fetch recommended jobs dari Supabase ───────────────────────────
+    // ── Fetch recommended jobs dari Supabase ──────────────────────────────
+    // Profil di-fetch terpisah oleh ProfileBloc (sumber tunggal profil).
     List<JobModel> recommendedJobs = [];
     try {
       final user = _supabase.auth.currentUser;
@@ -66,9 +51,6 @@ class HomeService {
     }
 
     return {
-      'userName': name,
-      'profileCompleteness': completeness,
-      'userProfile': userProfile,
       'recommendedJobs': recommendedJobs,
       'upcomingEvent': Event(
         title: 'Dinus Career Center Job Fair 2027',
