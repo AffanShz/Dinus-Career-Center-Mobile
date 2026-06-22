@@ -5,8 +5,13 @@ import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class JobSearchBar extends StatefulWidget {
   final Function(String) onSearch;
+  final VoidCallback onFilterPressed;
 
-  const JobSearchBar({super.key, required this.onSearch});
+  const JobSearchBar({
+    super.key, 
+    required this.onSearch,
+    required this.onFilterPressed,
+  });
 
   @override
   State<JobSearchBar> createState() => _JobSearchBarState();
@@ -80,9 +85,7 @@ class _JobSearchBarState extends State<JobSearchBar> {
           ),
           child: IconButton(
             icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 24),
-            onPressed: () {
-              // TODO: Filter action
-            },
+            onPressed: widget.onFilterPressed,
           ),
         ),
       ],

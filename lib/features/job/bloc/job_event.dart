@@ -4,17 +4,26 @@ abstract class JobEvent extends Equatable {
   const JobEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadJobs extends JobEvent {
   final String category;
   final String query;
+  final String? sektor;
+  final String? jurusan;
+  final String? lokasi;
 
-  const LoadJobs({this.category = 'Semua', this.query = ''});
+  const LoadJobs({
+    this.category = 'Semua',
+    this.query = '',
+    this.sektor,
+    this.jurusan,
+    this.lokasi,
+  });
 
   @override
-  List<Object> get props => [category, query];
+  List<Object?> get props => [category, query, sektor, jurusan, lokasi];
 }
 
 class ChangeCategory extends JobEvent {
@@ -23,7 +32,7 @@ class ChangeCategory extends JobEvent {
   const ChangeCategory(this.category);
 
   @override
-  List<Object> get props => [category];
+  List<Object?> get props => [category];
 }
 
 class SearchJobs extends JobEvent {
@@ -32,7 +41,7 @@ class SearchJobs extends JobEvent {
   const SearchJobs(this.query);
 
   @override
-  List<Object> get props => [query];
+  List<Object?> get props => [query];
 }
 
 class ApplyJobSuccess extends JobEvent {
@@ -41,5 +50,16 @@ class ApplyJobSuccess extends JobEvent {
   const ApplyJobSuccess(this.jobId);
 
   @override
-  List<Object> get props => [jobId];
+  List<Object?> get props => [jobId];
+}
+
+class ApplyAdvancedFilter extends JobEvent {
+  final String? sektor;
+  final String? jurusan;
+  final String? lokasi;
+
+  const ApplyAdvancedFilter({this.sektor, this.jurusan, this.lokasi});
+
+  @override
+  List<Object?> get props => [sektor, jurusan, lokasi];
 }

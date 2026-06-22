@@ -11,6 +11,7 @@ import '../bloc/job_state.dart';
 import '../widgets/job_search_bar.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/job_list_item.dart';
+import '../widgets/job_filter_bottom_sheet.dart';
 
 class JobScreen extends StatelessWidget {
   const JobScreen({super.key});
@@ -49,6 +50,28 @@ class JobScreen extends StatelessWidget {
                         JobSearchBar(
                           onSearch: (query) {
                             context.read<JobBloc>().add(SearchJobs(query));
+                          },
+                          onFilterPressed: () async {
+                            final result = await showModalBottomSheet<Map<String, String?>>(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (ctx) => JobFilterBottomSheet(
+                                initialSektor: state.selectedSektor,
+                                initialJurusan: state.selectedJurusan,
+                                initialLokasi: state.selectedLokasi,
+                              ),
+                            );
+
+                            if (result != null && context.mounted) {
+                              context.read<JobBloc>().add(
+                                ApplyAdvancedFilter(
+                                  sektor: result['sektor'],
+                                  jurusan: result['jurusan'],
+                                  lokasi: result['lokasi'],
+                                ),
+                              );
+                            }
                           },
                         ),
                         const SizedBox(height: 16),

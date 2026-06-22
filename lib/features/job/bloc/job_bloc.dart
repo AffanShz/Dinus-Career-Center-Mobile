@@ -13,6 +13,7 @@ class JobBloc extends Bloc<JobEvent, JobState> {
     on<ChangeCategory>(_onChangeCategory);
     on<SearchJobs>(_onSearchJobs);
     on<ApplyJobSuccess>(_onApplyJobSuccess);
+    on<ApplyAdvancedFilter>(_onApplyAdvancedFilter);
   }
 
   void _onApplyJobSuccess(ApplyJobSuccess event, Emitter<JobState> emit) {
@@ -31,12 +32,18 @@ class JobBloc extends Bloc<JobEvent, JobState> {
         status: JobStatus.loading,
         selectedCategory: event.category,
         searchQuery: event.query,
+        selectedSektor: event.sektor,
+        selectedJurusan: event.jurusan,
+        selectedLokasi: event.lokasi,
       ),
     );
     try {
       final jobs = await _jobService.fetchJobs(
         category: event.category,
         query: event.query,
+        sektor: event.sektor,
+        jurusan: event.jurusan,
+        lokasi: event.lokasi,
       );
       emit(state.copyWith(status: JobStatus.success, jobs: jobs));
     } catch (_) {
@@ -48,10 +55,32 @@ class JobBloc extends Bloc<JobEvent, JobState> {
     ChangeCategory event,
     Emitter<JobState> emit,
   ) async {
-    add(LoadJobs(category: event.category, query: state.searchQuery));
+    add(LoadJobs(
+      category: event.category,
+      query: state.searchQuery,
+      sektor: state.selectedSektor,
+      jurusan: state.selectedJurusan,
+      lokasi: state.selectedLokasi,
+    ));
   }
 
   Future<void> _onSearchJobs(SearchJobs event, Emitter<JobState> emit) async {
-    add(LoadJobs(category: state.selectedCategory, query: event.query));
+    add(LoadJobs(
+      category: state.selectedCategory,
+      query: event.query,
+      sektor: state.selectedSektor,
+      jurusan: state.selectedJurusan,
+      lokasi: state.selectedLokasi,
+    ));
+  }
+
+  Future<void> _onApplyAdvancedFilter(ApplyAdvancedFilter event, Emitter<JobState> emit) async {
+    add(LoadJobs(
+      category: state.selectedCategory,
+      query: state.searchQuery,
+      sektor: event.sektor,
+      jurusan: event.jurusan,
+      lokasi: event.lokasi,
+    ));
   }
 }
