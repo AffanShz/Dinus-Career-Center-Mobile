@@ -65,7 +65,7 @@ class JobApplicationService {
       String? existingLamaranId;
 
       if (existing != null) {
-        if (existing['status_terakhir'] == 'canceled') {
+        if (existing['status_terakhir'] == 'cancelled') {
           isReapply = true;
           existingLamaranId = existing['lamaran_id']?.toString();
         } else {
@@ -159,7 +159,7 @@ class JobApplicationService {
     try {
       await _supabase
           .from('lamaran')
-          .update({'status_terakhir': 'canceled'})
+          .update({'status_terakhir': 'cancelled'})
           .eq('lowongan_id', lowonganId)
           .eq('pelamar_id', user.id);
       return true;

@@ -93,7 +93,7 @@ class JobService {
         final Map<String, dynamic> mutableData = Map<String, dynamic>.from(data);
         final status = appliedJobMap[lowonganId];
         mutableData['status_lamaran'] = status;
-        mutableData['is_applied'] = status != null && status != 'canceled';
+        mutableData['is_applied'] = status != null && status != 'cancelled';
         return JobModel.fromMap(mutableData);
       }).toList();
 
@@ -144,7 +144,7 @@ class JobService {
         if (existingApplication != null) {
           final status = existingApplication['status_terakhir']?.toString() ?? 'applied';
           mutableResponse['status_lamaran'] = status;
-          mutableResponse['is_applied'] = status != 'canceled';
+          mutableResponse['is_applied'] = status != 'cancelled';
         } else {
           mutableResponse['is_applied'] = false;
         }
