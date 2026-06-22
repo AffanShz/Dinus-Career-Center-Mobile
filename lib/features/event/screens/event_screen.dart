@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
@@ -40,42 +40,54 @@ class EventScreen extends StatelessWidget {
                         eventBloc.add(LoadEvents());
                         await eventBloc.stream.firstWhere((state) => state.status != EventStatus.loading);
                       },
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 16.0,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16),
-                            _buildSectionHeader(),
-                            const SizedBox(height: 24),
-                            if (state.status == EventStatus.loading)
-                              const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(32.0),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            else if (state.status == EventStatus.failure)
-                              const Center(child: Text('Gagal memuat event'))
-                            else if (state.events.isEmpty)
-                              const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(32.0),
-                                  child: Text('Tidak ada event ditemukan'),
-                                ),
-                              )
-                            else
-                              ...state.events.map((event) => EventCard(
-                                    event: event,
-                                  )),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                      ),
+                      child: state.status == EventStatus.loading
+                          ? const Center(child: CircularProgressIndicator())
+                          : state.status == EventStatus.failure
+                              ? ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  children: const [
+                                    Center(
+                                        child:
+                                            Text('Gagal memuat event')),
+                                  ],
+                                )
+                              : state.events.isEmpty
+                                  ? ListView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      children: const [
+                                        Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(32.0),
+                                            child: Text(
+                                                'Tidak ada event ditemukan'),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : ListView.builder(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0,
+                                        vertical: 16.0,
+                                      ),
+                                      itemCount: state.events.length + 1,
+                                      itemBuilder: (context, index) {
+                                        if (index == 0) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 16.0, bottom: 24.0),
+                                            child: _buildSectionHeader(),
+                                          );
+                                        }
+                                        return EventCard(
+                                          event:
+                                              state.events[index - 1],
+                                        );
+                                      },
+                                    ),
                     );
                   },
                 ),
@@ -90,11 +102,7 @@ class EventScreen extends StatelessWidget {
   Widget _buildSectionHeader() {
     return Text(
       'Event Mendatang',
-      style: GoogleFonts.poppins(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: const Color(0xFF1E293B),
-      ),
+      style: AppTextStyles.headlineMedium,
     );
   }
 }

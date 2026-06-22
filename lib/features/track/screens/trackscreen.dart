@@ -55,44 +55,48 @@ class TrackScreen extends StatelessWidget {
                         context.read<TrackBloc>().add(
                             LoadApplications(filter: state.selectedFilter));
                       },
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0,
-                            vertical: 8.0,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (state.status == TrackStatus.loading)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(32.0),
-                                    child: CircularProgressIndicator(),
-                                  ),
+                      child: state.status == TrackStatus.loading
+                          ? const Center(child: CircularProgressIndicator())
+                          : state.status == TrackStatus.failure
+                              ? ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  children: const [
+                                    Center(
+                                      child: Text(
+                                          'Gagal memuat data pelacakan'),
+                                    ),
+                                  ],
                                 )
-                              else if (state.status == TrackStatus.failure)
-                                const Center(
-                                    child: Text('Gagal memuat data pelacakan'))
-                              else if (state.applications.isEmpty)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(32.0),
-                                    child: Text('Tidak ada lamaran ditemukan'),
-                                  ),
-                                )
-                              else
-                                Column(
-                                  children: state.applications
-                                      .map((app) =>
-                                          ApplicationCard(application: app))
-                                      .toList(),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
+                              : state.applications.isEmpty
+                                  ? ListView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      children: const [
+                                        Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(32.0),
+                                            child: Text(
+                                                'Tidak ada lamaran ditemukan'),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : ListView.builder(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0,
+                                        vertical: 8.0,
+                                      ),
+                                      itemCount: state.applications.length,
+                                      itemBuilder: (context, index) {
+                                        return ApplicationCard(
+                                          application:
+                                              state.applications[index],
+                                        );
+                                      },
+                                    ),
                     ),
                   ),
                 ],

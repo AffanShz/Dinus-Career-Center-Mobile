@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/widgets/app_header.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
@@ -72,48 +72,58 @@ class JobScreen extends StatelessWidget {
                               query: state.searchQuery,
                             ));
                       },
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0,
-                            vertical: 8.0,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildSectionHeader(state.jobs.length),
-                              const SizedBox(height: 16),
-                              if (state.status == JobStatus.loading)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(32.0),
-                                    child: CircularProgressIndicator(),
-                                  ),
+                      child: state.status == JobStatus.loading
+                          ? const Center(child: CircularProgressIndicator())
+                          : state.status == JobStatus.failure
+                              ? ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  children: const [
+                                    Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(32.0),
+                                        child:
+                                            Text('Gagal memuat lowongan'),
+                                      ),
+                                    ),
+                                  ],
                                 )
-                              else if (state.status == JobStatus.failure)
-                                const Center(
-                                    child: Text('Gagal memuat lowongan'))
-                              else if (state.jobs.isEmpty)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(32.0),
-                                    child:
-                                        Text('Tidak ada lowongan ditemukan'),
-                                  ),
-                                )
-                              else
-                                Column(
-                                  children: state.jobs
-                                      .map((job) => JobListItem(
-                                            job: job,
-                                          ))
-                                      .toList(),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
+                              : state.jobs.isEmpty
+                                  ? ListView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      children: const [
+                                        Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(32.0),
+                                            child: Text(
+                                                'Tidak ada lowongan ditemukan'),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : ListView.builder(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0,
+                                        vertical: 8.0,
+                                      ),
+                                      itemCount: state.jobs.length + 1,
+                                      itemBuilder: (context, index) {
+                                        if (index == 0) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 16.0),
+                                            child: _buildSectionHeader(
+                                                state.jobs.length),
+                                          );
+                                        }
+                                        return JobListItem(
+                                          job: state.jobs[index - 1],
+                                        );
+                                      },
+                                    ),
                     ),
                   ),
                 ],
@@ -131,9 +141,7 @@ class JobScreen extends StatelessWidget {
       children: [
         Text(
           'Lowongan Tersedia',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.primary,
           ),
         ),
@@ -145,9 +153,7 @@ class JobScreen extends StatelessWidget {
           ),
           child: Text(
             '$count Lowongan',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+            style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.accent,
             ),
           ),
