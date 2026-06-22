@@ -36,7 +36,9 @@ class EventScreen extends StatelessWidget {
                   builder: (context, state) {
                     return RefreshIndicator(
                       onRefresh: () async {
-                        context.read<EventBloc>().add(LoadEvents());
+                        final eventBloc = context.read<EventBloc>();
+                        eventBloc.add(LoadEvents());
+                        await eventBloc.stream.firstWhere((state) => state.status != EventStatus.loading);
                       },
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),

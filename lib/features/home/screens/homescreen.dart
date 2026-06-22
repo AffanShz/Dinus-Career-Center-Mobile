@@ -52,8 +52,16 @@ class Homescreen extends StatelessWidget {
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        context.read<HomeBloc>().add(LoadHomeData());
-                        context.read<ProfileBloc>().add(LoadProfile());
+                        final homeBloc = context.read<HomeBloc>();
+                        final profileBloc = context.read<ProfileBloc>();
+                        
+                        homeBloc.add(LoadHomeData());
+                        profileBloc.add(LoadProfile());
+                        
+                        await Future.wait([
+                          homeBloc.stream.firstWhere((state) => state.status != HomeStatus.loading),
+                          profileBloc.stream.firstWhere((state) => state.status != ProfileStatus.loading),
+                        ]);
                       },
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),

@@ -98,8 +98,8 @@ class ApplicationModel {
         currentStep = 0;
     }
 
-    final createdAt = DateTime.parse(map['created_at'] ?? DateTime.now().toIso8601String());
-    final updatedAt = DateTime.parse(map['updated_at'] ?? map['created_at'] ?? DateTime.now().toIso8601String());
+    final createdAt = DateTime.tryParse(map['created_at']?.toString() ?? '') ?? DateTime.now();
+    final updatedAt = DateTime.tryParse(map['updated_at']?.toString() ?? map['created_at']?.toString() ?? '') ?? DateTime.now();
 
     return ApplicationModel(
       id: map['lamaran_id']?.toString() ?? '',

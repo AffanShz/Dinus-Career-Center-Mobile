@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
-import '../models/event_model.dart';
+import 'package:intl/intl.dart';
+import '../../event/models/event_model.dart';
 
 class EventCard extends StatelessWidget {
-  final Event event;
+  final EventModel event;
 
   const EventCard({super.key, required this.event});
 
@@ -13,7 +14,7 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final Uri url = Uri.parse('https://cc.dinus.ac.id/tiket_JF27/');
+        final Uri url = Uri.parse(event.registrationLink ?? 'https://cc.dinus.ac.id/tiket_JF27/');
         try {
           if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
             debugPrint('Could not launch $url');
@@ -58,7 +59,7 @@ class EventCard extends StatelessWidget {
                               color: Colors.white, size: 16),
                           const SizedBox(width: 4),
                           Text(
-                            event.type.toUpperCase(),
+                            (event.category ?? 'EVENT').toUpperCase(),
                             style: AppTextStyles.labelSmall.copyWith(
                               color: Colors.white,
                               letterSpacing: 1.2,
@@ -97,7 +98,7 @@ class EventCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            event.date,
+                            DateFormat('dd MMM yyyy', 'id_ID').format(event.eventDate),
                             style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
                           ),
                         ],
@@ -112,7 +113,7 @@ class EventCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            event.time,
+                            event.startTime,
                             style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
                           ),
                         ],
@@ -149,7 +150,7 @@ class EventCard extends StatelessWidget {
 }
 
 class UpcomingEvents extends StatelessWidget {
-  final Event event;
+  final EventModel event;
 
   const UpcomingEvents({super.key, required this.event});
 

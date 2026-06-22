@@ -76,7 +76,7 @@ class JobService {
     } catch (e) {
       // ignore: avoid_print
       appLog('Error fetching jobs from Supabase: $e');
-      return [];
+      rethrow;
     }
   }
 

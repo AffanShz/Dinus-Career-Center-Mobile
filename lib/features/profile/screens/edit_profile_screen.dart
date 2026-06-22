@@ -32,6 +32,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _ipkController;
   late TextEditingController _bidangController;
   late TextEditingController _disabilitasController;
+  late TextEditingController _emailController;
+  late TextEditingController _univController;
 
   String? _selectedJenisKelamin;
   String? _selectedStatusPerkawinan;
@@ -71,6 +73,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _disabilitasController = TextEditingController(
       text: widget.profile.disabilitas,
     );
+    _emailController = TextEditingController(text: widget.profile.email);
+    _univController = TextEditingController(text: 'Universitas Dian Nuswantoro');
 
     _selectedJenisKelamin = widget.profile.jenisKelamin;
     _selectedStatusPerkawinan = widget.profile.statusPerkawinan;
@@ -101,6 +105,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _ipkController.dispose();
     _bidangController.dispose();
     _disabilitasController.dispose();
+    _emailController.dispose();
+    _univController.dispose();
     super.dispose();
   }
 
@@ -569,7 +575,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _buildTextField('Nama Lengkap', _nameController),
           _buildTextField(
             'Email',
-            TextEditingController(text: profile.email),
+            _emailController,
             readOnly: true,
             helperText: 'Email tidak dapat diubah',
           ),
@@ -669,7 +675,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 24),
           _buildTextField(
             'Universitas / Institusi',
-            TextEditingController(text: 'Universitas Dian Nuswantoro'),
+            _univController,
             readOnly: true,
           ),
           _buildTextField('Bidang / Jurusan', _bidangController),

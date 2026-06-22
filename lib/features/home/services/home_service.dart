@@ -1,7 +1,7 @@
 import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../job/models/job_model.dart';
-import '../models/event_model.dart';
+import '../../event/models/event_model.dart';
 
 class HomeService {
   final _supabase = Supabase.instance.client;
@@ -51,14 +51,26 @@ class HomeService {
       appLog('[HomeService] Error fetching recommended jobs: $e');
     }
 
+    // ── Fetch upcoming event dari Supabase ────────────────────────────
+    EventModel? upcomingEvent;
+    try {
+      final String today = DateTime.now().toIso8601String().split('T')[0];
+      final eventResponse = await _supabase.from('events')
+          .select('*, event_speakers(*)')
+          .gte('event_date', today)
+          .order('event_date', ascending: true)
+          .limit(1);
+
+      if ((eventResponse as List).isNotEmpty) {
+        upcomingEvent = EventModel.fromJson(eventResponse.first);
+      }
+    } catch (e) {
+      appLog('[HomeService] Error fetching upcoming event: $e');
+    }
+
     return {
       'recommendedJobs': recommendedJobs,
-      'upcomingEvent': Event(
-        title: 'Dinus Career Center Job Fair 2027',
-        date: '15-16 Juni 2027',
-        time: '08:00 - 16:00 WIB',
-        type: 'JOB FAIR',
-      ),
+      'upcomingEvent': upcomingEvent,
     };
   }
 }

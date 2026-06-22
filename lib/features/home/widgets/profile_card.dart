@@ -99,8 +99,8 @@ class ProfileCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (context) => ProfileBloc(),
+                        builder: (ctx) => BlocProvider.value(
+                          value: context.read<ProfileBloc>(),
                           child: EditProfileScreen(profile: userProfile!),
                         ),
                       ),

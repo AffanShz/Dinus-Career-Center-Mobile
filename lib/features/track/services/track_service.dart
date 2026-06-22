@@ -62,7 +62,7 @@ class TrackService {
       return allApplications;
     } catch (e) {
       appLog('Error fetching applications: $e');
-      return [];
+      rethrow;
     }
   }
 

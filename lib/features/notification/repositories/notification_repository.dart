@@ -22,7 +22,7 @@ class NotificationRepository {
           .toList();
     } catch (e) {
       appLog('Error fetching notifications: $e');
-      return [];
+      rethrow;
     }
   }
 

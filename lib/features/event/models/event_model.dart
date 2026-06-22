@@ -88,24 +88,26 @@ class EventModel extends Equatable {
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
-      id: json['id'],
-      title: json['title'],
-      slug: json['slug'],
-      description: json['description'],
-      imageUrl: json['image_url'],
-      eventDate: DateTime.parse(json['event_date']),
-      startTime: json['start_time'],
-      endTime: json['end_time'],
-      locationName: json['location_name'],
-      address: json['address'],
-      benefits: json['benefits'],
-      category: json['category'],
-      organizer: json['organizer'],
-      maxParticipants: json['max_participants'],
-      registrationLink: json['registration_link'],
-      status: json['status'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      id: json['id'] ?? 0,
+      title: json['title']?.toString() ?? 'Unknown Event',
+      slug: json['slug']?.toString(),
+      description: json['description']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+      eventDate: DateTime.tryParse(json['event_date']?.toString() ?? '') ?? DateTime.now(),
+      startTime: json['start_time']?.toString() ?? '00:00',
+      endTime: json['end_time']?.toString(),
+      locationName: json['location_name']?.toString(),
+      address: json['address']?.toString(),
+      benefits: json['benefits']?.toString(),
+      category: json['category']?.toString(),
+      organizer: json['organizer']?.toString(),
+      maxParticipants: json['max_participants'] is int 
+          ? json['max_participants'] 
+          : int.tryParse(json['max_participants']?.toString() ?? ''),
+      registrationLink: json['registration_link']?.toString(),
+      status: json['status']?.toString(),
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
       speakers: (json['event_speakers'] as List<dynamic>?)
               ?.map((s) => EventSpeaker.fromJson(s as Map<String, dynamic>))
               .toList() ??
