@@ -71,40 +71,68 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     MarkAsRead event,
     Emitter<NotificationState> emit,
   ) async {
-    await _repository.markAsRead(event.id);
-    final updatedList = state.notifications.map((n) {
+    final previousNotifications = state.notifications;
+    // Optimistic update: reflect the change in the UI immediately.
+    final updatedList = previousNotifications.map((n) {
       if (n.id == event.id) {
         return n.copyWith(isRead: true);
       }
       return n;
     }).toList();
     emit(state.copyWith(notifications: updatedList));
+
+    try {
+      await _repository.markAsRead(event.id);
+    } catch (e) {
+      // Roll back to the previous state if the DB write failed.
+      emit(state.copyWith(notifications: previousNotifications));
+    }
   }
 
   Future<void> _onMarkAllAsRead(
     MarkAllAsReadEvent event,
     Emitter<NotificationState> emit,
   ) async {
-    await _repository.markAllAsRead();
-    final updatedList = state.notifications.map((n) => n.copyWith(isRead: true)).toList();
+    final previousNotifications = state.notifications;
+    final updatedList =
+        previousNotifications.map((n) => n.copyWith(isRead: true)).toList();
     emit(state.copyWith(notifications: updatedList));
+
+    try {
+      await _repository.markAllAsRead();
+    } catch (e) {
+      emit(state.copyWith(notifications: previousNotifications));
+    }
   }
 
   Future<void> _onDeleteNotification(
     DeleteNotification event,
     Emitter<NotificationState> emit,
   ) async {
-    await _repository.deleteNotification(event.id);
-    final updatedList = state.notifications.where((n) => n.id != event.id).toList();
+    final previousNotifications = state.notifications;
+    final updatedList =
+        previousNotifications.where((n) => n.id != event.id).toList();
     emit(state.copyWith(notifications: updatedList));
+
+    try {
+      await _repository.deleteNotification(event.id);
+    } catch (e) {
+      emit(state.copyWith(notifications: previousNotifications));
+    }
   }
 
   Future<void> _onClearAllNotifications(
     ClearAllNotifications event,
     Emitter<NotificationState> emit,
   ) async {
-    await _repository.deleteAllNotifications();
+    final previousNotifications = state.notifications;
     emit(state.copyWith(notifications: []));
+
+    try {
+      await _repository.deleteAllNotifications();
+    } catch (e) {
+      emit(state.copyWith(notifications: previousNotifications));
+    }
   }
 
   @override

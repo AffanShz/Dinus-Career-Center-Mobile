@@ -34,6 +34,7 @@ class NotificationRepository {
           .eq('notifikasi_id', notificationId);
     } catch (e) {
       appLog('Error marking notification as read: $e');
+      rethrow;
     }
   }
 
@@ -49,6 +50,7 @@ class NotificationRepository {
           .eq('is_read', false);
     } catch (e) {
       appLog('Error marking all notifications as read: $e');
+      rethrow;
     }
   }
 
@@ -60,6 +62,7 @@ class NotificationRepository {
           .eq('notifikasi_id', notificationId);
     } catch (e) {
       appLog('Error deleting notification: $e');
+      rethrow;
     }
   }
 
@@ -74,6 +77,7 @@ class NotificationRepository {
           .eq('pelamar_id', user.id);
     } catch (e) {
       appLog('Error deleting all notifications: $e');
+      rethrow;
     }
   }
 
