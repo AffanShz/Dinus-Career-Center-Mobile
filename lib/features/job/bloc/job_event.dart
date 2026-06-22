@@ -53,6 +53,15 @@ class ApplyJobSuccess extends JobEvent {
   List<Object?> get props => [jobId];
 }
 
+class CancelJobSuccess extends JobEvent {
+  final String jobId;
+
+  const CancelJobSuccess(this.jobId);
+
+  @override
+  List<Object?> get props => [jobId];
+}
+
 class ApplyAdvancedFilter extends JobEvent {
   final String? sektor;
   final String? jurusan;

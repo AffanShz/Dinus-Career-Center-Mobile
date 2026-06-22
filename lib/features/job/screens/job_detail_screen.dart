@@ -529,7 +529,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                     const SnackBar(content: Text('Lamaran berhasil dibatalkan.')),
                                   );
                                   try {
-                                    context.read<JobBloc>().add(const LoadJobs()); // refresh jobs list
+                                    context.read<JobBloc>().add(CancelJobSuccess(widget.job.id));
                                   } catch (_) {}
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -551,6 +551,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             setState(() {
                               _isApplied = true;
                             });
+                            try {
+                              context.read<JobBloc>().add(ApplyJobSuccess(widget.job.id));
+                            } catch (_) {}
                           }
                         }
                       : null,

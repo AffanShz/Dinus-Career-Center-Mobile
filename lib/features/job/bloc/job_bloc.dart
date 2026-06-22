@@ -13,13 +13,24 @@ class JobBloc extends Bloc<JobEvent, JobState> {
     on<ChangeCategory>(_onChangeCategory);
     on<SearchJobs>(_onSearchJobs);
     on<ApplyJobSuccess>(_onApplyJobSuccess);
+    on<CancelJobSuccess>(_onCancelJobSuccess);
     on<ApplyAdvancedFilter>(_onApplyAdvancedFilter);
   }
 
   void _onApplyJobSuccess(ApplyJobSuccess event, Emitter<JobState> emit) {
     final updatedJobs = state.jobs.map((job) {
       if (job.id == event.jobId) {
-        return job.copyWith(isApplied: true);
+        return job.copyWith(isApplied: true, statusLamaran: 'applied');
+      }
+      return job;
+    }).toList();
+    emit(state.copyWith(jobs: updatedJobs));
+  }
+
+  void _onCancelJobSuccess(CancelJobSuccess event, Emitter<JobState> emit) {
+    final updatedJobs = state.jobs.map((job) {
+      if (job.id == event.jobId) {
+        return job.copyWith(isApplied: false, statusLamaran: 'cancelled');
       }
       return job;
     }).toList();
