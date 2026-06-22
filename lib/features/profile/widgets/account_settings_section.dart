@@ -6,6 +6,9 @@ import 'package:dcc_mobile/features/auth/screens/login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/profile_bloc.dart';
 import '../screens/edit_profile_screen.dart';
+import '../screens/about_us_screen.dart';
+import '../screens/privacy_policy_screen.dart';
+import '../screens/terms_conditions_screen.dart';
 
 class AccountSettingsSection extends StatelessWidget {
   const AccountSettingsSection({super.key});
@@ -43,15 +46,27 @@ class AccountSettingsSection extends StatelessWidget {
 
           const Divider(height: 1, color: AppColors.surfaceContainerHigh),
           _buildSettingItem(
+            icon: Icons.info_outline_rounded,
+            title: 'Tentang Kami',
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen()));
+            },
+          ),
+          const Divider(height: 1, color: AppColors.surfaceContainerHigh),
+          _buildSettingItem(
             icon: Icons.policy_outlined,
             title: 'Kebijakan Privasi',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
+            },
           ),
           const Divider(height: 1, color: AppColors.surfaceContainerHigh),
           _buildSettingItem(
             icon: Icons.gavel_outlined,
             title: 'Syarat & Ketentuan',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsConditionsScreen()));
+            },
           ),
           const Divider(height: 1, color: AppColors.surfaceContainerHigh),
           _buildSettingItem(
@@ -59,13 +74,41 @@ class AccountSettingsSection extends StatelessWidget {
             title: 'Keluar',
             textColor: AppColors.error,
             onTap: () async {
-              await AuthService.signOut();
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Login()),
-                  (route) => false,
-                );
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    title: Text('Konfirmasi', style: AppTextStyles.headlineMedium.copyWith(color: AppColors.primary)),
+                    content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text('Batal', style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          elevation: 0,
+                        ),
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text('Keluar', style: AppTextStyles.bodyMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirm == true && context.mounted) {
+                await AuthService.signOut();
+                if (context.mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Login()),
+                    (route) => false,
+                  );
+                }
               }
             },
           ),
