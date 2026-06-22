@@ -1,11 +1,32 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 
-class JobSearchBar extends StatelessWidget {
+class JobSearchBar extends StatefulWidget {
   final Function(String) onSearch;
 
   const JobSearchBar({super.key, required this.onSearch});
+
+  @override
+  State<JobSearchBar> createState() => _JobSearchBarState();
+}
+
+class _JobSearchBarState extends State<JobSearchBar> {
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      widget.onSearch(query);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +47,11 @@ class JobSearchBar extends StatelessWidget {
               ],
             ),
             child: TextField(
-              onChanged: onSearch,
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Cari lowongan',
-                hintStyle: GoogleFonts.poppins(
+                hintStyle: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.grey[500],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
                 ),
                 border: InputBorder.none,
                 icon: Icon(
