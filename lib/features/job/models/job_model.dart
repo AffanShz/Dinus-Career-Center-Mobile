@@ -236,6 +236,7 @@ class JobModel {
     String? tipePekerjaan,
     String? sektor,
     bool? isApplied,
+    String? statusLamaran,
     List<JobTag>? tags,
   }) {
     return JobModel(
@@ -260,6 +261,7 @@ class JobModel {
       tipePekerjaan: tipePekerjaan ?? this.tipePekerjaan,
       sektor: sektor ?? this.sektor,
       isApplied: isApplied ?? this.isApplied,
+      statusLamaran: statusLamaran ?? this.statusLamaran,
       tags: tags ?? this.tags,
     );
   }
