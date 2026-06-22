@@ -28,22 +28,24 @@ class HomeService {
       // ignore: avoid_print
       appLog('[HomeService] Fetched ${(response as List).length} lowongan');
 
-      Set<String> appliedJobIds = {};
+      Map<String, String> appliedJobMap = {};
       if (user != null) {
         final applications = await _supabase
             .from('lamaran')
-            .select('lowongan_id')
+            .select('lowongan_id, status_terakhir')
             .eq('pelamar_id', user.id);
         
-        appliedJobIds = (applications as List)
-            .map((a) => a['lowongan_id'].toString())
-            .toSet();
+        for (var a in (applications as List)) {
+          appliedJobMap[a['lowongan_id'].toString()] = a['status_terakhir']?.toString() ?? 'applied';
+        }
       }
 
       recommendedJobs = (response as List).map((data) {
         final String lowonganId = data['lowongan_id'].toString();
         final Map<String, dynamic> mutableData = Map<String, dynamic>.from(data);
-        mutableData['is_applied'] = appliedJobIds.contains(lowonganId);
+        final status = appliedJobMap[lowonganId];
+        mutableData['status_lamaran'] = status;
+        mutableData['is_applied'] = status != null && status != 'cancelled';
         return JobModel.fromMap(mutableData);
       }).toList();
     } catch (e) {
