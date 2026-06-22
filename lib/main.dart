@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/colors.dart';
+import 'core/utils/env.dart';
 import 'features/auth/screens/login.dart';
 import 'features/home/screens/main_screen.dart';
 import 'features/auth/services/auth_service.dart';
@@ -16,14 +17,26 @@ import 'core/utils/workmanager_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  print('DEBUG: App Starting...');
-  await dotenv.load(fileName: '.env');
+
+  // Load and validate configuration before anything else. If the .env file is
+  // missing or a required key is absent, show a clear error screen instead of
+  // crashing with an opaque null-check failure.
+  final String supabaseUrl;
+  final String supabaseAnonKey;
+  try {
+    await dotenv.load(fileName: '.env');
+    supabaseUrl = Env.supabaseUrl;
+    supabaseAnonKey = Env.supabaseAnonKey;
+  } catch (e) {
+    final message = e is EnvException
+        ? e.message
+        : 'Gagal memuat file .env. Pastikan file .env tersedia di root project. ($e)';
+    runApp(ConfigErrorApp(message: message));
+    return;
+  }
 
   // Inisialisasi locale Indonesia untuk format tanggal
   await initializeDateFormatting('id_ID', null);
-
-  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
@@ -94,6 +107,57 @@ class MainApp extends StatelessWidget {
         ),
       ),
       home: initialSession != null ? const MainScreen() : const Login(),
+    );
+  }
+}
+
+/// Fallback app shown when required configuration (.env) is missing or invalid.
+/// Replaces the previous behavior of crashing on a null-check at startup.
+class ConfigErrorApp extends StatelessWidget {
+  final String message;
+
+  const ConfigErrorApp({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline,
+                      color: AppColors.primary, size: 64),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Konfigurasi Tidak Lengkap',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

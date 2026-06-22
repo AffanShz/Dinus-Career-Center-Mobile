@@ -1,8 +1,8 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/utils/dinus_email_parser.dart';
+import '../../../core/utils/env.dart';
 
 class AuthService {
   static final _supabase = Supabase.instance.client;
@@ -29,8 +29,7 @@ class AuthService {
   /// Sign in with Google via Supabase idToken flow (google_sign_in v6)
   static Future<AuthResponse?> signInWithGoogle() async {
     try {
-      final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID']!;
-      print('DEBUG: Starting Google Sign-In with webClientId: $webClientId');
+      final webClientId = Env.googleWebClientId;
 
       final GoogleSignIn googleSignIn = GoogleSignIn(
         serverClientId: webClientId,
