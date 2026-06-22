@@ -23,6 +23,7 @@ class TrackService {
             )
           ''')
           .eq('pelamar_id', user.id)
+          .neq('status_terakhir', 'cancelled')
           .order('updated_at', ascending: false)
           .limit(50);
 

@@ -106,6 +106,23 @@ class JobListItem extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ] else if (job.statusLamaran == 'cancelled') ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Sudah Dibatalkan',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.red,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ],
                     ],
                   ),
