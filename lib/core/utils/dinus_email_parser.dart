@@ -42,6 +42,18 @@ class DinusEmailParser {
     '16': 'P',
   };
 
+  /// Reverse mapping for converting a known letter back to its numeric faculty code.
+  static const Map<String, String> _letterToFacultyCode = {
+    'A': '1',
+    'B': '2',
+    'C': '3',
+    'D': '4',
+    'E': '5',
+    'F': '6',
+    'G': '7',
+    'P': '16',
+  };
+
   static Map<String, String?> parse(String email) {
     if (!email.endsWith('@mhs.dinus.ac.id')) {
       return {'nim': null, 'bidang': null};
@@ -91,5 +103,42 @@ class DinusEmailParser {
     }
 
     return {'nim': null, 'bidang': null};
+  }
+
+  /// Konversi NIM (atau input campuran) menjadi email @mhs.dinus.ac.id
+  /// Jika input sudah berbentuk email dinus, kembalikan langsung.
+  /// Jika input tidak memenuhi standar NIM minimal, kembalikan null atau input asli (tergantung kebutuhan, di sini kita kembalikan null jika gagal parsing, atau input asli jika dirasa itu email).
+  static String? toEmail(String input) {
+    final cleanInput = input.trim();
+    if (cleanInput.isEmpty) return null;
+
+    // Jika sudah berupa email dinus, kembalikan
+    if (cleanInput.toLowerCase().endsWith('@mhs.dinus.ac.id')) {
+      return cleanInput.toLowerCase();
+    }
+    
+    // Jika mengandung '@' tapi bukan dinus, biarkan saja (siapa tahu email pribadi diperbolehkan)
+    if (cleanInput.contains('@')) {
+      return cleanInput;
+    }
+
+    // Ekstrak NIM
+    // Contoh: A11.2024.11111
+    final upperInput = cleanInput.toUpperCase();
+    final firstLetter = upperInput.substring(0, 1);
+    
+    final facultyCode = _letterToFacultyCode[firstLetter];
+    if (facultyCode != null) {
+      // Ada kemungkinan ini NIM valid
+      // Hapus titik
+      final restOfNim = upperInput.substring(1).replaceAll('.', '');
+      // Validasi panjang minimal (program 2 + tahun 4 + sequence min 1)
+      if (restOfNim.length >= 7) {
+        return '$facultyCode$restOfNim@mhs.dinus.ac.id';
+      }
+    }
+
+    // Jika format gagal dikenali sebagai NIM, kembalikan input aslinya (fallback)
+    return cleanInput;
   }
 }

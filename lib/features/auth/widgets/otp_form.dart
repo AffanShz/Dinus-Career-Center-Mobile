@@ -4,9 +4,11 @@ import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_bloc.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
-
+import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
+import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 class OtpForm extends StatefulWidget {
-  const OtpForm({super.key});
+  final String email;
+  const OtpForm({super.key, required this.email});
 
   @override
   State<OtpForm> createState() => _OtpFormState();
@@ -26,7 +28,26 @@ class _OtpFormState extends State<OtpForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        // Handle OTP success -> Main screen
+        if (state is AuthSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MainScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 300),
+            ),
+            (route) => false,
+          );
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
       },
       builder: (context, state) {
         return Container(
@@ -54,15 +75,15 @@ class _OtpFormState extends State<OtpForm> {
                   color: Color(0xFF0F4C81),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Verifikasi Email',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Masukkan kode OTP yang telah dikirimkan ke email Anda.',
-                  style: TextStyle(fontSize: 14),
+                  style: AppTextStyles.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -92,7 +113,12 @@ class _OtpFormState extends State<OtpForm> {
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() == true) {
-                               // verify OTP
+                               context.read<AuthBloc>().add(
+                                 OtpVerifyRequested(
+                                   email: widget.email,
+                                   token: _otpController.text.trim(),
+                                 ),
+                               );
                             }
                           },
                     child: state is AuthLoading

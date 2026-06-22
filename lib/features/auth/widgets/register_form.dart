@@ -6,6 +6,8 @@ import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_password_field.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
 import 'package:dcc_mobile/features/auth/screens/otp.dart';
+import 'package:dcc_mobile/core/utils/dinus_email_parser.dart';
+import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -34,7 +36,25 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        // Handle successful registration, perhaps navigate to OTP screen
+        if (state is AuthOtpRequired) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => OtpScreen(email: state.email),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 300),
+            ),
+          );
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
       },
       builder: (context, state) {
         return Container(
@@ -69,15 +89,15 @@ class _RegisterFormState extends State<RegisterForm> {
                 const SizedBox(height: 16),
 
                 // Judul
-                const Text(
+                Text(
                   'Registrasi Akun',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Daftar untuk mengakses fitur Dinus Career Center.',
-                  style: TextStyle(fontSize: 14),
+                  style: AppTextStyles.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -128,12 +148,24 @@ class _RegisterFormState extends State<RegisterForm> {
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() == true) {
-                              // For demonstration, we'll navigate directly to the OTP screen.
-                              // In a real app, you would add an event to AuthBloc here.
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OtpScreen(),
+                              if (_passwordController.text != _confirmPasswordController.text) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Konfirmasi password tidak cocok!'),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              final emailInput = _emailController.text.trim();
+                              final parsedEmail = DinusEmailParser.toEmail(emailInput) ?? emailInput;
+
+                              context.read<AuthBloc>().add(
+                                RegisterRequested(
+                                  email: parsedEmail,
+                                  password: _passwordController.text,
+                                  fullName: _nameController.text.trim(),
                                 ),
                               );
                             }
@@ -161,11 +193,19 @@ class _RegisterFormState extends State<RegisterForm> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
-                    'Sudah punya akun? Login',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: const Color(0xFF0F4C81),
-                      fontWeight: FontWeight.bold,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Sudah punya akun? ',
+                      style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey[600]),
+                      children: [
+                        TextSpan(
+                          text: 'Login',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: const Color(0xFF0F4C81),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -5,7 +5,8 @@ import 'package:dcc_mobile/features/auth/bloc/auth_bloc.dart';
 import 'package:dcc_mobile/features/auth/widgets/otp_form.dart';
 
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+  final String email;
+  const OtpScreen({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +14,6 @@ class OtpScreen extends StatelessWidget {
       create: (context) => AuthBloc(),
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -48,7 +41,7 @@ class OtpScreen extends StatelessWidget {
                           children: [
                             const Spacer(),
                             const Spacer(),
-                            const OtpForm(),
+                            OtpForm(email: email),
                             const Spacer(),
                             Text(
                               '© 2024 Dinus Career Center. All Rights Reserved.',

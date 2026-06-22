@@ -15,6 +15,17 @@ class AuthSuccess extends AuthState {}
 
 class AuthCancelled extends AuthState {}
 
+class AuthOtpRequired extends AuthState {
+  final String email;
+
+  const AuthOtpRequired(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class AuthRegisteredSuccess extends AuthState {}
+
 class AuthFailure extends AuthState {
   final String error;
 

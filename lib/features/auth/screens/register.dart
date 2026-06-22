@@ -13,14 +13,6 @@ class RegisterScreen extends StatelessWidget {
       create: (context) => AuthBloc(),
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -36,7 +28,9 @@ class RegisterScreen extends StatelessWidget {
               builder: (context, constraints) {
                 return SingleChildScrollView(
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
                     child: IntrinsicHeight(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -47,12 +41,15 @@ class RegisterScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Spacer(),
+                            const Spacer(),
                             const RegisterForm(),
                             const Spacer(),
                             Text(
                               '© 2024 Dinus Career Center. All Rights Reserved.',
                               textAlign: TextAlign.center,
-                              style: AppTextStyles.bodySmall.copyWith(color: Colors.white60),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: Colors.white60,
+                              ),
                             ),
                             const SizedBox(height: 8),
                           ],

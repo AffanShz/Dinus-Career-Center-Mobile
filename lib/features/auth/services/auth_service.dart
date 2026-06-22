@@ -27,6 +27,42 @@ class AuthService {
     return response;
   }
 
+  /// Sign up with email and password via Supabase (sends OTP if email confirmations are enabled)
+  static Future<AuthResponse> signUpWithEmail({
+    required String email,
+    required String password,
+    required String fullName,
+  }) async {
+    appLog('DEBUG: Signing up user $email');
+    final response = await _supabase.auth.signUp(
+      email: email,
+      password: password,
+      data: {'full_name': fullName},
+    );
+    return response;
+  }
+
+  /// Verify OTP sent to email during Sign Up
+  static Future<AuthResponse> verifyOtp({
+    required String email,
+    required String token,
+  }) async {
+    appLog('DEBUG: Verifying OTP for $email');
+    final response = await _supabase.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: OtpType.signup,
+    );
+
+    if (response.session != null) {
+      await _saveLoginTime();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('USER_ID', response.user!.id);
+      await handleAfterLogin();
+    }
+    return response;
+  }
+
   /// Sign in with Google via Supabase idToken flow (google_sign_in v6)
   static Future<AuthResponse?> signInWithGoogle() async {
     try {

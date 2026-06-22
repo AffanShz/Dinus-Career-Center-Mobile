@@ -9,6 +9,7 @@ import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
 import 'package:dcc_mobile/features/auth/widgets/google_sign_in_button.dart';
 import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 import 'package:dcc_mobile/features/auth/screens/register.dart';
+import 'package:dcc_mobile/core/utils/dinus_email_parser.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -72,15 +73,15 @@ class _LoginFormState extends State<LoginForm> {
                 const SizedBox(height: 16),
 
                 // Informasi Penting
-                const Text(
+                Text(
                   'Informasi Penting:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Silakan login menggunakan akun @dinus.ac.id Anda.',
-                  style: TextStyle(fontSize: 14),
+                  style: AppTextStyles.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -148,9 +149,12 @@ class _LoginFormState extends State<LoginForm> {
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() == true) {
+                              final emailInput = _emailController.text.trim();
+                              final parsedEmail = DinusEmailParser.toEmail(emailInput) ?? emailInput;
+                              
                               context.read<AuthBloc>().add(
                                 LoginRequested(
-                                  _emailController.text.trim(),
+                                  parsedEmail,
                                   _passwordController.text,
                                 ),
                               );
@@ -178,16 +182,28 @@ class _LoginFormState extends State<LoginForm> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(),
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const RegisterScreen(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(opacity: animation, child: child);
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
                       ),
                     );
                   },
-                  child: Text(
-                    'Belum punya akun? Daftar Sekarang',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: const Color(0xFF0F4C81),
-                      fontWeight: FontWeight.bold,
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Belum punya akun? ',
+                      style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey[600]),
+                      children: [
+                        TextSpan(
+                          text: 'Daftar Sekarang',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: const Color(0xFF0F4C81),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
