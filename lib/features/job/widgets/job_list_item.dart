@@ -26,7 +26,11 @@ class JobListItem extends StatelessWidget {
           ),
         );
         if (result == true && context.mounted) {
-          context.read<JobBloc>().add(ApplyJobSuccess(job.id));
+          try {
+            context.read<JobBloc>().add(ApplyJobSuccess(job.id));
+          } catch (_) {
+            // Ignore if JobBloc is not in context (e.g. when used inside CompanyDetailScreen)
+          }
         }
       },
       child: Container(

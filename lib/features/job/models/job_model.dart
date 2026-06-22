@@ -28,6 +28,9 @@ class JobModel {
   // From perusahaan relation
   final String perusahaan;      // perusahaan.nama_perusahaan
   final String lokasi;          // perusahaan.kota
+  final String? alamatPerusahaan; // perusahaan.alamat_perusahaan
+  final String? deskripsiPerusahaan; // perusahaan.deskripsi_perusahaan
+  final String? websitePerusahaan; // perusahaan.website_perusahaan
   final String? logoPerusahaan; // perusahaan.logo
 
   // From relational FK tables
@@ -52,6 +55,9 @@ class JobModel {
     this.updatedAt,
     required this.perusahaan,
     required this.lokasi,
+    this.alamatPerusahaan,
+    this.deskripsiPerusahaan,
+    this.websitePerusahaan,
     this.logoPerusahaan,
     this.jabatan,
     this.jurusan,
@@ -94,6 +100,9 @@ class JobModel {
         perusahaanData?['nama_perusahaan']?.toString() ?? 'DCC Perusahaan';
     final String lokasiPerusahaan =
         perusahaanData?['kota']?.toString() ?? 'Semarang';
+    final String? alamatPerusahaan = perusahaanData?['alamat_perusahaan']?.toString();
+    final String? deskripsiPerusahaan = perusahaanData?['deskripsi_perusahaan']?.toString();
+    final String? websitePerusahaan = perusahaanData?['website_perusahaan']?.toString();
     final String? logoUrl = perusahaanData?['logo']?.toString();
 
     final String? namaJabatan        = jabatanData?['nama']?.toString();
@@ -154,6 +163,9 @@ class JobModel {
       updatedAt: updatedAtParsed,
       perusahaan: namaPerusahaan,
       lokasi: lokasiPerusahaan,
+      alamatPerusahaan: alamatPerusahaan,
+      deskripsiPerusahaan: deskripsiPerusahaan,
+      websitePerusahaan: websitePerusahaan,
       logoPerusahaan: logoUrl,
       jabatan: namaJabatan,
       jurusan: namaJurusan,
@@ -212,6 +224,9 @@ class JobModel {
     DateTime? updatedAt,
     String? perusahaan,
     String? lokasi,
+    String? alamatPerusahaan,
+    String? deskripsiPerusahaan,
+    String? websitePerusahaan,
     String? logoPerusahaan,
     String? jabatan,
     String? jurusan,
@@ -233,6 +248,9 @@ class JobModel {
       updatedAt: updatedAt ?? this.updatedAt,
       perusahaan: perusahaan ?? this.perusahaan,
       lokasi: lokasi ?? this.lokasi,
+      alamatPerusahaan: alamatPerusahaan ?? this.alamatPerusahaan,
+      deskripsiPerusahaan: deskripsiPerusahaan ?? this.deskripsiPerusahaan,
+      websitePerusahaan: websitePerusahaan ?? this.websitePerusahaan,
       logoPerusahaan: logoPerusahaan ?? this.logoPerusahaan,
       jabatan: jabatan ?? this.jabatan,
       jurusan: jurusan ?? this.jurusan,

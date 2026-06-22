@@ -11,18 +11,30 @@ class JobService {
   Future<List<JobModel>> fetchJobs({
     String category = 'Semua',
     String query = '',
+    String? sektor,
+    String? jurusan,
+    String? lokasi,
+    String? namaPerusahaan,
   }) async {
     try {
       final user = AuthService.currentUser;
 
+      final tipePekerjaanJoin = category != 'Semua' ? 'tipe_pekerjaan!inner ( nama )' : 'tipe_pekerjaan ( nama )';
+      final sektorJoin = sektor != null && sektor.isNotEmpty ? 'sektor!inner ( nama )' : 'sektor ( nama )';
+      final jurusanJoin = jurusan != null && jurusan.isNotEmpty ? 'jurusan!inner ( nama )' : 'jurusan ( nama )';
+      final bool needsPerusahaanInner = (lokasi != null && lokasi.isNotEmpty) || (namaPerusahaan != null && namaPerusahaan.isNotEmpty);
+      final perusahaanJoin = needsPerusahaanInner 
+          ? 'perusahaan!inner ( nama_perusahaan, kota, alamat_perusahaan, deskripsi_perusahaan, website_perusahaan, logo )' 
+          : 'perusahaan ( nama_perusahaan, kota, alamat_perusahaan, deskripsi_perusahaan, website_perusahaan, logo )';
+
       // Join semua tabel relasi sesuai schema lowongan
       var request = _supabase.from('lowongan').select('''
         *,
-        perusahaan ( nama_perusahaan, kota, alamat_perusahaan, logo ),
+        $perusahaanJoin,
         jabatan ( nama ),
-        jurusan ( nama ),
-        tipe_pekerjaan ( nama ),
-        sektor ( nama )
+        $jurusanJoin,
+        $tipePekerjaanJoin,
+        $sektorJoin
       ''');
 
       // Filter hanya lowongan yang aktif (berdasarkan enum status_loker)
@@ -35,6 +47,25 @@ class JobService {
       // directly in a simple select easily without gte filter. 
       // We'll apply the gte filter and handle nulls or perform client-side final check if needed.
       request = request.or('batas_akhir.is.null,batas_akhir.gte.$today');
+
+      // Filter pencarian berdasarkan kategori (tipe pekerjaan) di sisi DB
+      if (category != 'Semua') {
+        request = request.ilike('tipe_pekerjaan.nama', category);
+      }
+
+      // Advanced filters
+      if (sektor != null && sektor.isNotEmpty) {
+        request = request.ilike('sektor.nama', sektor);
+      }
+      if (jurusan != null && jurusan.isNotEmpty) {
+        request = request.ilike('jurusan.nama', jurusan);
+      }
+      if (namaPerusahaan != null && namaPerusahaan.isNotEmpty) {
+        request = request.eq('perusahaan.nama_perusahaan', namaPerusahaan);
+      }
+      if (lokasi != null && lokasi.isNotEmpty) {
+        request = request.ilike('perusahaan.kota', lokasi);
+      }
 
       // Filter pencarian berdasarkan judul lowongan
       if (query.isNotEmpty) {
@@ -63,16 +94,6 @@ class JobService {
         mutableData['is_applied'] = appliedJobIds.contains(lowonganId);
         return JobModel.fromMap(mutableData);
       }).toList();
-
-      // Client-side filter berdasarkan tipe_pekerjaan.nama
-      // (filter nested relation tidak didukung langsung oleh PostgREST)
-      // Exact match filter — prevents 'Part-time' matching 'Full-time'
-      if (category != 'Semua') {
-        return jobs.where((job) {
-          final tipe = job.tipePekerjaan?.toLowerCase() ?? '';
-          return tipe == category.toLowerCase();
-        }).toList();
-      }
 
       return jobs;
     } catch (e) {
@@ -126,6 +147,47 @@ class JobService {
       // ignore: avoid_print
       appLog('Error fetching job detail: $e');
       return null;
+    }
+  }
+
+  /// Fetch filter options for bottom sheet
+  Future<Map<String, List<String>>> fetchFilterOptions() async {
+    try {
+      final sektorRes = await _supabase.from('sektor').select('nama');
+      final jurusanRes = await _supabase.from('jurusan').select('nama');
+      final kotaRes = await _supabase.from('perusahaan').select('kota');
+
+      final List<String> sektorList = (sektorRes as List)
+          .map((e) => e['nama'].toString())
+          .toSet()
+          .toList();
+      sektorList.sort();
+
+      final List<String> jurusanList = (jurusanRes as List)
+          .map((e) => e['nama'].toString())
+          .toSet()
+          .toList();
+      jurusanList.sort();
+
+      final List<String> kotaList = (kotaRes as List)
+          .map((e) => e['kota']?.toString() ?? '')
+          .where((k) => k.isNotEmpty)
+          .toSet()
+          .toList();
+      kotaList.sort();
+
+      return {
+        'sektor': sektorList,
+        'jurusan': jurusanList,
+        'lokasi': kotaList,
+      };
+    } catch (e) {
+      appLog('Error fetching filter options: $e');
+      return {
+        'sektor': [],
+        'jurusan': [],
+        'lokasi': [],
+      };
     }
   }
 }
