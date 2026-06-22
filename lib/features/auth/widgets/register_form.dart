@@ -2,30 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_bloc.dart';
-import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_password_field.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
-import 'package:dcc_mobile/features/auth/widgets/google_sign_in_button.dart';
-import 'package:dcc_mobile/features/home/screens/main_screen.dart';
-import 'package:dcc_mobile/features/auth/screens/register.dart';
+import 'package:dcc_mobile/features/auth/screens/otp.dart';
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+class RegisterForm extends StatefulWidget {
+  const RegisterForm({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<RegisterForm> createState() => _RegisterFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,19 +34,7 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
-          );
-        } else if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
-        }
+        // Handle successful registration, perhaps navigate to OTP screen
       },
       builder: (context, state) {
         return Container(
@@ -68,77 +57,68 @@ class _LoginFormState extends State<LoginForm> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Logo UDINUS
-                Image.asset('assets/images/udinus.png', height: 80),
+                Image.asset(
+                  'assets/images/udinus.png',
+                  height: 80,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.school,
+                    size: 80,
+                    color: Color(0xFF0F4C81),
+                  ),
+                ),
                 const SizedBox(height: 16),
 
-                // Informasi Penting
+                // Judul
                 const Text(
-                  'Informasi Penting:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  'Registrasi Akun',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 const Text(
-                  'Silakan login menggunakan akun @dinus.ac.id Anda.',
+                  'Daftar untuk mengakses fitur Dinus Career Center.',
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
 
-                // Google Login Button
-                GoogleSignInButton(
-                  text: 'Masuk dengan akun dinus.ac.id',
-                  onPressed: state is AuthLoading
-                      ? () {}
-                      : () {
-                          context.read<AuthBloc>().add(GoogleLoginRequested());
-                        },
-                ),
-
-                const SizedBox(height: 24),
-
-                // ATAU Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'atau login dengan akun siadin',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Email / NIM Field (Styled like image)
                 AuthTextField(
-                  label: '',
-                  prefixIcon: Icons.person_outline,
-                  hintText: 'A11.2024.12345 atau email dinus',
-                  controller: _emailController,
+                  label: 'NAMA LENGKAP',
+                  prefixIcon: Icons.badge_outlined,
+                  hintText: 'Nama Lengkap',
+                  controller: _nameController,
                 ),
                 const SizedBox(height: 16),
 
-                // Password Field
+                AuthTextField(
+                  label: 'EMAIL',
+                  prefixIcon: Icons.email_outlined,
+                  hintText: 'NIM@mhs.dinus.ac.id',
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+
                 AuthPasswordField(
+                  label: 'KATA SANDI',
                   controller: _passwordController,
-                  hintText: 'Password Siadin (bukan Google)',
+                  hintText: 'Password',
+                ),
+                const SizedBox(height: 16),
+
+                AuthPasswordField(
+                  label: 'KONFIRMASI KATA SANDI',
+                  controller: _confirmPasswordController,
+                  hintText: 'Konfirmasi Password',
                 ),
                 const SizedBox(height: 24),
 
-                // Login Button
+                // Register Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF0F4C81,
-                      ), // Dark blue from image
+                      backgroundColor: const Color(0xFF0F4C81),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -148,10 +128,12 @@ class _LoginFormState extends State<LoginForm> {
                         ? null
                         : () {
                             if (_formKey.currentState?.validate() == true) {
-                              context.read<AuthBloc>().add(
-                                LoginRequested(
-                                  _emailController.text.trim(),
-                                  _passwordController.text,
+                              // For demonstration, we'll navigate directly to the OTP screen.
+                              // In a real app, you would add an event to AuthBloc here.
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const OtpScreen(),
                                 ),
                               );
                             }
@@ -166,7 +148,7 @@ class _LoginFormState extends State<LoginForm> {
                             ),
                           )
                         : Text(
-                            'Login sebagai Dinusian',
+                            'Daftar Sekarang',
                             style: AppTextStyles.labelLarge.copyWith(
                               color: Colors.white,
                             ),
@@ -174,17 +156,13 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(),
-                      ),
-                    );
+                    Navigator.pop(context);
                   },
                   child: Text(
-                    'Belum punya akun? Daftar Sekarang',
+                    'Sudah punya akun? Login',
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: const Color(0xFF0F4C81),
                       fontWeight: FontWeight.bold,
