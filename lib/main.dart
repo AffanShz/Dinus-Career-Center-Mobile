@@ -11,8 +11,6 @@ import 'features/home/screens/main_screen.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/notification/services/notification_service.dart';
 import 'features/notification/services/realtime_notification_service.dart';
-// flutter_background_service disabled — conflicts with android plugin isolate guard
-// import 'features/notification/services/notification_background_service.dart';
 import 'core/utils/workmanager_helper.dart';
 
 void main() async {
@@ -50,7 +48,7 @@ void main() async {
   // Defer non-critical initialization to after the first frame renders.
   // This prevents blocking the main thread and avoids ANR crashes.
   WidgetsBinding.instance.addPostFrameCallback((_) async {
-    // Save credentials for background service
+    // Save credentials for the WorkManager background task isolate
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('SUPABASE_URL', supabaseUrl);
     await prefs.setString('SUPABASE_ANON_KEY', supabaseAnonKey);
@@ -68,8 +66,6 @@ void main() async {
     // Initialize Realtime Notification Service for foreground
     final realtimeService = RealtimeNotificationService();
     realtimeService.listenToAuthChanges();
-
-    // flutter_background_service disabled — handled by WorkManager instead
 
     // Initialize WorkManager
     WorkManagerHelper.init();
