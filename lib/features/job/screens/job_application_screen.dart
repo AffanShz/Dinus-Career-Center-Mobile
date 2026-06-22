@@ -29,6 +29,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   Future<void> _pickFile(
     Function(File?) onPicked, {
     List<String>? allowedExtensions,
+    int? maxSizeBytes,
   }) async {
     try {
       FilePickerResult? result = await FilePicker.pickFiles(
@@ -37,8 +38,21 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       );
 
       if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+
+        // Validate file size
+        if (maxSizeBytes != null && file.lengthSync() > maxSizeBytes) {
+          final maxMB = (maxSizeBytes / (1024 * 1024)).toStringAsFixed(0);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Ukuran file melebihi batas maksimal ${maxMB}MB')),
+            );
+          }
+          return;
+        }
+
         setState(() {
-          onPicked(File(result.files.single.path!));
+          onPicked(file);
         });
       }
     } catch (e) {
@@ -59,6 +73,17 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
         const SnackBar(content: Text('Harap lengkapi semua berkas wajib')),
       );
       return;
+    }
+
+    // Validate portfolio URL if link mode is selected
+    if (_isPortfolioLink && _linkController.text.isNotEmpty) {
+      final url = _linkController.text.trim();
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('URL portofolio harus diawali dengan http:// atau https://')),
+        );
+        return;
+      }
     }
 
     setState(() {
@@ -319,6 +344,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     onTap: () => _pickFile(
                       (f) => _pasFoto = f,
                       allowedExtensions: ['jpg', 'jpeg', 'png'],
+                      maxSizeBytes: 2 * 1024 * 1024, // 2MB
                     ),
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
@@ -420,7 +446,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     subtitle: 'PDF maks 5MB',
                     currentFile: _cv,
                     onTap: () =>
-                        _pickFile((f) => _cv = f, allowedExtensions: ['pdf']),
+                        _pickFile((f) => _cv = f, allowedExtensions: ['pdf'], maxSizeBytes: 5 * 1024 * 1024),
                     onRemove: () => setState(() => _cv = null),
                   ),
                 ),
@@ -560,6 +586,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                             onTap: () => _pickFile(
                               (f) => _portofolioFile = f,
                               allowedExtensions: ['pdf'],
+                              maxSizeBytes: 10 * 1024 * 1024, // 10MB
                             ),
                             onRemove: () =>
                                 setState(() => _portofolioFile = null),
@@ -652,6 +679,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     onTap: () => _pickFile(
                       (f) => _transkripNilai = f,
                       allowedExtensions: ['pdf'],
+                      maxSizeBytes: 5 * 1024 * 1024, // 5MB
                     ),
                     onRemove: () => setState(() => _transkripNilai = null),
                   ),
@@ -699,6 +727,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                     onTap: () => _pickFile(
                       (f) => _suratLamaran = f,
                       allowedExtensions: ['pdf'],
+                      maxSizeBytes: 5 * 1024 * 1024, // 5MB
                     ),
                     onRemove: () => setState(() => _suratLamaran = null),
                   ),
