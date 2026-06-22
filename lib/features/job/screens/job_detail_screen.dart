@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
 import 'job_application_screen.dart';
 
@@ -41,10 +41,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           ),
           title: Text(
             'Detail Lowongan',
-            style: GoogleFonts.poppins(
+            style: AppTextStyles.headlineMedium.copyWith(
               color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
             ),
           ),
           centerTitle: true,
@@ -112,9 +110,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                           Text(
                             widget.job.judul,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                            style: AppTextStyles.headlineLarge.copyWith(
                               color: AppColors.primary,
                             ),
                           ),
@@ -122,10 +118,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                           // Nama Perusahaan
                           Text(
                             widget.job.perusahaan,
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
+                            style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.textMuted,
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           // Lokasi Perusahaan
@@ -142,8 +136,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                 const SizedBox(width: 4),
                                 Text(
                                   widget.job.lokasi,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
+                                  style: AppTextStyles.bodySmall.copyWith(
                                     color: Colors.grey[500],
                                   ),
                                 ),
@@ -172,9 +165,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                       ),
                                       child: Text(
                                         tag.label,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
+                                        style: AppTextStyles.labelSmall.copyWith(
                                           color: tag.text,
                                         ),
                                       ),
@@ -235,8 +226,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       widget.job.detailLowongan.isNotEmpty
                           ? widget.job.detailLowongan
                           : 'Tidak ada deskripsi.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: Colors.grey[800],
                         height: 1.6,
                       ),
@@ -309,9 +299,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         : (widget.job.isAktif
                               ? 'Lamar Sekarang'
                               : 'Lowongan Ditutup'),
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
+                    style: AppTextStyles.bodyLarge.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: null, // inherit from button foregroundColor
                     ),
                   ),
                 ),
@@ -335,9 +325,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ),
       child: Text(
         isActive ? 'AKTIF' : 'TUTUP',
-        style: GoogleFonts.poppins(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+        style: AppTextStyles.labelSmall.copyWith(
           color: isActive ? Colors.green : Colors.red,
         ),
       ),
@@ -359,8 +347,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
+            style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textMuted,
             ),
           ),
@@ -368,9 +355,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           Text(
             value,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.primary,
             ),
             maxLines: 2,
@@ -388,13 +373,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMuted),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
         ),
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
+            style: AppTextStyles.bodyMedium.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
             ),
@@ -407,9 +391,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: GoogleFonts.poppins(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
+      style: AppTextStyles.headlineMedium.copyWith(
         color: AppColors.primary,
       ),
     );
@@ -420,7 +402,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       return [
         Text(
           'Tidak ada kualifikasi yang disebutkan.',
-          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey[600]),
         ),
       ];
     }
@@ -447,8 +429,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     line.trim().startsWith('-') || line.trim().startsWith('•')
                         ? line.trim().substring(1).trim()
                         : line.trim(),
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
+                    style: AppTextStyles.bodyMedium.copyWith(
                       color: Colors.grey[800],
                       height: 1.5,
                     ),

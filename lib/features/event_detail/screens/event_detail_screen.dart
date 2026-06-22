@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import '../../event/models/event_model.dart';
 
 class EventDetailScreen extends StatelessWidget {
@@ -91,7 +92,7 @@ class EventDetailScreen extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.4,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: AppColors.onSurface,
         image: event.imageUrl != null && event.imageUrl!.isNotEmpty
             ? DecorationImage(
                 image: event.imageUrl!.startsWith('http')
@@ -135,19 +136,13 @@ class EventDetailScreen extends StatelessWidget {
           ),
           child: Text(
             category.toUpperCase(),
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: tagColor,
-            ),
+            style: AppTextStyles.labelSmall.copyWith(color: tagColor),
           ),
         ),
         const SizedBox(height: 16),
         Text(
           event.title,
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.headlineLarge.copyWith(
             color: AppColors.primary,
             height: 1.2,
           ),
@@ -213,16 +208,13 @@ class EventDetailScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[400],
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textMuted,
             ),
           ),
           Text(
             value,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
+            style: AppTextStyles.bodyMedium.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
@@ -271,16 +263,13 @@ class EventDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   'LOKASI',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[400],
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.textMuted,
                   ),
                 ),
                 Text(
                   event.locationName ?? 'TBA',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
+                  style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
@@ -288,9 +277,8 @@ class EventDetailScreen extends StatelessWidget {
                 if (event.address != null)
                   Text(
                     event.address!,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey[500],
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textMuted,
                     ),
                   ),
               ],
@@ -308,18 +296,15 @@ class EventDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Deskripsi Event',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 16),
         Text(
           event.description ?? 'Tidak ada deskripsi tersedia.',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.blueGrey[700],
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.onSurfaceVariant,
             height: 1.6,
           ),
         ),
@@ -346,10 +331,8 @@ class EventDetailScreen extends StatelessWidget {
         children: [
           Text(
             'Benefit Peserta:',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E293B),
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: AppColors.onSurface,
             ),
           ),
           const SizedBox(height: 16),
@@ -360,15 +343,14 @@ class EventDetailScreen extends StatelessWidget {
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(top: 2.0),
-                      child: Icon(Icons.check_circle, size: 18, color: Color(0xFF1E293B)),
+                      child: Icon(Icons.check_circle, size: 18, color: AppColors.onSurface),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         benefit.trim(),
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: const Color(0xFF475569),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -388,9 +370,7 @@ class EventDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Pembicara',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.primary,
           ),
         ),
@@ -428,18 +408,15 @@ class EventDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           speaker.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: AppTextStyles.headlineSmall.copyWith(
                             color: AppColors.primary,
                           ),
                         ),
                         if (speaker.title != null)
                           Text(
                             speaker.title!,
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.onSurfaceVariant,
                             ),
                           ),
                       ],
@@ -462,7 +439,7 @@ class EventDetailScreen extends StatelessWidget {
         throw Exception('Could not launch $urlString');
       }
     } catch (e) {
-      debugPrint('Error launching URL: $e');
+      appLog('Error launching URL: $e');
     }
   }
 
@@ -491,17 +468,13 @@ class EventDetailScreen extends StatelessWidget {
                 children: [
                   Text(
                     'STATUS',
-                    style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[400],
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.textMuted,
                     ),
                   ),
                   Text(
                     (event.status ?? 'DRAFT').toUpperCase(),
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.headlineMedium.copyWith(
                       color: AppColors.primary,
                     ),
                   ),
@@ -525,9 +498,8 @@ class EventDetailScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Daftar Sekarang',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: Colors.white,
                     ),
                   ),
                 ),

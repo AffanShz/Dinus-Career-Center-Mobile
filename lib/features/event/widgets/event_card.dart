@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:intl/intl.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import '../models/event_model.dart';
@@ -82,9 +82,7 @@ class EventCard extends StatelessWidget {
                 children: [
                   Text(
                     event.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.headlineMedium.copyWith(
                       color: AppColors.primary,
                       height: 1.3,
                     ),
@@ -100,10 +98,8 @@ class EventCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         dateStr,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
+                        style: AppTextStyles.bodyMedium.copyWith(
                           color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -115,10 +111,8 @@ class EventCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         event.locationName ?? 'TBA',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
+                        style: AppTextStyles.bodyMedium.copyWith(
                           color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],

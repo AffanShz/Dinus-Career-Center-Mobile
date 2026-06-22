@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:dcc_mobile/core/theme/text_styles.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 
 class CategoryFilter extends StatelessWidget {
@@ -36,8 +36,7 @@ class CategoryFilter extends StatelessWidget {
               child: Center(
                 child: Text(
                   category,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
+                  style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? AppColors.white : AppColors.secondary,
                   ),
