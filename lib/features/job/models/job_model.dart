@@ -40,6 +40,7 @@ class JobModel {
   final String? sektor;         // sektor.nama
 
   final bool isApplied;
+  final String? statusLamaran;
   final List<JobTag> tags;
 
   JobModel({
@@ -64,6 +65,7 @@ class JobModel {
     this.tipePekerjaan,
     this.sektor,
     this.isApplied = false,
+    this.statusLamaran,
     this.tags = const [],
   });
 
@@ -171,7 +173,8 @@ class JobModel {
       jurusan: namaJurusan,
       tipePekerjaan: namaTipePekerjaan,
       sektor: namaSektor,
-      isApplied: map['is_applied'] ?? false,
+      isApplied: map['is_applied'] == true,
+      statusLamaran: map['status_lamaran']?.toString(),
       tags: generatedTags,
     );
   }

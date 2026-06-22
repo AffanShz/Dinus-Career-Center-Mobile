@@ -56,12 +56,21 @@ class JobApplicationService {
       // cheaper, and avoids creating orphaned berkas/storage objects.
       final existing = await _supabase
           .from('lamaran')
-          .select('lamaran_id')
+          .select('lamaran_id, status_terakhir')
           .eq('pelamar_id', pelamarId)
           .eq('lowongan_id', lowonganId)
-          .limit(1);
-      if ((existing as List).isNotEmpty) {
-        return ApplicationResult.alreadyApplied;
+          .maybeSingle();
+
+      bool isReapply = false;
+      String? existingLamaranId;
+
+      if (existing != null) {
+        if (existing['status_terakhir'] == 'canceled') {
+          isReapply = true;
+          existingLamaranId = existing['lamaran_id']?.toString();
+        } else {
+          return ApplicationResult.alreadyApplied;
+        }
       }
 
       String? pasFotoUrl;
@@ -99,18 +108,23 @@ class JobApplicationService {
 
       final berkasId = berkasResponse['berkas_lamaran_id'];
 
-      // 2. Insert into lamaran. The Supabase client cannot run a true
-      // multi-statement transaction, so if this fails we manually roll back
-      // the berkas_lamaran row to avoid an orphan record.
+      // 2. Insert or Update into lamaran
       try {
-        await _supabase.from('lamaran').insert({
-          'lowongan_id': lowonganId,
-          'pelamar_id': pelamarId,
-          'berkas_lamaran_id': berkasId,
-          'status_terakhir': 'applied',
-        });
+        if (isReapply && existingLamaranId != null) {
+          await _supabase.from('lamaran').update({
+            'berkas_lamaran_id': berkasId,
+            'status_terakhir': 'applied',
+          }).eq('lamaran_id', existingLamaranId);
+        } else {
+          await _supabase.from('lamaran').insert({
+            'lowongan_id': lowonganId,
+            'pelamar_id': pelamarId,
+            'berkas_lamaran_id': berkasId,
+            'status_terakhir': 'applied',
+          });
+        }
       } catch (e) {
-        appLog('Error inserting lamaran, rolling back berkas_lamaran: $e');
+        appLog('Error upserting lamaran, rolling back berkas_lamaran: $e');
         await _rollbackBerkas(berkasId);
         return ApplicationResult.failure;
       }
@@ -131,6 +145,27 @@ class JobApplicationService {
           .eq('berkas_lamaran_id', berkasId);
     } catch (e) {
       appLog('Failed to roll back berkas_lamaran $berkasId: $e');
+    }
+  }
+
+  /// Membatalkan lamaran dengan mengubah status_terakhir menjadi 'canceled'
+  Future<bool> cancelApplication(String lowonganId) async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      appLog('User not logged in');
+      return false;
+    }
+
+    try {
+      await _supabase
+          .from('lamaran')
+          .update({'status_terakhir': 'canceled'})
+          .eq('lowongan_id', lowonganId)
+          .eq('pelamar_id', user.id);
+      return true;
+    } catch (e) {
+      appLog('Error cancelling application: $e');
+      return false;
     }
   }
 }

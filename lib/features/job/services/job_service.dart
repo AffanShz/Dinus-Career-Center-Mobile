@@ -76,22 +76,24 @@ class JobService {
       final response = await request.limit(20);
 
       // Ambil daftar lowongan_id yang sudah dilamar oleh user jika login
-      Set<String> appliedJobIds = {};
+      Map<String, String> appliedJobMap = {};
       if (user != null) {
         final applications = await _supabase
             .from('lamaran')
-            .select('lowongan_id')
+            .select('lowongan_id, status_terakhir')
             .eq('pelamar_id', user.id);
         
-        appliedJobIds = (applications as List)
-            .map((a) => a['lowongan_id'].toString())
-            .toSet();
+        for (var a in (applications as List)) {
+          appliedJobMap[a['lowongan_id'].toString()] = a['status_terakhir']?.toString() ?? 'applied';
+        }
       }
 
       final List<JobModel> jobs = (response as List).map((data) {
         final String lowonganId = data['lowongan_id'].toString();
         final Map<String, dynamic> mutableData = Map<String, dynamic>.from(data);
-        mutableData['is_applied'] = appliedJobIds.contains(lowonganId);
+        final status = appliedJobMap[lowonganId];
+        mutableData['status_lamaran'] = status;
+        mutableData['is_applied'] = status != null && status != 'canceled';
         return JobModel.fromMap(mutableData);
       }).toList();
 
@@ -134,12 +136,18 @@ class JobService {
       if (user != null) {
         final existingApplication = await _supabase
             .from('lamaran')
-            .select()
+            .select('status_terakhir')
             .eq('lowongan_id', lowonganId)
             .eq('pelamar_id', user.id)
             .maybeSingle();
         
-        mutableResponse['is_applied'] = existingApplication != null;
+        if (existingApplication != null) {
+          final status = existingApplication['status_terakhir']?.toString() ?? 'applied';
+          mutableResponse['status_lamaran'] = status;
+          mutableResponse['is_applied'] = status != 'canceled';
+        } else {
+          mutableResponse['is_applied'] = false;
+        }
       }
 
       return JobModel.fromMap(mutableResponse);

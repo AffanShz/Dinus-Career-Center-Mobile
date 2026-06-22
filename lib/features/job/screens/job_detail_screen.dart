@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
+import '../services/job_application_service.dart';
 import 'job_application_screen.dart';
 import 'company_detail_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/job_bloc.dart';
+import '../bloc/job_event.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final JobModel job;
@@ -487,7 +491,56 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 child: ElevatedButton(
                   onPressed: isAktif
                       ? () async {
-                          if (_isApplied) return;
+                          if (_isApplied) {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Batalkan Lamaran'),
+                                content: const Text('Apakah Anda yakin ingin membatalkan lamaran untuk posisi ini?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Tidak'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                                    child: const Text('Ya, Batalkan'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirm == true && mounted) {
+                              // Show loading indicator
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => const Center(child: CircularProgressIndicator()),
+                              );
+
+                              final success = await JobApplicationService().cancelApplication(widget.job.id);
+                              
+                              if (mounted) {
+                                Navigator.pop(context); // close loading
+                                if (success) {
+                                  setState(() { _isApplied = false; });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Lamaran berhasil dibatalkan.')),
+                                  );
+                                  try {
+                                    context.read<JobBloc>().add(const LoadJobs()); // refresh jobs list
+                                  } catch (_) {}
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Gagal membatalkan lamaran.')),
+                                  );
+                                }
+                              }
+                            }
+                            return;
+                          }
+
                           final applied = await Navigator.push<bool>(
                             context,
                             MaterialPageRoute(
@@ -502,7 +555,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isApplied ? Colors.grey[400] : AppColors.primary,
+                    backgroundColor: _isApplied ? AppColors.error : AppColors.primary,
                     disabledBackgroundColor: Colors.grey[300],
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -511,7 +564,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    _isApplied ? 'Telah Dilamar' : 'Lamar Sekarang',
+                    _isApplied ? 'Batalkan Lamaran' : 'Lamar Sekarang',
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: Colors.white,
                     ),
