@@ -38,18 +38,7 @@ class Login extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Spacer(),
-                            Text(
-                              'Welcome to DCC Mobile',
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.headlineLarge.copyWith(color: Colors.white),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Shape your future career at UDINUS',
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
-                            ),
-                            const SizedBox(height: 40),
+                            const Spacer(),
                             const LoginForm(),
                             const Spacer(),
                             Text(

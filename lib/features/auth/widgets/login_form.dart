@@ -66,54 +66,85 @@ class _LoginFormState extends State<LoginForm> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'DCC SSO Login',
-                  style: AppTextStyles.headlineSmall,
+                // Logo UDINUS
+                Image.asset(
+                  'assets/images/udinus.png',
+                  height: 80,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Silakan masuk dengan kredensial mahasiswa Anda',
-                  style: AppTextStyles.bodySmall,
+                const SizedBox(height: 16),
+                
+                // Informasi Penting
+                const Text(
+                  'Informasi Penting:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Silakan login menggunakan akun @dinus.ac.id Anda.',
+                  style: TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
+                
+                // Google Login Button
+                GoogleSignInButton(
+                  text: 'Masuk dengan akun dinus.ac.id',
+                  onPressed: state is AuthLoading
+                      ? () {}
+                      : () {
+                          context.read<AuthBloc>().add(GoogleLoginRequested());
+                        },
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // ATAU Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'atau login dengan akun siadin',
+                        style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Email / NIM Field (Styled like image)
                 AuthTextField(
-                  label: 'EMAIL',
+                  label: '',
                   prefixIcon: Icons.person_outline,
-                  hintText: 'email@student.dinus.ac.id',
+                  hintText: 'A11.2024.12345 atau email dinus',
                   controller: _emailController,
                 ),
                 const SizedBox(height: 16),
+                
+                // Password Field
                 AuthPasswordField(
                   controller: _passwordController,
-                  hintText: 'Masukkan kata sandi',
+                  hintText: 'Password Siadin (bukan Google)',
                 ),
-                const SizedBox(height: 8.0),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Lupa Kata Sandi?',
-                      style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 24),
+
+                // Login Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: const Color(0xFF0F4C81), // Dark blue from image
                       padding: const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          25.0,
-                        ),
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     onPressed: state is AuthLoading
@@ -137,44 +168,11 @@ class _LoginFormState extends State<LoginForm> {
                               strokeWidth: 2,
                             ),
                           )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Masuk',
-                                style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ],
+                        : Text(
+                            'Login sebagai Dinusian',
+                            style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
                           ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'ATAU',
-                        style: AppTextStyles.bodySmall,
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                GoogleSignInButton(
-                  onPressed: state is AuthLoading
-                      ? () {}
-                      : () {
-                          context.read<AuthBloc>().add(GoogleLoginRequested());
-                        },
                 ),
               ],
             ),

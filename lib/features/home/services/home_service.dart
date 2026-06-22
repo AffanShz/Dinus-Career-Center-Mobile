@@ -68,6 +68,16 @@ class HomeService {
       appLog('[HomeService] Error fetching upcoming event: $e');
     }
 
+    // Fallback: jika tidak ada event dari DB, tampilkan event default
+    upcomingEvent ??= EventModel(
+      id: 0,
+      title: 'Dinus Career Center Job Fair 2027',
+      eventDate: DateTime(2027, 6, 15),
+      startTime: '08:00 - 16:00 WIB',
+      category: 'JOB FAIR',
+      registrationLink: 'https://cc.dinus.ac.id/tiket_JF27/',
+    );
+
     return {
       'recommendedJobs': recommendedJobs,
       'upcomingEvent': upcomingEvent,

@@ -4,8 +4,9 @@ import 'package:dcc_mobile/core/theme/text_styles.dart';
 
 class GoogleSignInButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final String text;
 
-  const GoogleSignInButton({super.key, required this.onPressed});
+  const GoogleSignInButton({super.key, required this.onPressed, this.text = 'Masuk dengan Google'});
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +14,9 @@ class GoogleSignInButton extends StatelessWidget {
       width: double.infinity,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0),
+            borderRadius: BorderRadius.circular(8.0),
           ),
           side: const BorderSide(color: Colors.black12),
         ),
@@ -26,19 +27,18 @@ class GoogleSignInButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Using network image or asset for Google logo
-            Image.network(
-              'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
+            // Using local asset for Google logo
+            Image.asset(
+              'assets/images/google.png',
               height: 24,
               width: 24,
-              cacheWidth: 72, // Roughly 3x the display size for sharpness
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(Icons.login, color: Colors.red);
               },
             ),
             const SizedBox(width: 12),
             Text(
-              'Masuk dengan Google',
+              text,
               style: AppTextStyles.labelLarge.copyWith(
                 color: Colors.black87,
               ),
