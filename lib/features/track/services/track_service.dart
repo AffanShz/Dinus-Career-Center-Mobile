@@ -23,27 +23,38 @@ class TrackService {
             )
           ''')
           .eq('pelamar_id', user.id)
-          .order('updated_at', ascending: false);
+          .order('updated_at', ascending: false)
+          .limit(50);
 
       final List<dynamic> response = await query;
 
-      // For applications where lowongan is null (RLS-blocked inactive jobs),
-      // attempt to fetch the lowongan data directly using lowongan_id.
-      final List<Map<String, dynamic>> enrichedResponse = [];
+      // Collect IDs where lowongan is missing (RLS-blocked inactive jobs)
+      final List<Map<String, dynamic>> mutableResponse = [];
+      final List<String> missingLowonganIds = [];
+
       for (final data in response) {
         final map = Map<String, dynamic>.from(data as Map<String, dynamic>);
+        mutableResponse.add(map);
 
         if (_isLowonganMissing(map['lowongan']) && map['lowongan_id'] != null) {
-          final lowonganData = await _fetchLowonganFallback(map['lowongan_id'].toString());
-          if (lowonganData != null) {
-            map['lowongan'] = lowonganData;
+          missingLowonganIds.add(map['lowongan_id'].toString());
+        }
+      }
+
+      // Batch fetch all missing lowongan in a single query (instead of N+1)
+      if (missingLowonganIds.isNotEmpty) {
+        final fallbackData = await _fetchLowonganBatch(missingLowonganIds);
+        for (final map in mutableResponse) {
+          if (_isLowonganMissing(map['lowongan']) && map['lowongan_id'] != null) {
+            final id = map['lowongan_id'].toString();
+            if (fallbackData.containsKey(id)) {
+              map['lowongan'] = fallbackData[id];
+            }
           }
         }
-
-        enrichedResponse.add(map);
       }
       
-      final List<ApplicationModel> allApplications = enrichedResponse
+      final List<ApplicationModel> allApplications = mutableResponse
           .map((data) => ApplicationModel.fromMap(data))
           .toList();
 
@@ -75,10 +86,9 @@ class TrackService {
     return false;
   }
 
-  /// Fallback: fetch lowongan + perusahaan directly by ID.
-  /// Uses a separate RPC call or a direct query that may bypass
-  /// the RLS restriction that blocks joined reads.
-  Future<Map<String, dynamic>?> _fetchLowonganFallback(String lowonganId) async {
+  /// Batch fetch: fetch multiple lowongan + perusahaan directly by IDs.
+  /// Replaces the serial N+1 _fetchLowonganFallback loop with a single query.
+  Future<Map<String, Map<String, dynamic>>> _fetchLowonganBatch(List<String> lowonganIds) async {
     try {
       final response = await _supabase
           .from('lowongan')
@@ -88,13 +98,20 @@ class TrackService {
               *
             )
           ''')
-          .eq('lowongan_id', lowonganId)
-          .maybeSingle();
+          .inFilter('lowongan_id', lowonganIds);
 
-      return response;
+      final Map<String, Map<String, dynamic>> result = {};
+      for (final item in response as List) {
+        final map = item as Map<String, dynamic>;
+        final id = map['lowongan_id']?.toString();
+        if (id != null) {
+          result[id] = map;
+        }
+      }
+      return result;
     } catch (e) {
-      appLog('WARN: _fetchLowonganFallback failed for $lowonganId: $e');
-      return null;
+      appLog('WARN: _fetchLowonganBatch failed: $e');
+      return {};
     }
   }
 }

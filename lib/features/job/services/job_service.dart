@@ -41,7 +41,8 @@ class JobService {
         request = request.ilike('judul', '%$query%');
       }
 
-      final response = await request;
+      // Limit jumlah data untuk performa
+      final response = await request.limit(20);
 
       // Ambil daftar lowongan_id yang sudah dilamar oleh user jika login
       Set<String> appliedJobIds = {};
@@ -65,10 +66,11 @@ class JobService {
 
       // Client-side filter berdasarkan tipe_pekerjaan.nama
       // (filter nested relation tidak didukung langsung oleh PostgREST)
+      // Exact match filter — prevents 'Part-time' matching 'Full-time'
       if (category != 'Semua') {
         return jobs.where((job) {
           final tipe = job.tipePekerjaan?.toLowerCase() ?? '';
-          return tipe.contains(category.toLowerCase());
+          return tipe == category.toLowerCase();
         }).toList();
       }
 
