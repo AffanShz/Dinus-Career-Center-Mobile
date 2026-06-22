@@ -74,7 +74,10 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildCircleButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.3),
@@ -115,7 +118,9 @@ class EventDetailScreen extends StatelessWidget {
           ),
         ),
         child: event.imageUrl == null || event.imageUrl!.isEmpty
-            ? const Center(child: Icon(Icons.image, size: 64, color: Colors.white54))
+            ? const Center(
+                child: Icon(Icons.image, size: 64, color: Colors.white54),
+              )
             : null,
       ),
     );
@@ -153,9 +158,13 @@ class EventDetailScreen extends StatelessWidget {
 
   Widget _buildDateTimeCards() {
     final dateStr = DateFormat('d MMM yyyy').format(event.eventDate);
-    final timeStr = event.endTime != null ? '${event.startTime} - ${event.endTime}' : event.startTime;
+    final timeStr = event.endTime != null
+        ? '${event.startTime} - ${event.endTime}'
+        : event.startTime;
+    final kuotaStr = event.maxParticipants != null ? event.maxParticipants.toString() : 'Tanpa Batas';
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: _buildInfoCard(
@@ -164,12 +173,20 @@ class EventDetailScreen extends StatelessWidget {
             value: dateStr,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: _buildInfoCard(
             icon: Icons.access_time,
             label: 'WAKTU',
             value: timeStr,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildInfoCard(
+            icon: Icons.people_outline,
+            label: 'KUOTA',
+            value: kuotaStr,
           ),
         ),
       ],
@@ -182,10 +199,10 @@ class EventDetailScreen extends StatelessWidget {
     required String value,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -198,26 +215,32 @@ class EventDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: AppColors.background,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 20, color: AppColors.accent),
+            child: Icon(icon, size: 16, color: AppColors.accent),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             label,
             style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.textMuted,
+              fontSize: 10,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
             value,
             style: AppTextStyles.bodyMedium.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
+              fontSize: 12,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -244,16 +267,13 @@ class EventDetailScreen extends StatelessWidget {
             height: 50,
             width: 50,
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/dcc.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.business),
-              ),
+            child: const Icon(
+              Icons.map_outlined,
+              color: AppColors.primary,
+              size: 24,
             ),
           ),
           const SizedBox(width: 16),
@@ -284,7 +304,6 @@ class EventDetailScreen extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.map_outlined, color: AppColors.primary, size: 24),
         ],
       ),
     );
@@ -317,7 +336,10 @@ class EventDetailScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final benefitList = event.benefits!.split(RegExp(r'\n|,')).where((s) => s.trim().isNotEmpty).toList();
+    final benefitList = event.benefits!
+        .split(RegExp(r'\n|,'))
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -336,27 +358,33 @@ class EventDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...benefitList.map((benefit) => Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2.0),
-                      child: Icon(Icons.check_circle, size: 18, color: AppColors.onSurface),
+          ...benefitList.map(
+            (benefit) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 2.0),
+                    child: Icon(
+                      Icons.check_circle,
+                      size: 18,
+                      color: AppColors.onSurface,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        benefit.trim(),
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      benefit.trim(),
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.onSurfaceVariant,
                       ),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -375,58 +403,61 @@ class EventDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        ...event.speakers.map((speaker) => Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(60),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.grey[200],
-                    backgroundImage: speaker.image != null && speaker.image!.isNotEmpty
-                        ? NetworkImage(speaker.image!)
-                        : null,
-                    child: speaker.image == null || speaker.image!.isEmpty
-                        ? const Icon(Icons.person, color: Colors.grey)
-                        : null,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+        ...event.speakers.map(
+          (speaker) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(60),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage:
+                      speaker.image != null && speaker.image!.isNotEmpty
+                      ? NetworkImage(speaker.image!)
+                      : null,
+                  child: speaker.image == null || speaker.image!.isEmpty
+                      ? const Icon(Icons.person, color: Colors.grey)
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        speaker.name,
+                        style: AppTextStyles.headlineSmall.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      if (speaker.title != null)
                         Text(
-                          speaker.name,
-                          style: AppTextStyles.headlineSmall.copyWith(
-                            color: AppColors.primary,
+                          speaker.title!,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.onSurfaceVariant,
                           ),
                         ),
-                        if (speaker.title != null)
-                          Text(
-                            speaker.title!,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.onSurfaceVariant,
-                            ),
-                          ),
-                      ],
-                    ),
+                    ],
                   ),
-                  const Icon(Icons.verified, color: AppColors.accent, size: 20),
-                  const SizedBox(width: 8),
-                ],
-              ),
-            )),
+                ),
+                const Icon(Icons.verified, color: AppColors.accent, size: 20),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -483,7 +514,9 @@ class EventDetailScreen extends StatelessWidget {
               const SizedBox(width: 32),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: event.registrationLink != null && event.registrationLink!.isNotEmpty
+                  onPressed:
+                      event.registrationLink != null &&
+                          event.registrationLink!.isNotEmpty
                       ? () => _launchURL(event.registrationLink)
                       : null,
                   style: ElevatedButton.styleFrom(
