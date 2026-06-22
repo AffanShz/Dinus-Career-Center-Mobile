@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dcc_mobile/features/auth/services/auth_service.dart';
 import 'auth_event.dart';
@@ -36,25 +37,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      print('DEBUG: AuthBloc calling AuthService.signInWithGoogle()');
+      appLog('DEBUG: AuthBloc calling AuthService.signInWithGoogle()');
       final response = await AuthService.signInWithGoogle();
 
       if (response == null) {
-        print('DEBUG: AuthBloc received null response (user cancelled)');
+        appLog('DEBUG: AuthBloc received null response (user cancelled)');
         emit(AuthInitial());
         return;
       }
 
       if (response.session != null) {
-        print('DEBUG: AuthBloc success: Session created');
+        appLog('DEBUG: AuthBloc success: Session created');
         emit(AuthSuccess());
       } else {
-        print('DEBUG: AuthBloc failure: No session in response');
+        appLog('DEBUG: AuthBloc failure: No session in response');
         emit(const AuthFailure('Google Sign-In failed. Please try again.'));
       }
     } catch (e, stackTrace) {
-      print('DEBUG: AuthBloc caught error: $e');
-      print('DEBUG: StackTrace: $stackTrace');
+      appLog('DEBUG: AuthBloc caught error: $e');
+      appLog('DEBUG: StackTrace: $stackTrace');
       emit(AuthFailure(e.toString()));
     }
   }

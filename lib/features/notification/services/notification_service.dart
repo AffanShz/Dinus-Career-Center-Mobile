@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -59,7 +60,7 @@ class NotificationService {
 
   void _handleNotificationClick(Map<String, dynamic> data) {
     // Navigation logic will be handled here or via a stream/callback to the main app
-    print('Notification clicked with data: $data');
+    appLog('Notification clicked with data: $data');
     // GlobalKey for navigation or a stream can be used to notify the UI
   }
 

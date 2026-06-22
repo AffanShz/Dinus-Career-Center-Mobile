@@ -22,13 +22,13 @@ class ApplicationCard extends StatelessWidget {
         color: isRejected ? const Color(0xFFFFF8F8) : AppColors.white,
         borderRadius: BorderRadius.circular(24),
         border: isRejected 
-            ? Border.all(color: const Color(0xFFFCA5A5).withOpacity(0.4), width: 1.5)
+            ? Border.all(color: const Color(0xFFFCA5A5).withValues(alpha: 0.4), width: 1.5)
             : null,
         boxShadow: [
           BoxShadow(
             color: isRejected 
-                ? const Color(0xFFEF4444).withOpacity(0.08)
-                : Colors.black.withOpacity(0.04),
+                ? const Color(0xFFEF4444).withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -208,7 +208,7 @@ class ApplicationCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: isCurrent && !isFinal
                         ? Border.all(
-                            color: activeColor.withOpacity(0.3),
+                            color: activeColor.withValues(alpha: 0.3),
                             width: 6,
                           )
                         : Border.all(color: Colors.transparent, width: 6),

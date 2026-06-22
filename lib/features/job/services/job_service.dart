@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/job_model.dart';
 import '../../auth/services/auth_service.dart';
@@ -74,7 +75,7 @@ class JobService {
       return jobs;
     } catch (e) {
       // ignore: avoid_print
-      print('Error fetching jobs from Supabase: $e');
+      appLog('Error fetching jobs from Supabase: $e');
       return [];
     }
   }
@@ -121,7 +122,7 @@ class JobService {
       return JobModel.fromMap(mutableResponse);
     } catch (e) {
       // ignore: avoid_print
-      print('Error fetching job detail: $e');
+      appLog('Error fetching job detail: $e');
       return null;
     }
   }

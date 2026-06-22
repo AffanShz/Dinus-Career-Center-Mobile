@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'dart:convert';
 import 'package:workmanager/workmanager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -63,7 +64,7 @@ void callbackDispatcher() {
         await prefs.setStringList('processed_notification_ids', processedIds);
       }
     } catch (e) {
-      print('Workmanager task error: $e');
+      appLog('Workmanager task error: $e');
     }
 
     return Future.value(true);
@@ -76,7 +77,6 @@ class WorkManagerHelper {
   static void init() {
     Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: false,
     );
   }
 

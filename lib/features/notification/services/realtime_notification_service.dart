@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,10 +26,10 @@ class RealtimeNotificationService {
       final Session? session = data.session;
 
       if ((event == AuthChangeEvent.signedIn || event == AuthChangeEvent.initialSession) && session != null) {
-        print('DEBUG: AuthChangeEvent.${event.name} - Initializing Realtime Notifications');
+        appLog('DEBUG: AuthChangeEvent.${event.name} - Initializing Realtime Notifications');
         init();
       } else if (event == AuthChangeEvent.signedOut) {
-        print('DEBUG: AuthChangeEvent.signedOut - Disposing Realtime Notifications');
+        appLog('DEBUG: AuthChangeEvent.signedOut - Disposing Realtime Notifications');
         _channel?.unsubscribe();
         _channel = null;
       }
@@ -38,17 +39,17 @@ class RealtimeNotificationService {
   void init() {
     final user = _supabase.auth.currentUser;
     if (user == null) {
-      print('DEBUG: RealtimeNotificationService.init() - No user logged in');
+      appLog('DEBUG: RealtimeNotificationService.init() - No user logged in');
       return;
     }
     
     // Check if we are already subscribed to this user's channel to avoid redundancy
     if (_channel != null) {
-      print('DEBUG: Realtime already subscribed, skipping re-init');
+      appLog('DEBUG: Realtime already subscribed, skipping re-init');
       return;
     }
 
-    print('DEBUG: Subscribing to notifications for user: ${user.id}');
+    appLog('DEBUG: Subscribing to notifications for user: ${user.id}');
     _channel = _supabase
         .channel('notifikasi_user_${user.id}')
         .onPostgresChanges(
@@ -63,15 +64,15 @@ class RealtimeNotificationService {
           callback: _handleInsert,
         )
         .subscribe((status, error) {
-          print('DEBUG: Realtime Subscription Status: $status');
+          appLog('DEBUG: Realtime Subscription Status: $status');
           if (error != null) {
-            print('DEBUG: Realtime Subscription Error: $error');
+            appLog('DEBUG: Realtime Subscription Error: $error');
           }
         });
   }
 
   Future<void> _handleInsert(PostgresChangePayload payload) async {
-    print('DEBUG: Received Realtime Payload: ${payload.newRecord}');
+    appLog('DEBUG: Received Realtime Payload: ${payload.newRecord}');
     final data = payload.newRecord;
     
     // Always update the UI stream

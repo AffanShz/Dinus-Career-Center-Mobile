@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,25 +38,25 @@ class AuthService {
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        print('DEBUG: Google Sign-In cancelled by user');
+        appLog('DEBUG: Google Sign-In cancelled by user');
         return null;
       }
 
-      print('DEBUG: Google User: ${googleUser.email}');
+      appLog('DEBUG: Google User: ${googleUser.email}');
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
       final String? accessToken = googleAuth.accessToken;
       final String? idToken = googleAuth.idToken;
 
-      print('DEBUG: idToken: ${idToken != null ? "exists" : "null"}');
-      print('DEBUG: accessToken: ${accessToken != null ? "exists" : "null"}');
+      appLog('DEBUG: idToken: ${idToken != null ? "exists" : "null"}');
+      appLog('DEBUG: accessToken: ${accessToken != null ? "exists" : "null"}');
 
       if (idToken == null) {
         throw Exception('Google Sign-In failed: idToken is null');
       }
 
-      print('DEBUG: Signing into Supabase with idToken');
+      appLog('DEBUG: Signing into Supabase with idToken');
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
@@ -70,7 +71,7 @@ class AuthService {
       }
       return response;
     } catch (e) {
-      print('DEBUG: Google Sign-In Error: $e');
+      appLog('DEBUG: Google Sign-In Error: $e');
       rethrow;
     }
   }
@@ -80,7 +81,7 @@ class AuthService {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
-    print('DEBUG: Handling post-login data for user: ${user.email}');
+    appLog('DEBUG: Handling post-login data for user: ${user.email}');
 
     try {
       final email = user.email?.toLowerCase() ?? '';
@@ -104,7 +105,7 @@ class AuthService {
           .maybeSingle();
 
       if (pelamar == null) {
-        print('DEBUG: Creating missing pelamar record');
+        appLog('DEBUG: Creating missing pelamar record');
         await _supabase.from('pelamar').insert({
           'pelamar_id': user.id,
           'email': email,
@@ -114,7 +115,7 @@ class AuthService {
           'bidang': parsedData['bidang'],
         });
       } else {
-        print('DEBUG: Pelamar record already exists');
+        appLog('DEBUG: Pelamar record already exists');
         // Update NIM/Bidang if they are currently null
         if (pelamar['nim'] == null || pelamar['bidang'] == null) {
            await _supabase.from('pelamar').update({
@@ -124,9 +125,9 @@ class AuthService {
         }
       }
 
-      print('DEBUG: post-login data handling completed successfully.');
+      appLog('DEBUG: post-login data handling completed successfully.');
     } catch (e) {
-      print('DEBUG: Error in handleAfterLogin: $e');
+      appLog('DEBUG: Error in handleAfterLogin: $e');
     }
   }
 
@@ -134,7 +135,7 @@ class AuthService {
   static Future<void> _saveLoginTime() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_loginTimeKey, DateTime.now().millisecondsSinceEpoch);
-    print('DEBUG: Login time saved');
+    appLog('DEBUG: Login time saved');
   }
 
   /// Check if the session is older than 3 days
@@ -148,10 +149,10 @@ class AuthService {
       final loginDate = DateTime.fromMillisecondsSinceEpoch(loginTimestamp);
       final difference = DateTime.now().difference(loginDate).inDays;
 
-      print('DEBUG: Session age: $difference days');
+      appLog('DEBUG: Session age: $difference days');
 
       if (difference >= 3) {
-        print('DEBUG: Session expired (3 days limit). Logging out...');
+        appLog('DEBUG: Session expired (3 days limit). Logging out...');
         await signOut();
       }
     } else {

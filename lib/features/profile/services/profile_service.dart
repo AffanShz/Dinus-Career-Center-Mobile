@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/profile_model.dart';
@@ -43,7 +44,7 @@ class ProfileService {
         bidang: bidangFromEmail,
       );
     } catch (e) {
-      print('ERROR: fetchUserProfile: $e');
+      appLog('ERROR: fetchUserProfile: $e');
       return UserProfile(
         id: user?.id ?? '',
         email: email,
@@ -57,20 +58,20 @@ class ProfileService {
 
   Future<void> updateProfile(UserProfile profile) async {
     final data = profile.toMap();
-    print('DEBUG: updateProfile called for user: ${profile.id}');
-    print('DEBUG: Data to upsert: $data');
+    appLog('DEBUG: updateProfile called for user: ${profile.id}');
+    appLog('DEBUG: Data to upsert: $data');
 
     // Step 1: Upsert into pelamar table (primary save)
     try {
       await _supabase
           .from('pelamar')
           .upsert(data, onConflict: 'pelamar_id');
-      print('DEBUG: pelamar upsert SUCCESS');
+      appLog('DEBUG: pelamar upsert SUCCESS');
     } catch (e, stack) {
-      print('ERROR: pelamar upsert FAILED');
-      print('ERROR type: ${e.runtimeType}');
-      print('ERROR message: $e');
-      print('ERROR stack: $stack');
+      appLog('ERROR: pelamar upsert FAILED');
+      appLog('ERROR type: ${e.runtimeType}');
+      appLog('ERROR message: $e');
+      appLog('ERROR stack: $stack');
       rethrow;
     }
 
@@ -85,17 +86,17 @@ class ProfileService {
             'role': 'pelamar', // NOT NULL column — must always be provided
             'updated_at': DateTime.now().toIso8601String(),
           }, onConflict: 'id');
-      print('DEBUG: profiles sync SUCCESS');
+      appLog('DEBUG: profiles sync SUCCESS');
     } catch (e) {
       // Non-critical: log but don't rethrow
-      print('WARN: profiles sync failed (non-critical): $e');
+      appLog('WARN: profiles sync failed (non-critical): $e');
     }
   }
 
   Future<String?> uploadProfilePicture(File file) async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
-      print('ERROR: uploadProfilePicture - no authenticated user');
+      appLog('ERROR: uploadProfilePicture - no authenticated user');
       return null;
     }
 
@@ -105,8 +106,8 @@ class ProfileService {
     // Store as userId/timestamp.ext to organize per user
     final String filePath = '$userId/$timestamp.$extension';
 
-    print('DEBUG: Uploading photo → bucket: foto-profil, path: $filePath');
-    print('DEBUG: File size: ${await file.length()} bytes');
+    appLog('DEBUG: Uploading photo → bucket: foto-profil, path: $filePath');
+    appLog('DEBUG: File size: ${await file.length()} bytes');
 
     try {
       await _supabase.storage.from('foto-profil').upload(
@@ -120,10 +121,10 @@ class ProfileService {
           _supabase.storage.from('foto-profil').getPublicUrl(filePath);
       final String urlWithCacheBust = '$publicUrl?t=$timestamp';
 
-      print('DEBUG: Photo uploaded successfully: $urlWithCacheBust');
+      appLog('DEBUG: Photo uploaded successfully: $urlWithCacheBust');
       return urlWithCacheBust;
     } catch (e) {
-      print('ERROR: uploadProfilePicture FAILED: $e');
+      appLog('ERROR: uploadProfilePicture FAILED: $e');
       rethrow;
     }
   }
@@ -139,12 +140,12 @@ class ProfileService {
       if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
         // Everything after 'foto-profil' is the file path inside the bucket
         final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
-        print('DEBUG: Deleting old photo from foto-profil/$filePath');
+        appLog('DEBUG: Deleting old photo from foto-profil/$filePath');
         await _supabase.storage.from('foto-profil').remove([filePath]);
-        print('DEBUG: Old photo deleted');
+        appLog('DEBUG: Old photo deleted');
       }
     } catch (e) {
-      print('WARN: deleteProfilePicture failed (non-critical): $e');
+      appLog('WARN: deleteProfilePicture failed (non-critical): $e');
       // Non-critical: we can still continue even if old file delete fails
     }
   }

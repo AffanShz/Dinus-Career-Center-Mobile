@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
@@ -24,7 +25,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final profile = await _profileService.fetchUserProfile();
       emit(state.copyWith(status: ProfileStatus.success, userProfile: profile));
     } catch (e) {
-      print('ProfileBloc ERROR: _onLoadProfile: $e');
+      appLog('ProfileBloc ERROR: _onLoadProfile: $e');
       emit(state.copyWith(status: ProfileStatus.failure));
     }
   }
@@ -39,7 +40,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await _profileService.updateProfile(event.profile);
       emit(state.copyWith(status: ProfileStatus.success, userProfile: event.profile));
     } catch (e) {
-      print('ProfileBloc ERROR: _onUpdateProfile: $e');
+      appLog('ProfileBloc ERROR: _onUpdateProfile: $e');
       // Restore previous profile and emit failure so the screen can show the error
       emit(state.copyWith(
         status: ProfileStatus.failure,
@@ -52,9 +53,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     UploadProfilePicture event,
     Emitter<ProfileState> emit,
   ) async {
-    print('DEBUG: _onUploadProfilePicture called, file: ${event.file.path}');
+    appLog('DEBUG: _onUploadProfilePicture called, file: ${event.file.path}');
     if (state.userProfile == null) {
-      print('WARN: _onUploadProfilePicture - state.userProfile is null, skipping');
+      appLog('WARN: _onUploadProfilePicture - state.userProfile is null, skipping');
       return;
     }
     
@@ -80,7 +81,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(state.copyWith(status: ProfileStatus.failure, userProfile: previousProfile));
       }
     } catch (e) {
-      print('ProfileBloc ERROR: _onUploadProfilePicture: $e');
+      appLog('ProfileBloc ERROR: _onUploadProfilePicture: $e');
       emit(state.copyWith(status: ProfileStatus.failure, userProfile: previousProfile));
     }
   }
@@ -108,7 +109,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       
       emit(state.copyWith(status: ProfileStatus.success, userProfile: updatedProfile));
     } catch (e) {
-      print('ProfileBloc ERROR: _onDeleteProfilePicture: $e');
+      appLog('ProfileBloc ERROR: _onDeleteProfilePicture: $e');
       emit(state.copyWith(status: ProfileStatus.failure, userProfile: previousProfile));
     }
   }

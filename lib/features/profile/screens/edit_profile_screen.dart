@@ -1439,7 +1439,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           DropdownButtonFormField<String>(
-            value: value,
+            initialValue: value,
             isExpanded: true,
             items: items
                 .map(

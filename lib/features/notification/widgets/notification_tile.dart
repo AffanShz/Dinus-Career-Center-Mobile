@@ -20,7 +20,7 @@ class NotificationTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        color: notification.isRead ? Colors.transparent : AppColors.primary.withOpacity(0.05),
+        color: notification.isRead ? Colors.transparent : AppColors.primary.withValues(alpha: 0.05),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -83,7 +83,7 @@ class NotificationTile extends StatelessWidget {
       case 'interview':
         iconData = Icons.video_call_rounded;
         iconColor = const Color(0xFF4530B2);
-        bgColor = const Color(0xFF9E9BF0).withOpacity(0.2);
+        bgColor = const Color(0xFF9E9BF0).withValues(alpha: 0.2);
         break;
       case 'lamaran':
       case 'status_update':
@@ -99,7 +99,7 @@ class NotificationTile extends StatelessWidget {
       default:
         iconData = Icons.notifications_rounded;
         iconColor = AppColors.primary;
-        bgColor = AppColors.primary.withOpacity(0.1);
+        bgColor = AppColors.primary.withValues(alpha: 0.1);
     }
 
     return Container(

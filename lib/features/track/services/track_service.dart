@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/application_model.dart';
 import '../../auth/services/auth_service.dart';
@@ -60,7 +61,7 @@ class TrackService {
       
       return allApplications;
     } catch (e) {
-      print('Error fetching applications: $e');
+      appLog('Error fetching applications: $e');
       return [];
     }
   }
@@ -92,7 +93,7 @@ class TrackService {
 
       return response;
     } catch (e) {
-      print('WARN: _fetchLowonganFallback failed for $lowonganId: $e');
+      appLog('WARN: _fetchLowonganFallback failed for $lowonganId: $e');
       return null;
     }
   }

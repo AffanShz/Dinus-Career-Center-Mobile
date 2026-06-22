@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/notification_model.dart';
 import '../../auth/services/auth_service.dart';
@@ -20,7 +21,7 @@ class NotificationRepository {
           .map((data) => NotificationModel.fromMap(data))
           .toList();
     } catch (e) {
-      print('Error fetching notifications: $e');
+      appLog('Error fetching notifications: $e');
       return [];
     }
   }
@@ -32,7 +33,7 @@ class NotificationRepository {
           .update({'is_read': true})
           .eq('notifikasi_id', notificationId);
     } catch (e) {
-      print('Error marking notification as read: $e');
+      appLog('Error marking notification as read: $e');
     }
   }
 
@@ -47,7 +48,7 @@ class NotificationRepository {
           .eq('pelamar_id', user.id)
           .eq('is_read', false);
     } catch (e) {
-      print('Error marking all notifications as read: $e');
+      appLog('Error marking all notifications as read: $e');
     }
   }
 
@@ -58,7 +59,7 @@ class NotificationRepository {
           .delete()
           .eq('notifikasi_id', notificationId);
     } catch (e) {
-      print('Error deleting notification: $e');
+      appLog('Error deleting notification: $e');
     }
   }
 
@@ -72,7 +73,7 @@ class NotificationRepository {
           .delete()
           .eq('pelamar_id', user.id);
     } catch (e) {
-      print('Error deleting all notifications: $e');
+      appLog('Error deleting all notifications: $e');
     }
   }
 
@@ -89,7 +90,7 @@ class NotificationRepository {
 
       return (response as List).length;
     } catch (e) {
-      print('Error getting unread count: $e');
+      appLog('Error getting unread count: $e');
       return 0;
     }
   }

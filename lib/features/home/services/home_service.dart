@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../job/models/job_model.dart';
 import '../models/event_model.dart';
@@ -25,7 +26,7 @@ class HomeService {
       .limit(5);
 
       // ignore: avoid_print
-      print('[HomeService] Fetched ${(response as List).length} lowongan');
+      appLog('[HomeService] Fetched ${(response as List).length} lowongan');
 
       Set<String> appliedJobIds = {};
       if (user != null) {
@@ -47,7 +48,7 @@ class HomeService {
       }).toList();
     } catch (e) {
       // ignore: avoid_print
-      print('[HomeService] Error fetching recommended jobs: $e');
+      appLog('[HomeService] Error fetching recommended jobs: $e');
     }
 
     return {

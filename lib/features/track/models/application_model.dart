@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -42,7 +43,7 @@ class ApplicationModel {
 
     // Debug: log when lowongan data is missing (likely RLS-blocked inactive job)
     if (lowongan.isEmpty) {
-      print('WARN: ApplicationModel - lowongan data is null/empty for lamaran_id: ${map['lamaran_id']}, lowongan_id: ${map['lowongan_id']}');
+      appLog('WARN: ApplicationModel - lowongan data is null/empty for lamaran_id: ${map['lamaran_id']}, lowongan_id: ${map['lowongan_id']}');
     }
     
     final statusRaw = map['status_terakhir']?.toString().toLowerCase() ?? 'applied';
@@ -68,7 +69,7 @@ class ApplicationModel {
         break;
       case 'interview':
         statusDisplay = 'Interview';
-        statusBg = const Color(0xFF9E9BF0).withOpacity(0.8);
+        statusBg = const Color(0xFF9E9BF0).withValues(alpha: 0.8);
         statusText = const Color(0xFF4530B2);
         currentStep = 2;
         break;

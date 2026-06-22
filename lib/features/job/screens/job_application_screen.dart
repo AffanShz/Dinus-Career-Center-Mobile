@@ -7,8 +7,7 @@ import '../services/job_application_service.dart';
 class JobApplicationScreen extends StatefulWidget {
   final String lowonganId;
 
-  const JobApplicationScreen({Key? key, required this.lowonganId})
-    : super(key: key);
+  const JobApplicationScreen({super.key, required this.lowonganId});
 
   @override
   State<JobApplicationScreen> createState() => _JobApplicationScreenState();
@@ -66,7 +65,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       _isLoading = true;
     });
 
-    final success = await _service.submitApplication(
+    final result = await _service.submitApplication(
       lowonganId: widget.lowonganId,
       pasFoto: _pasFoto,
       cv: _cv,
@@ -82,19 +81,36 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       _isLoading = false;
     });
 
-    if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Lamaran berhasil dikirim')));
-      Navigator.pop(context, true); // Go back with success result
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.',
+    switch (result) {
+      case ApplicationResult.success:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Lamaran berhasil dikirim')),
+        );
+        Navigator.pop(context, true); // Go back with success result
+        break;
+      case ApplicationResult.alreadyApplied:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Anda sudah pernah melamar lowongan ini.'),
           ),
-        ),
-      );
+        );
+        break;
+      case ApplicationResult.notLoggedIn:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sesi Anda berakhir. Silakan masuk kembali.'),
+          ),
+        );
+        break;
+      case ApplicationResult.failure:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.',
+            ),
+          ),
+        );
+        break;
     }
   }
 
@@ -109,10 +125,10 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   Widget _buildGlassCard({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFFC2C6D3).withOpacity(0.15),
+          color: const Color(0xFFC2C6D3).withValues(alpha: 0.15),
           width: 1.5,
         ),
       ),
@@ -233,7 +249,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9FB),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF7F9FB).withOpacity(0.9),
+        backgroundColor: const Color(0xFFF7F9FB).withValues(alpha: 0.9),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -471,7 +487,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                       boxShadow: !_isPortfolioLink
                                           ? [
                                               BoxShadow(
-                                                color: Colors.black.withOpacity(
+                                                color: Colors.black.withValues(alpha: 
                                                   0.05,
                                                 ),
                                                 blurRadius: 4,
@@ -509,7 +525,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                       boxShadow: _isPortfolioLink
                                           ? [
                                               BoxShadow(
-                                                color: Colors.black.withOpacity(
+                                                color: Colors.black.withValues(alpha: 
                                                   0.05,
                                                 ),
                                                 blurRadius: 4,
@@ -564,7 +580,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                                   fontSize: 14,
                                   color: const Color(
                                     0xFF424751,
-                                  ).withOpacity(0.5),
+                                  ).withValues(alpha: 0.5),
                                 ),
                                 prefixIcon: const Icon(
                                   Icons.link,
@@ -704,8 +720,8 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                   end: Alignment.topCenter,
                   colors: [
                     const Color(0xFFF7F9FB),
-                    const Color(0xFFF7F9FB).withOpacity(0.9),
-                    const Color(0xFFF7F9FB).withOpacity(0.0),
+                    const Color(0xFFF7F9FB).withValues(alpha: 0.9),
+                    const Color(0xFFF7F9FB).withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -718,7 +734,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 8,
-                      shadowColor: const Color(0xFF003A75).withOpacity(0.2),
+                      shadowColor: const Color(0xFF003A75).withValues(alpha: 0.2),
                       backgroundColor:
                           Colors.transparent, // to use gradient via Ink
                     ).copyWith(
@@ -780,8 +796,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
 class ClipRVM extends StatelessWidget {
   final BorderRadius radius;
   final Widget child;
-  const ClipRVM({Key? key, required this.radius, required this.child})
-    : super(key: key);
+  const ClipRVM({super.key, required this.radius, required this.child});
 
   @override
   Widget build(BuildContext context) {

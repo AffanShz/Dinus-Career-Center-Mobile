@@ -1,1 +1,10 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Legacy artifact — all active code lives under lib/features/job/.
+    - job/**
+  errors:
+    # Enforce: no raw print() in the app. Use appLog() (lib/core/utils/app_logger.dart),
+    # which is gated on kDebugMode so it never leaks to production logs.
+    avoid_print: error

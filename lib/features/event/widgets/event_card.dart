@@ -35,7 +35,7 @@ class EventCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -65,10 +65,10 @@ class EventCard extends StatelessWidget {
                     children: [
                       _buildTag(
                         'Akan Datang',
-                        const Color(0xFF1E5BBF).withOpacity(0.8),
+                        const Color(0xFF1E5BBF).withValues(alpha: 0.8),
                       ),
                       const SizedBox(width: 8),
-                      _buildTag(category, tagColor.withOpacity(0.8)),
+                      _buildTag(category, tagColor.withValues(alpha: 0.8)),
                     ],
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 
@@ -19,7 +20,7 @@ class GoogleSignInButton extends StatelessWidget {
           side: const BorderSide(color: Colors.black12),
         ),
         onPressed: () {
-          print('DEBUG: GoogleSignInButton pressed');
+          appLog('DEBUG: GoogleSignInButton pressed');
           onPressed();
         },
         child: Row(
