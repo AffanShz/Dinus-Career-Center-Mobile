@@ -8,6 +8,8 @@ import 'package:dcc_mobile/features/event/screens/event_screen.dart';
 import 'package:dcc_mobile/features/profile/screens/profile_screen.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_bloc.dart';
 import 'package:dcc_mobile/features/profile/bloc/profile_event.dart';
+import 'package:dcc_mobile/features/home/bloc/home_bloc.dart';
+import 'package:dcc_mobile/features/home/bloc/home_event.dart';
 import 'package:dcc_mobile/features/job/bloc/job_bloc.dart';
 import 'package:dcc_mobile/features/job/bloc/job_event.dart';
 
@@ -82,6 +84,7 @@ class _MainScreenState extends State<MainScreen> {
       providers: [
         BlocProvider(create: (context) => ProfileBloc()..add(LoadProfile())),
         BlocProvider(create: (context) => JobBloc()..add(const LoadJobs())),
+        BlocProvider(create: (context) => HomeBloc()..add(LoadHomeData())),
       ],
       child: Scaffold(
         body: IndexedStack(

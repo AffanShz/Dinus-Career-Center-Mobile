@@ -8,6 +8,8 @@ import 'company_detail_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/job_bloc.dart';
 import '../bloc/job_event.dart';
+import '../../home/bloc/home_bloc.dart';
+import '../../home/bloc/home_event.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final JobModel job;
@@ -530,6 +532,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                   );
                                   try {
                                     context.read<JobBloc>().add(CancelJobSuccess(widget.job.id));
+                                    context.read<HomeBloc>().add(LoadHomeData());
                                   } catch (_) {}
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -553,6 +556,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             });
                             try {
                               context.read<JobBloc>().add(ApplyJobSuccess(widget.job.id));
+                              context.read<HomeBloc>().add(LoadHomeData());
                             } catch (_) {}
                           }
                         }

@@ -22,11 +22,9 @@ class Homescreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHomeData()),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
           child: BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
               if (state.status == HomeStatus.initial ||
@@ -124,7 +122,6 @@ class Homescreen extends StatelessWidget {
               );
             },
           ),
-        ),
       ),
     );
   }
