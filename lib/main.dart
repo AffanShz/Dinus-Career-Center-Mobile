@@ -6,8 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/colors.dart';
 import 'core/utils/env.dart';
-import 'features/auth/screens/login.dart';
-import 'features/home/screens/main_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/notification/services/notification_service.dart';
 import 'features/notification/services/realtime_notification_service.dart';
@@ -101,7 +100,7 @@ class MainApp extends StatelessWidget {
           onSurface: AppColors.onSurface,
         ),
       ),
-      home: initialSession != null ? const MainScreen() : const Login(),
+      home: SplashScreen(initialSession: initialSession),
     );
   }
 }
