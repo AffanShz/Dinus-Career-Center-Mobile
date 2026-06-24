@@ -41,7 +41,7 @@ class JobService {
       request = request.eq('status_loker', 'aktif');
 
       // Ambil tanggal hari ini (Y-m-d format for Supabase comparison)
-      final String today = DateTime.now().toIso8601String().split('T')[0];
+      final String today = DateTime.now().toIso8601String().split('T').first;
       
       // PostgREST doesn't support complex OR conditions (batas_akhir is null OR batas_akhir >= today) 
       // directly in a simple select easily without gte filter. 

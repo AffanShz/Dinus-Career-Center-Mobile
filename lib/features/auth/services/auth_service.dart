@@ -18,10 +18,11 @@ class AuthService {
       email: email,
       password: password,
     );
-    if (response.session != null) {
+    final user = response.user;
+    if (response.session != null && user != null) {
       await _saveLoginTime();
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('USER_ID', response.user!.id);
+      await prefs.setString('USER_ID', user.id);
       await handleAfterLogin();
     }
     return response;
@@ -57,7 +58,9 @@ class AuthService {
     if (response.session != null) {
       await _saveLoginTime();
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('USER_ID', response.user!.id);
+      if (response.user != null) {
+        await prefs.setString('USER_ID', response.user!.id);
+      }
       await handleAfterLogin();
     }
     return response;
@@ -102,7 +105,9 @@ class AuthService {
       if (response.session != null) {
         await _saveLoginTime();
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('USER_ID', response.user!.id);
+        if (response.user != null) {
+          await prefs.setString('USER_ID', response.user!.id);
+        }
         await handleAfterLogin();
       }
       return response;

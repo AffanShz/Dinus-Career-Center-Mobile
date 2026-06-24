@@ -87,8 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response.user != null) {
         // Supabase security feature: if the email already exists,
         // it returns a fake user object with an empty identities array.
-        if (response.user!.identities != null &&
-            response.user!.identities!.isEmpty) {
+        if (response.user!.identities?.isEmpty ?? false) {
           emit(
             const AuthFailure(
               'Email/NIM ini sudah terdaftar. Silakan kembali dan login, atau masuk menggunakan akun Google.',

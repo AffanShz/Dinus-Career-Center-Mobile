@@ -104,7 +104,11 @@ class JobApplicationService {
         'portofolio': portofolioUrl,
         'transkip_nilai': transkipNilaiUrl,
         'surat_lamaran': suratLamaranUrl,
-      }).select().single();
+      }).select().maybeSingle();
+
+      if (berkasResponse == null) {
+        throw Exception('Gagal menyimpan berkas lamaran');
+      }
 
       final berkasId = berkasResponse['berkas_lamaran_id'];
 

@@ -101,7 +101,8 @@ class ProfileService {
     }
 
     final String userId = user.id;
-    final String extension = file.path.split('.').last.toLowerCase();
+    final parts = file.path.split('.');
+    final String extension = parts.isNotEmpty ? parts.last.toLowerCase() : '';
     final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     // Store as userId/timestamp.ext to organize per user
     final String filePath = '$userId/$timestamp.$extension';
@@ -131,7 +132,8 @@ class ProfileService {
 
   Future<void> deleteProfilePicture(String url) async {
     try {
-      final uri = Uri.parse(url.split('?').first); // strip cache-buster
+      final parts = url.split('?');
+      final uri = Uri.parse(parts.isNotEmpty ? parts.first : url); // strip cache-buster
       final pathSegments = uri.pathSegments;
 
       // URL pattern: .../storage/v1/object/public/foto-profil/userId/filename

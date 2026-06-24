@@ -180,7 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       name: _nameController.text,
       photoUrl: currentPhotoUrl,
       tempatLahir: _tempatLahirController.text,
-      tanggalLahir: _selectedTanggalLahir?.toIso8601String().split('T')[0],
+      tanggalLahir: _selectedTanggalLahir != null ? _selectedTanggalLahir!.toIso8601String().split('T').first : null,
       noKtp: _noKtpController.text,
       jenisKelamin: _selectedJenisKelamin,
       alamat: _alamatController.text,
@@ -1532,7 +1532,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Text(
                 _selectedTanggalLahir == null
                     ? 'Pilih Tanggal'
-                    : _selectedTanggalLahir!.toIso8601String().split('T')[0],
+                    : _selectedTanggalLahir!.toIso8601String().split('T').first,
                 style: AppTextStyles.bodyMedium,
               ),
             ),

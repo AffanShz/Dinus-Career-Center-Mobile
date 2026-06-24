@@ -201,7 +201,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    currentFile.path.split('/').last,
+                    currentFile.path.split('/').isNotEmpty ? currentFile.path.split('/').last : currentFile.path,
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,

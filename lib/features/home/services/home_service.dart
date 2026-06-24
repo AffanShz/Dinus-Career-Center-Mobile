@@ -12,7 +12,7 @@ class HomeService {
     List<JobModel> recommendedJobs = [];
     try {
       final user = _supabase.auth.currentUser;
-      final String today = DateTime.now().toIso8601String().split('T')[0];
+      final String today = DateTime.now().toIso8601String().split('T').first;
       final response = await _supabase.from('lowongan').select('''
         *,
         perusahaan ( nama_perusahaan, kota, alamat_perusahaan, logo ),
@@ -56,7 +56,7 @@ class HomeService {
     // ── Fetch upcoming event dari Supabase ────────────────────────────
     EventModel? upcomingEvent;
     try {
-      final String today = DateTime.now().toIso8601String().split('T')[0];
+      final String today = DateTime.now().toIso8601String().split('T').first;
       final eventResponse = await _supabase.from('events')
           .select('*, event_speakers(*)')
           .gte('event_date', today)
