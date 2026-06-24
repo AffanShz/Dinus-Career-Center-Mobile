@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
-import '../services/job_application_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/job_application_bloc.dart';
 import 'job_application_screen.dart';
 import 'company_detail_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +23,20 @@ class JobDetailScreen extends StatefulWidget {
 
 class _JobDetailScreenState extends State<JobDetailScreen> {
   late bool _isApplied;
+  late JobApplicationBloc _applicationBloc;
 
+  @override
   @override
   void initState() {
     super.initState();
     _isApplied = widget.job.isApplied;
+    _applicationBloc = JobApplicationBloc();
+  }
+
+  @override
+  void dispose() {
+    _applicationBloc.close();
+    super.dispose();
   }
 
   @override
@@ -515,31 +525,33 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
                             if (confirm == true && mounted) {
                               // Show loading indicator
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) => const Center(child: CircularProgressIndicator()),
+                                builder: (_) => BlocProvider.value(
+                                  value: _applicationBloc,
+                                  child: BlocListener<JobApplicationBloc, JobApplicationState>(
+                                    listener: (context, state) {
+                                      if (state is JobApplicationSuccess) {
+                                        Navigator.pop(context); // close loading
+                                        setState(() { _isApplied = false; });
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Lamaran berhasil dibatalkan.')),
+                                        );
+                                        try {
+                                          context.read<JobBloc>().add(CancelJobSuccess(widget.job.id));
+                                          context.read<HomeBloc>().add(LoadHomeData());
+                                        } catch (_) {}
+                                      } else if (state is JobApplicationFailure) {
+                                        Navigator.pop(context); // close loading
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(state.error)),
+                                        );
+                                      }
+                                    },
+                                    child: const Center(child: CircularProgressIndicator()),
+                                  ),
+                                ),
                               );
 
-                              final success = await JobApplicationService().cancelApplication(widget.job.id);
-                              
-                              if (mounted) {
-                                Navigator.pop(context); // close loading
-                                if (success) {
-                                  setState(() { _isApplied = false; });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Lamaran berhasil dibatalkan.')),
-                                  );
-                                  try {
-                                    context.read<JobBloc>().add(CancelJobSuccess(widget.job.id));
-                                    context.read<HomeBloc>().add(LoadHomeData());
-                                  } catch (_) {}
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Gagal membatalkan lamaran.')),
-                                  );
-                                }
-                              }
+                              _applicationBloc.add(CancelApplication(widget.job.id));
                             }
                             return;
                           }

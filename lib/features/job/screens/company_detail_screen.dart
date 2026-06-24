@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
 import '../models/job_model.dart';
-import '../services/job_service.dart';
+import '../bloc/company_job_bloc.dart';
 import '../widgets/job_list_item.dart';
 
 class CompanyDetailScreen extends StatefulWidget {
@@ -16,31 +16,18 @@ class CompanyDetailScreen extends StatefulWidget {
 }
 
 class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
-  List<JobModel> _companyJobs = [];
-  bool _isLoading = true;
+  late CompanyJobBloc _companyJobBloc;
 
   @override
   void initState() {
     super.initState();
-    _fetchCompanyJobs();
+    _companyJobBloc = CompanyJobBloc()..add(FetchCompanyJobs(widget.job.perusahaan));
   }
 
-  Future<void> _fetchCompanyJobs() async {
-    try {
-      final jobs = await JobService().fetchJobs(namaPerusahaan: widget.job.perusahaan);
-      if (mounted) {
-        setState(() {
-          _companyJobs = jobs.where((j) => j.id != widget.job.id).toList();
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+  @override
+  void dispose() {
+    _companyJobBloc.close();
+    super.dispose();
   }
 
   @override
@@ -169,44 +156,55 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
   }
 
   Widget _buildCompanyJobs() {
-    if (_isLoading) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    if (_companyJobs.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.info_outline, color: AppColors.textMuted),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Tidak ada lowongan lain yang aktif dari perusahaan ini.',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
-              ),
+    return BlocBuilder<CompanyJobBloc, CompanyJobState>(
+      bloc: _companyJobBloc,
+      builder: (context, state) {
+        if (state is CompanyJobLoading || state is CompanyJobInitial) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(),
             ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _companyJobs.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        return JobListItem(job: _companyJobs[index]);
+        if (state is CompanyJobLoaded) {
+          final _companyJobs = state.jobs.where((j) => j.id != widget.job.id).toList();
+
+          if (_companyJobs.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, color: AppColors.textMuted),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Tidak ada lowongan lain yang aktif dari perusahaan ini.',
+                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _companyJobs.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              return JobListItem(job: _companyJobs[index]);
+            },
+          );
+        }
+
+        return const Center(child: Text('Gagal memuat lowongan.'));
       },
     );
   }

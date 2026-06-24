@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../repositories/notification_repository.dart';
-import '../services/realtime_notification_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/notification_badge_bloc.dart';
 
 class NotificationBadge extends StatefulWidget {
   final Widget child;
@@ -16,68 +16,58 @@ class NotificationBadge extends StatefulWidget {
 }
 
 class _NotificationBadgeState extends State<NotificationBadge> {
-  int _unreadCount = 0;
-  StreamSubscription? _subscription;
+  late NotificationBadgeBloc _badgeBloc;
 
   @override
   void initState() {
     super.initState();
-    _fetchInitialCount();
-    // Listen to realtime notifications to refresh count
-    _subscription = RealtimeNotificationService().notificationStream.listen((_) {
-      _fetchInitialCount();
-    });
+    _badgeBloc = NotificationBadgeBloc()..add(LoadUnreadCount());
   }
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _badgeBloc.close();
     super.dispose();
-  }
-
-  Future<void> _fetchInitialCount() async {
-    if (!mounted) return;
-    final count = await NotificationRepository().getUnreadCount();
-    if (mounted) {
-      setState(() {
-        _unreadCount = count;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_unreadCount == 0) return widget.child;
+    return BlocBuilder<NotificationBadgeBloc, NotificationBadgeState>(
+      bloc: _badgeBloc,
+      builder: (context, state) {
+        if (state.count == 0) return widget.child;
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        widget.child,
-        Positioned(
-          right: -4,
-          top: -4,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
-            ),
-            constraints: const BoxConstraints(
-              minWidth: 16,
-              minHeight: 16,
-            ),
-            child: Text(
-              _unreadCount > 9 ? '9+' : _unreadCount.toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            widget.child,
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 16,
+                  minHeight: 16,
+                ),
+                child: Text(
+                  state.count > 9 ? '9+' : state.count.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
-import '../services/job_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/job_filter_bloc.dart';
 
 class JobFilterBottomSheet extends StatefulWidget {
   final String? initialSektor;
@@ -20,8 +21,7 @@ class JobFilterBottomSheet extends StatefulWidget {
 }
 
 class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
-  final JobService _jobService = JobService();
-  bool _isLoading = true;
+  late JobFilterBloc _filterBloc;
   
   List<String> _sektorOptions = [];
   List<String> _jurusanOptions = [];
@@ -32,24 +32,19 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
   String? _selectedLokasi;
 
   @override
+  @override
   void initState() {
     super.initState();
     _selectedSektor = widget.initialSektor;
     _selectedJurusan = widget.initialJurusan;
     _selectedLokasi = widget.initialLokasi;
-    _fetchOptions();
+    _filterBloc = JobFilterBloc()..add(FetchFilterOptions());
   }
 
-  Future<void> _fetchOptions() async {
-    final options = await _jobService.fetchFilterOptions();
-    if (mounted) {
-      setState(() {
-        _sektorOptions = options['sektor'] ?? [];
-        _jurusanOptions = options['jurusan'] ?? [];
-        _lokasiOptions = options['lokasi'] ?? [];
-        _isLoading = false;
-      });
-    }
+  @override
+  void dispose() {
+    _filterBloc.close();
+    super.dispose();
   }
 
   void _applyFilter() {
@@ -142,62 +137,78 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
             ],
           ),
           const SizedBox(height: 16),
-          if (_isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else ...[
-            _buildDropdown(
-              label: 'Sektor Industri',
-              value: _selectedSektor,
-              items: _sektorOptions,
-              onChanged: (val) => setState(() => _selectedSektor = val),
-            ),
-            _buildDropdown(
-              label: 'Jurusan',
-              value: _selectedJurusan,
-              items: _jurusanOptions,
-              onChanged: (val) => setState(() => _selectedJurusan = val),
-            ),
-            _buildDropdown(
-              label: 'Lokasi Kota',
-              value: _selectedLokasi,
-              items: _lokasiOptions,
-              onChanged: (val) => setState(() => _selectedLokasi = val),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _resetFilter,
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: Text('Reset', style: AppTextStyles.labelLarge.copyWith(color: AppColors.primary)),
+          BlocBuilder<JobFilterBloc, JobFilterState>(
+            bloc: _filterBloc,
+            builder: (context, state) {
+              if (state is JobFilterLoading || state is JobFilterInitial) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _applyFilter,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                );
+              }
+
+              if (state is JobFilterLoaded) {
+                _sektorOptions = state.sektorOptions;
+                _jurusanOptions = state.jurusanOptions;
+                _lokasiOptions = state.lokasiOptions;
+
+                return Column(
+                  children: [
+                    _buildDropdown(
+                      label: 'Sektor Industri',
+                      value: _selectedSektor,
+                      items: _sektorOptions,
+                      onChanged: (val) => setState(() => _selectedSektor = val),
                     ),
-                    child: Text('Terapkan', style: AppTextStyles.labelLarge.copyWith(color: Colors.white)),
-                  ),
-                ),
-              ],
-            ),
-          ],
+                    _buildDropdown(
+                      label: 'Jurusan',
+                      value: _selectedJurusan,
+                      items: _jurusanOptions,
+                      onChanged: (val) => setState(() => _selectedJurusan = val),
+                    ),
+                    _buildDropdown(
+                      label: 'Lokasi Kota',
+                      value: _selectedLokasi,
+                      items: _lokasiOptions,
+                      onChanged: (val) => setState(() => _selectedLokasi = val),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: _resetFilter,
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: const BorderSide(color: AppColors.primary),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            child: Text('Reset', style: AppTextStyles.labelLarge.copyWith(color: AppColors.primary)),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _applyFilter,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            child: Text('Terapkan', style: AppTextStyles.labelLarge.copyWith(color: Colors.white)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+              return const Center(child: Text('Gagal memuat filter.'));
+            },
+          ),
         ],
       ),
     );

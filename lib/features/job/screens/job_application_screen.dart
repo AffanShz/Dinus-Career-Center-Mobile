@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/job_application_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/job_application_bloc.dart';
 
 class JobApplicationScreen extends StatefulWidget {
   final String lowonganId;
@@ -14,7 +15,7 @@ class JobApplicationScreen extends StatefulWidget {
 }
 
 class _JobApplicationScreenState extends State<JobApplicationScreen> {
-  final JobApplicationService _service = JobApplicationService();
+  late JobApplicationBloc _applicationBloc;
 
   File? _pasFoto;
   File? _cv;
@@ -25,6 +26,18 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   final TextEditingController _linkController = TextEditingController();
   bool _isLoading = false;
   bool _isPortfolioLink = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _applicationBloc = JobApplicationBloc();
+  }
+
+  @override
+  void dispose() {
+    _applicationBloc.close();
+    super.dispose();
+  }
 
   Future<void> _pickFile(
     Function(File?) onPicked, {
@@ -86,11 +99,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       }
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    final result = await _service.submitApplication(
+    _applicationBloc.add(SubmitApplication(
       lowonganId: widget.lowonganId,
       pasFoto: _pasFoto,
       cv: _cv,
@@ -98,45 +107,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       portofolioLink: _isPortfolioLink ? _linkController.text : null,
       transkipNilai: _transkripNilai,
       suratLamaran: _suratLamaran,
-    );
-
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    switch (result) {
-      case ApplicationResult.success:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Lamaran berhasil dikirim')),
-        );
-        Navigator.pop(context, true); // Go back with success result
-        break;
-      case ApplicationResult.alreadyApplied:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Anda sudah pernah melamar lowongan ini.'),
-          ),
-        );
-        break;
-      case ApplicationResult.notLoggedIn:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sesi Anda berakhir. Silakan masuk kembali.'),
-          ),
-        );
-        break;
-      case ApplicationResult.failure:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Gagal mengirim lamaran. Pastikan profil lengkap atau periksa koneksi Anda.',
-            ),
-          ),
-        );
-        break;
-    }
+    ));
   }
 
   String _getFileSize(File file) {
@@ -271,8 +242,19 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FB),
+    return BlocProvider.value(
+      value: _applicationBloc,
+      child: BlocListener<JobApplicationBloc, JobApplicationState>(
+        listener: (context, state) {
+          if (state is JobApplicationSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            Navigator.pop(context, true);
+          } else if (state is JobApplicationFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          }
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF7F9FB),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF7F9FB).withValues(alpha: 0.9),
         elevation: 0,
@@ -754,10 +736,13 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                   ],
                 ),
               ),
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _submitApplication,
-                style:
-                    ElevatedButton.styleFrom(
+              child: BlocBuilder<JobApplicationBloc, JobApplicationState>(
+                builder: (context, state) {
+                  final bool isLoading = state is JobApplicationLoading;
+                  return ElevatedButton(
+                    onPressed: isLoading ? null : _submitApplication,
+                    style:
+                        ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -783,7 +768,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                   child: Container(
                     height: 56, // Match HTML button height
                     alignment: Alignment.center,
-                    child: _isLoading
+                    child: isLoading
                         ? const SizedBox(
                             height: 24,
                             width: 24,
@@ -812,13 +797,14 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                             ],
                           ),
                   ),
-                ),
+                );
+              },
               ),
             ),
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
