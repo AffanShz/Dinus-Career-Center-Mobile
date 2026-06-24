@@ -525,6 +525,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
                             if (confirm == true && mounted) {
                               // Show loading indicator
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
                                 builder: (_) => BlocProvider.value(
                                   value: _applicationBloc,
                                   child: BlocListener<JobApplicationBloc, JobApplicationState>(

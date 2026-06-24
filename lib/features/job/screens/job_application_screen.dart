@@ -741,70 +741,67 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
                   final bool isLoading = state is JobApplicationLoading;
                   return ElevatedButton(
                     onPressed: isLoading ? null : _submitApplication,
-                    style:
-                        ElevatedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 8,
                       shadowColor: const Color(0xFF003A75).withValues(alpha: 0.2),
-                      backgroundColor:
-                          Colors.transparent, // to use gradient via Ink
+                      backgroundColor: Colors.transparent, // to use gradient via Ink
                     ).copyWith(
-                      backgroundColor: WidgetStateProperty.all(
-                        Colors.transparent,
+                      backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                    ),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF003A75), Color(0xFF4C56AF)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Container(
+                        height: 56, // Match HTML button height
+                        alignment: Alignment.center,
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Kirim Lamaran',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF003A75), Color(0xFF4C56AF)],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Container(
-                    height: 56, // Match HTML button height
-                    alignment: Alignment.center,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Kirim Lamaran',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.send,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                  ),
-                );
-              },
+                  );
+                },
               ),
             ),
           ),
         ],
       ),
-    ));
+    )));
   }
 }
 

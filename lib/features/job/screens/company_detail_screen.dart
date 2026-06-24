@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
 import 'package:dcc_mobile/core/theme/text_styles.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/job_model.dart';
 import '../bloc/company_job_bloc.dart';
 import '../widgets/job_list_item.dart';
