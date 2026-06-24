@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.dcc_mobile"
+    namespace = "id.ac.dinus.dcc"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.dcc_mobile"
+        applicationId = "id.ac.dinus.dcc"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -35,8 +35,7 @@ android {
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Signing configuration should be provided via environment variables or keystore properties
         }
     }
 }
