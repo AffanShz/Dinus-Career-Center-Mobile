@@ -21,8 +21,15 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "id.ac.dinus.dcc"
+        // Runtime applicationId intentionally differs from the `id.ac.dinus.dcc`
+        // namespace: the Google Cloud project "dinus-career-center" only has an
+        // Android OAuth client registered for `com.dcc_mobile` (+ debug SHA-1).
+        // Google Sign-In matches the running app's applicationId against that
+        // client, so it must stay `com.dcc_mobile` or login fails with
+        // ApiException 10 (DEVELOPER_ERROR). To switch to id.ac.dinus.dcc,
+        // register a new Android OAuth client for that package + SHA-1 in the
+        // Google Cloud Console, then change this back.
+        applicationId = "com.dcc_mobile"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
