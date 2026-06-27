@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dcc_mobile/core/utils/app_logger.dart';
@@ -23,15 +24,22 @@ enum ApplicationResult {
 class JobApplicationService {
   final _supabase = Supabase.instance.client;
 
-  Future<String?> uploadFile(String bucket, String path, File file) async {
-    try {
-      final String fullPath = '${AuthService.currentUser!.id}/$path';
-      await _supabase.storage.from(bucket).upload(fullPath, file, fileOptions: const FileOptions(upsert: true));
-      return _supabase.storage.from(bucket).getPublicUrl(fullPath);
-    } catch (e) {
-      appLog('Error uploading file: $e');
-      return null;
-    }
+  /// Per-lowongan mutex: prevents a second submit from entering the
+  /// critical section while the first is still uploading files.
+  final Map<String, Completer<void>> _submitLocks = {};
+
+  /// Uploads [file] to [bucket]/[path] and returns the public URL.
+  ///
+  /// Throws on failure so the caller can abort the application instead of
+  /// silently inserting a record with a null file URL.
+  Future<String> uploadFile(String bucket, String path, File file) async {
+    final String fullPath = '${AuthService.currentUser!.id}/$path';
+    await _supabase.storage.from(bucket).upload(
+      fullPath,
+      file,
+      fileOptions: const FileOptions(upsert: true),
+    );
+    return _supabase.storage.from(bucket).getPublicUrl(fullPath);
   }
 
   Future<ApplicationResult> submitApplication({
@@ -48,6 +56,17 @@ class JobApplicationService {
       appLog('User not logged in');
       return ApplicationResult.notLoggedIn;
     }
+
+    // ── Bug #4 fix: per-lowongan mutex ──
+    // If a submit for the same lowongan is already in-flight, wait for it
+    // to finish first. This closes the TOCTOU window between the duplicate
+    // check and the final INSERT.
+    if (_submitLocks.containsKey(lowonganId)) {
+      appLog('DEBUG: Waiting for in-flight submit for lowongan $lowonganId');
+      await _submitLocks[lowonganId]!.future;
+    }
+    final lock = Completer<void>();
+    _submitLocks[lowonganId] = lock;
 
     final pelamarId = user.id;
 
@@ -73,6 +92,10 @@ class JobApplicationService {
         }
       }
 
+      // ── Bug #5 fix: upload failures now throw ──
+      // uploadFile() no longer swallows errors. If a provided file fails
+      // to upload, the exception propagates here and the application is
+      // aborted — preventing a record with null file URLs.
       String? pasFotoUrl;
       if (pasFoto != null) {
          pasFotoUrl = await uploadFile('berkas-lamaran', 'pas_foto_${DateTime.now().millisecondsSinceEpoch}.jpg', pasFoto);
@@ -137,6 +160,10 @@ class JobApplicationService {
     } catch (e) {
       appLog('Error submitting application: $e');
       return ApplicationResult.failure;
+    } finally {
+      // Always release the lock so subsequent attempts can proceed.
+      _submitLocks.remove(lowonganId);
+      lock.complete();
     }
   }
 
