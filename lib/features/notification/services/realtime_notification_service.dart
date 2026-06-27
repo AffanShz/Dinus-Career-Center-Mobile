@@ -73,6 +73,12 @@ class RealtimeNotificationService {
 
   Future<void> _handleInsert(PostgresChangePayload payload) async {
     appLog('DEBUG: Received Realtime Payload: ${payload.newRecord}');
+
+    // Ignore DELETE events which have empty newRecord and cause ghost notifications
+    if (payload.eventType == PostgresChangeEvent.delete) {
+      return;
+    }
+
     final data = payload.newRecord;
     
     // Always update the UI stream
