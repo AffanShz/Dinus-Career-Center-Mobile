@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/job_application_bloc.dart';
+import 'job_application_success_screen.dart';
 
 class JobApplicationScreen extends StatefulWidget {
   final String lowonganId;
@@ -247,8 +248,15 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
       child: BlocListener<JobApplicationBloc, JobApplicationState>(
         listener: (context, state) {
           if (state is JobApplicationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-            Navigator.pop(context, true);
+            // Signal success to the detail screen (so it can refresh applied
+            // state), then replace this form with the confirmation screen.
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const JobApplicationSuccessScreen(),
+              ),
+              result: true,
+            );
           } else if (state is JobApplicationFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
           }
