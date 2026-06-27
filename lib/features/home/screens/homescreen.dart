@@ -56,9 +56,14 @@ class Homescreen extends StatelessWidget {
                         homeBloc.add(LoadHomeData());
                         profileBloc.add(LoadProfile());
                         
-                        await Future.wait([
-                          homeBloc.stream.firstWhere((state) => state.status != HomeStatus.loading),
-                          profileBloc.stream.firstWhere((state) => state.status != ProfileStatus.loading),
+                        // Use Future.any to prevent RefreshIndicator from hanging
+                        // if the state transitions too quickly before firstWhere catches it.
+                        await Future.any([
+                          Future.wait([
+                            homeBloc.stream.firstWhere((state) => state.status != HomeStatus.loading),
+                            profileBloc.stream.firstWhere((state) => state.status != ProfileStatus.loading),
+                          ]),
+                          Future.delayed(const Duration(seconds: 2)),
                         ]);
                       },
                       child: SingleChildScrollView(

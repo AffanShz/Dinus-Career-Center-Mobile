@@ -90,10 +90,19 @@ class JobScreen extends StatelessWidget {
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        context.read<JobBloc>().add(LoadJobs(
-                              category: state.selectedCategory,
-                              query: state.searchQuery,
-                            ));
+                        final jobBloc = context.read<JobBloc>();
+                        jobBloc.add(LoadJobs(
+                          category: state.selectedCategory,
+                          query: state.searchQuery,
+                          sektor: state.selectedSektor,
+                          jurusan: state.selectedJurusan,
+                          lokasi: state.selectedLokasi,
+                        ));
+                        
+                        await Future.any([
+                          jobBloc.stream.firstWhere((s) => s.status != JobStatus.loading),
+                          Future.delayed(const Duration(seconds: 2)),
+                        ]);
                       },
                       child: state.status == JobStatus.loading
                           ? const Center(child: CircularProgressIndicator())
