@@ -117,7 +117,11 @@ class AuthService {
     }
   }
 
-  /// Handle data insertion into profiles and pelamar tables after successful login
+  /// Handle data insertion into profiles and pelamar tables after successful login.
+  ///
+  /// Throws if profile/pelamar provisioning fails so the caller (bloc) can
+  /// surface the error to the user instead of landing on MainScreen without
+  /// the required database records.
   static Future<void> handleAfterLogin() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -169,6 +173,9 @@ class AuthService {
       appLog('DEBUG: post-login data handling completed successfully.');
     } catch (e) {
       appLog('DEBUG: Error in handleAfterLogin: $e');
+      // Rethrow so the calling bloc can surface the error to the user
+      // instead of silently landing on MainScreen without a pelamar record.
+      rethrow;
     }
   }
 
@@ -202,15 +209,33 @@ class AuthService {
     }
   }
 
-  /// Sign out from both Supabase and Google
+  /// Sign out from both Supabase and Google.
+  ///
+  /// Always clears local prefs (login timestamp, user ID) even if the
+  /// remote sign-out calls fail (e.g. no network, non-Google session).
+  /// This prevents the expired-session loop described in BUG_ANALYSIS #2.
   static Future<void> signOut() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut();
-    await _supabase.auth.signOut();
-
+    // Clear local session markers FIRST so a failed remote sign-out never
+    // leaves stale prefs that prevent future expiry cleanup.
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_loginTimeKey);
     await prefs.remove('USER_ID');
+
+    // Remote sign-out is best-effort — failures are logged but never
+    // propagated, since the critical invariant (local prefs cleared) is
+    // already satisfied above.
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+    } catch (e) {
+      appLog('DEBUG: GoogleSignIn.signOut() failed (non-fatal): $e');
+    }
+
+    try {
+      await _supabase.auth.signOut();
+    } catch (e) {
+      appLog('DEBUG: Supabase signOut() failed (non-fatal): $e');
+    }
   }
 
   /// Get current session
