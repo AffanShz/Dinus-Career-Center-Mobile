@@ -79,10 +79,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 ],
               ),
             ),
-            
+
             // Top App Bar
             _buildCustomAppBar(context),
-            
+
             // Bottom Bar
             _buildBottomActionBar(),
           ],
@@ -100,7 +100,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           children: [
             _buildCircleButton(
               icon: Icons.arrow_back,
-              onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+              onPressed: () =>
+                  Navigator.of(context).popUntil((route) => route.isFirst),
             ),
           ],
         ),
@@ -147,11 +148,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             height: 1.2,
           ),
         ),
-        if (widget.job.rangeGaji != null && widget.job.rangeGaji!.isNotEmpty) ...[
+        if (widget.job.rangeGaji != null &&
+            widget.job.rangeGaji!.isNotEmpty) ...[
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.monetization_on, color: AppColors.accent, size: 20),
+              const Icon(
+                Icons.monetization_on,
+                color: AppColors.accent,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 widget.job.rangeGaji!,
@@ -257,7 +263,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => CompanyDetailScreen(job: widget.job)),
+          MaterialPageRoute(
+            builder: (_) => CompanyDetailScreen(job: widget.job),
+          ),
         );
       },
       child: Container(
@@ -286,11 +294,17 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: widget.job.logoPerusahaan != null && widget.job.logoPerusahaan!.isNotEmpty
+                child:
+                    widget.job.logoPerusahaan != null &&
+                        widget.job.logoPerusahaan!.isNotEmpty
                     ? Image.network(
                         widget.job.logoPerusahaan!,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.business, color: AppColors.primary),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.business,
+                              color: AppColors.primary,
+                            ),
                       )
                     : const Icon(Icons.business, color: AppColors.primary),
               ),
@@ -357,20 +371,29 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: chips.map((chip) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              chip,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-            ),
-          )).toList(),
+          children: chips
+              .map(
+                (chip) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    chip,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -388,7 +411,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          widget.job.detailLowongan.isNotEmpty ? widget.job.detailLowongan : 'Tidak ada deskripsi tersedia.',
+          widget.job.detailLowongan.isNotEmpty
+              ? widget.job.detailLowongan
+              : 'Tidak ada deskripsi tersedia.',
           style: AppTextStyles.bodyMedium.copyWith(
             height: 1.6,
             color: AppColors.onSurfaceVariant,
@@ -403,14 +428,19 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       return const SizedBox.shrink();
     }
 
-    final reqList = widget.job.requirements.split(RegExp(r'\n|,|-')).where((s) => s.trim().isNotEmpty).toList();
+    final reqList = widget.job.requirements
+        .split(RegExp(r'\n|,|-'))
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -456,6 +486,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Widget _buildBottomActionBar() {
     final bool isAktif = widget.job.isAktif;
+    final bool canCancel = _isApplied && (widget.job.statusLamaran == null || widget.job.statusLamaran!.toLowerCase() == 'applied');
 
     return Positioned(
       bottom: 0,
@@ -501,22 +532,28 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               const SizedBox(width: 32),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: isAktif
+                  onPressed: isAktif && (!_isApplied || canCancel)
                       ? () async {
                           if (_isApplied) {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
                                 title: const Text('Batalkan Lamaran'),
-                                content: const Text('Apakah Anda yakin ingin membatalkan lamaran untuk posisi ini?'),
+                                content: const Text(
+                                  'Apakah Anda yakin ingin membatalkan lamaran untuk posisi ini?',
+                                ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context, false),
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
                                     child: const Text('Tidak'),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context, true),
-                                    style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: AppColors.error,
+                                    ),
                                     child: const Text('Ya, Batalkan'),
                                   ),
                                 ],
@@ -530,31 +567,60 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                 barrierDismissible: false,
                                 builder: (_) => BlocProvider.value(
                                   value: _applicationBloc,
-                                  child: BlocListener<JobApplicationBloc, JobApplicationState>(
-                                    listener: (context, state) {
-                                      if (state is JobApplicationSuccess) {
-                                        Navigator.pop(context); // close loading
-                                        setState(() { _isApplied = false; });
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Lamaran berhasil dibatalkan.')),
-                                        );
-                                        try {
-                                          context.read<JobBloc>().add(CancelJobSuccess(widget.job.id));
-                                          context.read<HomeBloc>().add(LoadHomeData());
-                                        } catch (_) {}
-                                      } else if (state is JobApplicationFailure) {
-                                        Navigator.pop(context); // close loading
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(state.error)),
-                                        );
-                                      }
-                                    },
-                                    child: const Center(child: CircularProgressIndicator()),
-                                  ),
+                                  child:
+                                      BlocListener<
+                                        JobApplicationBloc,
+                                        JobApplicationState
+                                      >(
+                                        listener: (context, state) {
+                                          if (state is JobApplicationSuccess) {
+                                            Navigator.pop(
+                                              context,
+                                            ); // close loading
+                                            setState(() {
+                                              _isApplied = false;
+                                            });
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Lamaran berhasil dibatalkan.',
+                                                ),
+                                              ),
+                                            );
+                                            try {
+                                              context.read<JobBloc>().add(
+                                                CancelJobSuccess(widget.job.id),
+                                              );
+                                              context.read<HomeBloc>().add(
+                                                LoadHomeData(),
+                                              );
+                                            } catch (_) {}
+                                          } else if (state
+                                              is JobApplicationFailure) {
+                                            Navigator.pop(
+                                              context,
+                                            ); // close loading
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(state.error),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      ),
                                 ),
                               );
 
-                              _applicationBloc.add(CancelApplication(widget.job.id));
+                              _applicationBloc.add(
+                                CancelApplication(widget.job.id),
+                              );
                             }
                             return;
                           }
@@ -562,7 +628,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                           final applied = await Navigator.push<bool>(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => JobApplicationScreen(lowonganId: widget.job.id),
+                              builder: (context) => JobApplicationScreen(
+                                lowonganId: widget.job.id,
+                              ),
                             ),
                           );
                           if (applied == true && mounted) {
@@ -570,14 +638,20 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                               _isApplied = true;
                             });
                             try {
-                              context.read<JobBloc>().add(ApplyJobSuccess(widget.job.id));
+                              context.read<JobBloc>().add(
+                                ApplyJobSuccess(widget.job.id),
+                              );
                               context.read<HomeBloc>().add(LoadHomeData());
                             } catch (_) {}
                           }
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isApplied ? AppColors.error : AppColors.primary,
+                    backgroundColor: !_isApplied
+                        ? AppColors.primary
+                        : canCancel
+                            ? AppColors.error
+                            : Colors.grey,
                     disabledBackgroundColor: Colors.grey[300],
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -586,7 +660,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    _isApplied ? 'Batalkan Lamaran' : 'Lamar Sekarang',
+                    !_isApplied
+                        ? 'Lamar Sekarang'
+                        : canCancel
+                            ? 'Batalkan Lamaran'
+                            : 'Lamaran Diproses',
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: Colors.white,
                     ),
