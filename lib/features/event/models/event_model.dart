@@ -19,11 +19,11 @@ class EventSpeaker extends Equatable {
 
   factory EventSpeaker.fromJson(Map<String, dynamic> json) {
     return EventSpeaker(
-      id: json['speaker_id'],
-      eventId: json['event_id'],
-      name: json['nama'],
-      title: json['jabatan'],
-      image: json['foto'],
+      id: json['speaker_id'] ?? 0,
+      eventId: json['event_id'] ?? 0,
+      name: json['nama']?.toString() ?? 'Speaker',
+      title: json['jabatan']?.toString(),
+      image: json['foto']?.toString(),
       urutan: json['urutan'] ?? 1,
     );
   }
