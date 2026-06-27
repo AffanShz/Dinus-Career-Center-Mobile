@@ -12,6 +12,8 @@ import 'features/notification/services/notification_service.dart';
 import 'features/notification/services/realtime_notification_service.dart';
 import 'core/utils/workmanager_helper.dart';
 
+import 'core/utils/navigation_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -82,6 +84,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

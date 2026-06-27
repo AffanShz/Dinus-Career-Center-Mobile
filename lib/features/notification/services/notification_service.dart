@@ -1,6 +1,10 @@
 import 'package:dcc_mobile/core/utils/app_logger.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:dcc_mobile/core/utils/navigation_service.dart';
+import 'package:dcc_mobile/features/notification/models/notification_model.dart';
+import 'package:dcc_mobile/features/notification/pages/notification_detail_page.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -59,9 +63,18 @@ class NotificationService {
   }
 
   void _handleNotificationClick(Map<String, dynamic> data) {
-    // Navigation logic will be handled here or via a stream/callback to the main app
     appLog('Notification clicked with data: $data');
-    // GlobalKey for navigation or a stream can be used to notify the UI
+    try {
+      final notification = NotificationModel.fromMap(data);
+      
+      // Gunakan addPostFrameCallback untuk memastikan Navigator sudah siap,
+      // terutama saat aplikasi baru dibuka dari state terminated (mati).
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        NavigationService.push(NotificationDetailPage(notification: notification));
+      });
+    } catch (e) {
+      appLog('Error parsing notification payload or navigating: $e');
+    }
   }
 
   Future<void> showNotification({
