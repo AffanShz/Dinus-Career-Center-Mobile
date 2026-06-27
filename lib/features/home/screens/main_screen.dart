@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<_NavItem> _navItems = const [
     _NavItem(
       icon: Icons.home_outlined,
-      selectedIcon: Icons.home_filled,
+      selectedIcon: Icons.home_rounded,
       label: 'Beranda',
     ),
     _NavItem(
