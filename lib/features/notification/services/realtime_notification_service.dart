@@ -103,8 +103,14 @@ class RealtimeNotificationService {
     );
   }
 
+  /// Tears down the realtime channel without closing the shared
+  /// [StreamController]. Because this class is a singleton, closing
+  /// the controller is permanent — any subsequent `add()` call (e.g.
+  /// after a re-login) would throw `Bad state: Cannot add event after
+  /// closing`. Only the channel subscription needs cleanup; the stream
+  /// stays alive for the lifetime of the process.
   void dispose() {
     _channel?.unsubscribe();
-    _notificationController.close();
+    _channel = null;
   }
 }
