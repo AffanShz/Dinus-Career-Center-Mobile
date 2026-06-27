@@ -176,37 +176,49 @@ class CVService {
 
   void _addProfessionalTemplate(pw.Document pdf, UserProfile profile) {
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        build: (context) => pw.FullPage(
-          ignoreMargins: true,
-          child: pw.Row(
+        pageTheme: pw.PageTheme(
+          margin: const pw.EdgeInsets.all(0),
+          buildBackground: (context) => pw.FullPage(
+            ignoreMargins: true,
+            child: pw.Row(
+              children: [
+                pw.Container(width: 200, color: PdfColors.blueGrey900),
+                pw.Expanded(child: pw.Container(color: PdfColors.white)),
+              ],
+            ),
+          ),
+        ),
+        build: (context) => [
+          pw.Partitions(
             children: [
               // Sidebar
-              pw.Container(
+              pw.Partition(
                 width: 200,
-                color: PdfColors.blueGrey900,
-                padding: const pw.EdgeInsets.all(24),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(profile.name, style: pw.TextStyle(color: PdfColors.white, fontSize: 20, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 4),
-                    pw.Text(profile.bidang ?? '', style: pw.TextStyle(color: PdfColors.white, fontSize: 12)),
-                    pw.SizedBox(height: 32),
-                    pw.Text('KONTAK', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
-                    pw.SizedBox(height: 8),
-                    pw.Text(profile.email, style: pw.TextStyle(color: PdfColors.white, fontSize: 9)),
-                    pw.Text(profile.noHandphone ?? '', style: pw.TextStyle(color: PdfColors.white, fontSize: 9)),
-                    pw.SizedBox(height: 32),
-                    pw.Text('KEAHLIAN', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
-                    pw.SizedBox(height: 8),
-                    ...profile.skills.map((skill) => pw.Text(skill, style: pw.TextStyle(color: PdfColors.white, fontSize: 9))),
-                  ],
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(24),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(profile.name, style: pw.TextStyle(color: PdfColors.white, fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                      pw.SizedBox(height: 4),
+                      pw.Text(profile.bidang ?? '', style: pw.TextStyle(color: PdfColors.white, fontSize: 12)),
+                      pw.SizedBox(height: 32),
+                      pw.Text('KONTAK', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                      pw.SizedBox(height: 8),
+                      pw.Text(profile.email, style: pw.TextStyle(color: PdfColors.white, fontSize: 9)),
+                      pw.Text(profile.noHandphone ?? '', style: pw.TextStyle(color: PdfColors.white, fontSize: 9)),
+                      pw.SizedBox(height: 32),
+                      pw.Text('KEAHLIAN', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                      pw.SizedBox(height: 8),
+                      ...profile.skills.map((skill) => pw.Text(skill, style: pw.TextStyle(color: PdfColors.white, fontSize: 9))),
+                    ],
+                  ),
                 ),
               ),
               // Main Content
-              pw.Expanded(
+              pw.Partition(
                 child: pw.Container(
                   padding: const pw.EdgeInsets.all(32),
                   child: pw.Column(
@@ -247,7 +259,7 @@ class CVService {
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
