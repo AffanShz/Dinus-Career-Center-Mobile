@@ -1,4 +1,4 @@
-package com.example.dcc_mobile
+package id.ac.dinus.dcc
 
 import io.flutter.embedding.android.FlutterActivity
 
