@@ -5,58 +5,73 @@ DCC Mobile adalah aplikasi mobile resmi Dinus Career Center (UDINUS) yang diranc
 ## 🚀 Fitur Utama
 
 - **Beranda (Home):** Ringkasan aktivitas, rekomendasi loker terbaru, dan event mendatang.
-- **Lowongan Kerja (Job):** Pencarian dan filter lowongan kerja (Full-time, Magang, Part-time) dengan fitur simpan (bookmark).
-- **Pelacakan (Track):** Memantau status lamaran kerja secara real-time dari tahap verifikasi hingga selesai.
-- **Event:** Informasi seminar, webinar, dan workshop karir lengkap dengan detail pendaftaran dan pembicara.
-- **Profil (Profile):** Manajemen Curriculum Vitae (CV), keahlian (tech stack), pengalaman kerja, dan pendidikan.
+- **Lowongan Kerja (Job):** Pencarian dan filter lowongan kerja (Full-time, Magang, Part-time) dengan fitur simpan (bookmark) dan form pendaftaran (termasuk upload berkas).
+- **Pelacakan (Track):** Memantau status lamaran kerja secara real-time dari tahap pendaftaran hingga penyelesaian (verifikasi, interview, dll).
+- **Event:** Informasi seminar, webinar, dan workshop karir lengkap dengan detail jadwal, pembicara, dan tautan pendaftaran.
+- **Profil (Profile):** Manajemen Curriculum Vitae (CV), keahlian (tech stack), pengalaman kerja, pendidikan, serta export profil menjadi dokumen PDF.
+- **Notifikasi Realtime:** Sistem notifikasi cerdas yang didukung sinkronisasi *background* (berjalan di latar belakang) dan *realtime database*.
 
 ## 🛠️ Tech Stack
 
-- **Framework:** [Flutter](https://flutter.dev/) (v3.x)
-- **State Management:** [Flutter BLoC](https://pub.dev/packages/flutter_bloc) (v9.1.1)
-- **Concurrency & Equality:** [Equatable](https://pub.dev/packages/equatable)
+- **Framework:** [Flutter](https://flutter.dev/) (v3.x / Material 3)
+- **Backend & Database:** [Supabase](https://supabase.com/) (`supabase_flutter`) untuk Auth, Postgres Database, & Realtime
+- **State Management:** [Flutter BLoC](https://pub.dev/packages/flutter_bloc)
+- **Latar Belakang & Notifikasi:** `workmanager`, `flutter_local_notifications`
+- **Utilitas Tambahan:** `flutter_dotenv`, `shared_preferences`, `intl`
 - **UI & Styling:** 
-  - Google Fonts (Poppins)
+  - Google Fonts (Manrope)
   - Custom Modular Widgets
-  - Modern Design System (Service-Oriented Architecture)
+  - Modern Design System
 
 ## 📂 Struktur Proyek
 
-Proyek ini menggunakan struktur folder berbasis fitur (feature-first) untuk skalabilitas dan pemeliharaan yang lebih baik:
+Proyek ini menggunakan struktur folder berbasis fitur (feature-first) untuk skalabilitas dan pemeliharaan yang rapi:
 
 ```text
 lib/
-├── core/               # Tema, widget global, dan utilitas pendukung
-├── features/           # Modul fitur mandiri
-│   ├── auth/           # Otentikasi & Manajemen Sesi
-│   ├── event/          # Manajemen & Detail Event
-│   ├── home/           # Dashboard & Integrasi Utama
-│   ├── job/            # Katalog & Filter Lowongan Kerja
+├── core/               # Tema, widget global, dan utilitas inti (env, workmanager logger)
+├── features/           # Modul fitur fungsional
+│   ├── auth/           # Otentikasi (Supabase OTP) & Manajemen Sesi
+│   ├── event/          # Katalog & Daftar Event
+│   ├── event_detail/   # Rincian mendalam event & pembicara
+│   ├── home/           # Dashboard utama
+│   ├── job/            # Katalog, filter, & aplikasi Lowongan Kerja
+│   ├── notification/   # Realtime Notification & Background Services
 │   ├── profile/        # Resume & Identitas Profesional
-│   └── track/          # Monitoring Status Lamaran
-└── main.dart           # Titik masuk aplikasi
+│   └── track/          # Monitoring Status Lamaran Aktif
+└── main.dart           # Titik awal aplikasi
 ```
 
-Setiap fitur dalam `lib/features/` memiliki sub-struktur:
-- `bloc/`: Logika bisnis dan manajemen state.
-- `models/`: Data classes dan mapping.
-- `screens/`: UI halaman utama fitur.
-- `services/`: Komunikasi data (API/Dummy data).
-- `widgets/`: Komponen UI spesifik fitur.
+Setiap fitur dalam `lib/features/` umumnya menggunakan pendekatan BLoC:
+- `bloc/`: Logika bisnis dan abstraksi state.
+- `models/`: Data class (parsing langsung dari DB).
+- `screens/`: UI halaman spesifik fitur.
+- `services/`: Lapisan abstraksi komunikasi ke *backend*.
+- `widgets/`: Komponen UI spesifik.
 
 ## 🏁 Cara Menjalankan
+
+### ⚠️ Persiapan Wajib (Environment)
+Aplikasi ini terhubung langsung dengan **Supabase**. Aplikasi akan menampilkan halaman galat *(Config Error Screen)* jika konfigurasi tidak disediakan.
 
 1. **Clone repositori:**
    ```bash
    git clone https://github.com/username/dcc_mobile.git
    ```
 
-2. **Install dependencies:**
+2. **Siapkan file `.env`:**
+   Buat file bernama `.env` di *root directory* proyek (sejajar dengan `pubspec.yaml`), lalu isi dengan *credentials* Supabase Anda:
+   ```env
+   SUPABASE_URL=https://<project_id>.supabase.co
+   SUPABASE_ANON_KEY=ey...<kunci_anon>
+   ```
+
+3. **Install dependencies:**
    ```bash
    flutter pub get
    ```
 
-3. **Jalankan aplikasi:**
+4. **Jalankan aplikasi:**
    ```bash
    flutter run
    ```
