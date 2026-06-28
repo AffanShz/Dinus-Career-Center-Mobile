@@ -4,7 +4,6 @@ import 'package:dcc_mobile/features/job/bloc/job_bloc.dart';
 import 'package:dcc_mobile/features/job/bloc/job_event.dart';
 import 'package:dcc_mobile/features/job/bloc/job_state.dart';
 import 'package:dcc_mobile/features/job/services/job_service.dart';
-import 'package:dcc_mobile/features/job/models/job_model.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockJobService extends Mock implements JobService {}

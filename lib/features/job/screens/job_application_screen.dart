@@ -25,7 +25,7 @@ class _JobApplicationScreenState extends State<JobApplicationScreen> {
   File? _suratLamaran;
 
   final TextEditingController _linkController = TextEditingController();
-  bool _isLoading = false;
+
   bool _isPortfolioLink = false;
 
   @override

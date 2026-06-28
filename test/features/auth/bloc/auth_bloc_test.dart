@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bloc_test/bloc_test.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_bloc.dart';
-import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 
 void main() {

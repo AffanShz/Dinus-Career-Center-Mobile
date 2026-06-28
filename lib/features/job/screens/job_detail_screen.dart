@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/job_application_bloc.dart';
 import 'job_application_screen.dart';
 import 'company_detail_screen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/job_bloc.dart';
 import '../bloc/job_event.dart';
 import '../../home/bloc/home_bloc.dart';

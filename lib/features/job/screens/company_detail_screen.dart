@@ -170,9 +170,9 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
         }
 
         if (state is CompanyJobLoaded) {
-          final _companyJobs = state.jobs.where((j) => j.id != widget.job.id).toList();
+          final companyJobs = state.jobs.where((j) => j.id != widget.job.id).toList();
 
-          if (_companyJobs.isEmpty) {
+          if (companyJobs.isEmpty) {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -197,10 +197,10 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
           return ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _companyJobs.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemCount: companyJobs.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              return JobListItem(job: _companyJobs[index]);
+              return JobListItem(job: companyJobs[index]);
             },
           );
         }

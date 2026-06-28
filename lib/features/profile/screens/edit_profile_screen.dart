@@ -180,7 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       name: _nameController.text,
       photoUrl: currentPhotoUrl,
       tempatLahir: _tempatLahirController.text,
-      tanggalLahir: _selectedTanggalLahir != null ? _selectedTanggalLahir!.toIso8601String().split('T').first : null,
+      tanggalLahir: _selectedTanggalLahir?.toIso8601String().split('T').first,
       noKtp: _noKtpController.text,
       jenisKelamin: _selectedJenisKelamin,
       alamat: _alamatController.text,
