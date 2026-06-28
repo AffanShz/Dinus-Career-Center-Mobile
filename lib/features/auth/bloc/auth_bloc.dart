@@ -13,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<OtpVerifyRequested>(_onOtpVerifyRequested);
   }
 
-  void _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       final response = await AuthService.signInWithEmail(
@@ -41,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onGoogleLoginRequested(
+  Future<void> _onGoogleLoginRequested(
     GoogleLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
@@ -70,7 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onRegisterRequested(
+  Future<void> _onRegisterRequested(
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
@@ -87,7 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response.user != null) {
         // Supabase security feature: if the email already exists,
         // it returns a fake user object with an empty identities array.
-        if (response.user!.identities?.isEmpty ?? false) {
+        if (response.user!.identities == null || (response.user!.identities?.isEmpty ?? true)) {
           emit(
             const AuthFailure(
               'Email/NIM ini sudah terdaftar. Silakan kembali dan login, atau masuk menggunakan akun Google.',
@@ -105,7 +105,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onOtpVerifyRequested(
+  Future<void> _onOtpVerifyRequested(
     OtpVerifyRequested event,
     Emitter<AuthState> emit,
   ) async {
