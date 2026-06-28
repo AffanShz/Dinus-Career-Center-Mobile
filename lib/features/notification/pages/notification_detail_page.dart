@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/notification_model.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
-import 'package:url_launcher/url_launcher.dart';\r\nimport 'package:dcc_mobile/features/home/screens/main_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   final NotificationModel notification;
