@@ -9,7 +9,7 @@ DCC Mobile adalah aplikasi mobile resmi Dinus Career Center (UDINUS) yang diranc
 - **Pelacakan (Track):** Memantau status lamaran kerja secara real-time dari tahap pendaftaran hingga penyelesaian (verifikasi, interview, dll).
 - **Event:** Informasi seminar, webinar, dan workshop karir lengkap dengan detail jadwal, pembicara, dan tautan pendaftaran.
 - **Profil (Profile):** Manajemen Curriculum Vitae (CV), keahlian (tech stack), pengalaman kerja, pendidikan, serta export profil menjadi dokumen PDF.
-- **Notifikasi Realtime:** Sistem notifikasi cerdas yang didukung sinkronisasi *background* (berjalan di latar belakang) dan *realtime database*.
+- **Notifikasi Realtime:** Sistem notifikasi cerdas yang didukung sinkronisasi _background_ (berjalan di latar belakang) dan _realtime database_.
 
 ## 🛠️ Tech Stack
 
@@ -18,7 +18,7 @@ DCC Mobile adalah aplikasi mobile resmi Dinus Career Center (UDINUS) yang diranc
 - **State Management:** [Flutter BLoC](https://pub.dev/packages/flutter_bloc)
 - **Latar Belakang & Notifikasi:** `workmanager`, `flutter_local_notifications`
 - **Utilitas Tambahan:** `flutter_dotenv`, `shared_preferences`, `intl`
-- **UI & Styling:** 
+- **UI & Styling:**
   - Google Fonts (Manrope)
   - Custom Modular Widgets
   - Modern Design System
@@ -43,30 +43,35 @@ lib/
 ```
 
 Setiap fitur dalam `lib/features/` umumnya menggunakan pendekatan BLoC:
+
 - `bloc/`: Logika bisnis dan abstraksi state.
 - `models/`: Data class (parsing langsung dari DB).
 - `screens/`: UI halaman spesifik fitur.
-- `services/`: Lapisan abstraksi komunikasi ke *backend*.
+- `services/`: Lapisan abstraksi komunikasi ke _backend_.
 - `widgets/`: Komponen UI spesifik.
 
 ## 🏁 Cara Menjalankan
 
 ### ⚠️ Persiapan Wajib (Environment)
-Aplikasi ini terhubung langsung dengan **Supabase**. Aplikasi akan menampilkan halaman galat *(Config Error Screen)* jika konfigurasi tidak disediakan.
+
+Aplikasi ini terhubung langsung dengan **Supabase**. Aplikasi akan menampilkan halaman galat _(Config Error Screen)_ jika konfigurasi tidak disediakan.
 
 1. **Clone repositori:**
+
    ```bash
    git clone https://github.com/username/dcc_mobile.git
    ```
 
 2. **Siapkan file `.env`:**
-   Buat file bernama `.env` di *root directory* proyek (sejajar dengan `pubspec.yaml`), lalu isi dengan *credentials* Supabase Anda:
+   Buat file bernama `.env` di _root directory_ proyek (sejajar dengan `pubspec.yaml`), lalu isi dengan _credentials_ Supabase Anda:
+
    ```env
    SUPABASE_URL=https://<project_id>.supabase.co
    SUPABASE_ANON_KEY=ey...<kunci_anon>
    ```
 
 3. **Install dependencies:**
+
    ```bash
    flutter pub get
    ```
@@ -77,4 +82,3 @@ Aplikasi ini terhubung langsung dengan **Supabase**. Aplikasi akan menampilkan h
    ```
 
 ---
-*Dikembangkan dengan ❤️ untuk masa depan karir mahasiswa UDINUS.*
