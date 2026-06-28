@@ -76,10 +76,34 @@ void main() async {
 
 final supabase = Supabase.instance.client;
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   final Session? initialSession;
 
   const MainApp({super.key, this.initialSession});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      AuthService.checkSessionAge();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +127,7 @@ class MainApp extends StatelessWidget {
           onSurface: AppColors.onSurface,
         ),
       ),
-      home: SplashScreen(initialSession: initialSession),
+      home: SplashScreen(initialSession: widget.initialSession),
     );
   }
 }
