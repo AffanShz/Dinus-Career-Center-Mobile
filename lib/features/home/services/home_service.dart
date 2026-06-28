@@ -45,7 +45,7 @@ class HomeService {
         final Map<String, dynamic> mutableData = Map<String, dynamic>.from(data);
         final status = appliedJobMap[lowonganId];
         mutableData['status_lamaran'] = status;
-        mutableData['is_applied'] = status != null && status != 'cancelled';
+        mutableData['is_applied'] = status != null && !['cancelled', 'rejected', 'withdrawn'].contains(status.toLowerCase());
         return JobModel.fromMap(mutableData);
       }).toList();
     } catch (e) {
