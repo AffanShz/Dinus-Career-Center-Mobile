@@ -108,6 +108,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Dinus Career Center',
       navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
