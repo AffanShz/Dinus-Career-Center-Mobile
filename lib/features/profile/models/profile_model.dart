@@ -287,7 +287,7 @@ class UserProfile {
       // DB enum values: 'SMA/SMK' | 'D1' | 'D2' | 'D3' | 'D4' | 'S1' | 'S2' | 'S3'
       'pendidikan_tertinggi': _nullIfEmpty(pendidikanTertinggi),
       'nim': _nullIfEmpty(nim),
-      'ipk': (ipk != null && ipk!.isNotEmpty) ? double.tryParse(ipk!) : null,
+      'ipk': (ipk != null && ipk!.isNotEmpty) ? double.tryParse(ipk!.replaceAll(',', '.')) : null,
       'bidang': _nullIfEmpty(bidang),
       'disabilitas': disabilitas,
       'skills': skills,
