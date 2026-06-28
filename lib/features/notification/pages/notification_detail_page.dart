@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/notification_model.dart';
 import 'package:dcc_mobile/core/theme/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';\r\nimport 'package:dcc_mobile/features/home/screens/main_screen.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   final NotificationModel notification;
@@ -66,7 +66,7 @@ class NotificationDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            if (notification.tipe == 'interview' && notification.linkZoom != null && notification.linkZoom!.isNotEmpty)
+            if (notification.tipe.toLowerCase() == 'interview' && notification.linkZoom != null && notification.linkZoom!.isNotEmpty)
               _buildActionButton(
                 label: 'Gabung Interview',
                 icon: Icons.video_call_rounded,
@@ -83,15 +83,21 @@ class NotificationDetailPage extends StatelessWidget {
                   }
                 },
               ),
-            if ((notification.tipe == 'lamaran' ||
-                    notification.tipe == 'completed' ||
-                    notification.tipe == 'status_update') &&
+            if ((notification.tipe.toLowerCase() == 'lamaran' ||
+                    notification.tipe.toLowerCase() == 'completed' ||
+                    notification.tipe.toLowerCase() == 'status_update') &&
                 notification.lamaranId != null)
               _buildActionButton(
                 label: 'Lihat Status Lamaran',
                 icon: Icons.description_rounded,
                 onPressed: () {
-                  // TODO: Navigate to application detail
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MainScreen(initialIndex: 2),
+                    ),
+                    (route) => false,
+                  );
                 },
               ),
           ],

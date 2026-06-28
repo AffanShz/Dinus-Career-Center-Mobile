@@ -28,14 +28,15 @@ class _NavItem {
 
 /// Root screen that holds the bottom navigation and switches between tabs.
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialIndex;
+  const MainScreen({super.key, this.initialIndex = 0});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   late final List<Widget> _pages;
 
   final List<_NavItem> _navItems = const [
@@ -69,6 +70,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
     _pages = [
       Homescreen(onSeeAllJobs: () => setState(() => _currentIndex = 1)),
       const JobScreen(),
