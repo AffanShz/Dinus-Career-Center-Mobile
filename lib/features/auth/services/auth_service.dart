@@ -66,6 +66,15 @@ class AuthService {
     return response;
   }
 
+  /// Resend OTP to email
+  static Future<void> resendOtp({required String email}) async {
+    appLog('DEBUG: Resending OTP to $email');
+    await _supabase.auth.resend(
+      type: OtpType.signup,
+      email: email,
+    );
+  }
+
   /// Sign in with Google via Supabase idToken flow (google_sign_in v6)
   static Future<AuthResponse?> signInWithGoogle() async {
     try {
@@ -195,12 +204,12 @@ class AuthService {
 
     if (loginTimestamp != null) {
       final loginDate = DateTime.fromMillisecondsSinceEpoch(loginTimestamp);
-      final difference = DateTime.now().difference(loginDate).inDays;
+      final difference = DateTime.now().difference(loginDate).inHours;
 
-      appLog('DEBUG: Session age: $difference days');
+      appLog('DEBUG: Session age: $difference hours');
 
-      if (difference >= 3) {
-        appLog('DEBUG: Session expired (3 days limit). Logging out...');
+      if (difference >= 72) {
+        appLog('DEBUG: Session expired (72 hours limit). Logging out...');
         await signOut();
       }
     } else {

@@ -5,6 +5,7 @@ import 'package:dcc_mobile/features/auth/bloc/auth_bloc.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_state.dart';
 import 'package:dcc_mobile/features/auth/widgets/auth_text_field.dart';
 import 'package:dcc_mobile/features/auth/bloc/auth_event.dart';
+import 'package:dcc_mobile/features/auth/services/auth_service.dart';
 import 'package:dcc_mobile/features/home/screens/main_screen.dart';
 class OtpForm extends StatefulWidget {
   final String email;
@@ -138,8 +139,24 @@ class _OtpFormState extends State<OtpForm> {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {
-                    // Resend OTP logic
+                  onPressed: () async {
+                    try {
+                      await AuthService.resendOtp(email: widget.email);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Kode OTP telah dikirim ulang ke email Anda.')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Gagal mengirim ulang OTP: $e'),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: Text(
                     'Kirim ulang kode OTP',
