@@ -75,7 +75,7 @@ class ProfileService {
       rethrow;
     }
 
-    // Step 2: Sync name/email to profiles table (non-blocking — won't cause save to fail)
+    // Step 2: Sync name/email to profiles table (critical)
     try {
       await _supabase
           .from('profiles')
@@ -88,8 +88,8 @@ class ProfileService {
           }, onConflict: 'id');
       appLog('DEBUG: profiles sync SUCCESS');
     } catch (e) {
-      // Non-critical: log but don't rethrow
-      appLog('WARN: profiles sync failed (non-critical): $e');
+      appLog('ERROR: profiles sync failed: $e');
+      rethrow;
     }
   }
 
