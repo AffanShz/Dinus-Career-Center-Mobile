@@ -39,7 +39,7 @@ class NotificationPage extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            BlocBuilder<NotificationBloc, NotificationState>(
+BlocBuilder<NotificationBloc, NotificationState>(
               builder: (context, state) {
                 final hasUnread = state.notifications.any((n) => !n.isRead);
                 if (!hasUnread) return const SizedBox.shrink();

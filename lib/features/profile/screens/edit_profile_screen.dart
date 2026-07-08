@@ -41,6 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedPendidikan;
   DateTime? _selectedTanggalLahir;
   bool _isSaving = false; // true when Save button pressed (vs photo upload)
+  bool _isDeletingPhoto = false;
 
   // Skills/Keahlian, Experience, and Education
   List<String> _skills = [];
@@ -140,22 +141,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _deleteImage() {
+    final bloc = context.read<ProfileBloc>();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Hapus Foto Profil?'),
         content: const Text(
           'Apakah Anda yakin ingin menghapus foto profil Anda?',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Batal'),
           ),
           TextButton(
             onPressed: () {
-              context.read<ProfileBloc>().add(const DeleteProfilePicture());
-              Navigator.pop(context);
+              setState(() => _isDeletingPhoto = true);
+              bloc.add(const DeleteProfilePicture());
+              Navigator.pop(dialogContext);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Hapus'),
@@ -253,6 +256,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               );
               Navigator.pop(context);
+            } else if (_isDeletingPhoto) {
+              _isDeletingPhoto = false;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Row(
+                    children: [
+                      Icon(Icons.delete_outline, color: Colors.white, size: 18),
+                      SizedBox(width: 8),
+                      Text('Foto profil berhasil dihapus'),
+                    ],
+                  ),
+                  backgroundColor: Colors.green.shade600,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
             } else {
               // Photo upload complete → show snackbar, stay on screen
               ScaffoldMessenger.of(context).showSnackBar(
@@ -271,6 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             }
           } else if (state.status == ProfileStatus.failure) {
             _isSaving = false;
+            _isDeletingPhoto = false;
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Gagal menyimpan profil. Coba lagi.'),

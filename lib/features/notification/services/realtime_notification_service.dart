@@ -101,12 +101,17 @@ class RealtimeNotificationService {
     if (processedIds.length > 50) processedIds.removeAt(0);
     await prefs.setStringList('processed_notification_ids', processedIds);
 
-    NotificationService().showNotification(
-      id: notificationId.hashCode,
-      title: data['judul'] ?? 'Notifikasi Baru',
-      body: data['pesan'] ?? '',
-      payload: jsonEncode(data),
-    );
+    try {
+      await NotificationService().showNotification(
+        id: notificationId.hashCode.abs(),
+        title: data['judul'] ?? 'Notifikasi Baru',
+        body: data['pesan'] ?? '',
+        payload: jsonEncode(data),
+      );
+      appLog('DEBUG: System notification shown for id=$notificationId');
+    } catch (e) {
+      appLog('ERROR: showNotification failed: $e');
+    }
   }
 
   /// Tears down the realtime channel without closing the shared
